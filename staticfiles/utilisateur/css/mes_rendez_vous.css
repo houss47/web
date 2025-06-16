@@ -1,0 +1,440 @@
+/* Styles spécifiques pour la page Mes Rendez-vous */
+
+/* Styles pour les cartes */
+.card {
+    border-radius: 15px;
+    border: none;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+    overflow: hidden;
+    background: #ffffff;
+    margin-bottom: 1.5rem;
+}
+
+.card:hover {
+    box-shadow: 0 8px 30px rgba(225, 121, 33, 0.15);
+    transform: translateY(-5px);
+}
+
+.card-header {
+    border-bottom: 1px solid rgba(225, 121, 33, 0.1);
+    background: linear-gradient(to right, rgba(225, 121, 33, 0.05), rgba(156, 69, 6, 0.05));
+    padding: 1.2rem;
+}
+
+.filter-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 4px;
+    height: 100%;
+    background: linear-gradient(to bottom, #E17921, #9C4506);
+}
+
+/* Styles pour le calendrier */
+.calendar-wrapper {
+    width: 100%;
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+}
+
+.calendar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem;
+    background: linear-gradient(135deg, #E17921, #9C4506);
+    color: white;
+}
+
+.calendar-header h5 {
+    font-weight: 600;
+    margin: 0;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.table-calendar {
+    table-layout: fixed;
+    margin: 0;
+}
+
+.table-calendar th, .table-calendar td {
+    text-align: center;
+    width: calc(100% / 7);
+    height: 2.5rem;
+    vertical-align: middle;
+}
+
+.table-calendar td {
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.table-calendar td:hover:not(.text-muted) {
+    background-color: rgba(225, 121, 33, 0.1);
+    transform: scale(1.1);
+}
+
+.table-calendar .text-muted {
+    color: #aaa !important;
+}
+
+.table-calendar .has-event {
+    position: relative;
+    font-weight: bold;
+    color: #E17921;
+}
+
+.table-calendar .has-event::after {
+    content: '';
+    position: absolute;
+    bottom: 3px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background-color: #E17921;
+}
+
+.table-calendar .today {
+    background-color: rgba(225, 121, 33, 0.2);
+    border-radius: 50%;
+    font-weight: bold;
+}
+
+.calendar-legend {
+    font-size: 0.8rem;
+}
+
+/* Styles pour les rendez-vous */
+.appointment-list {
+    max-height: 500px;
+    overflow-y: auto;
+}
+
+.appointment-item {
+    transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+    border-left: 4px solid transparent;
+    position: relative;
+}
+
+.appointment-item.today {
+    border-left: 4px solid #E17921;
+    background: linear-gradient(to right, rgba(225, 121, 33, 0.05), transparent);
+}
+
+.appointment-item:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(225, 121, 33, 0.12);
+}
+
+.appointment-item .card-body {
+    padding: 1.5rem;
+}
+
+/* Styles pour les badges */
+.status-badge {
+    padding: 0.5em 1em;
+    border-radius: 8px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.badge.rounded-pill.bg-light {
+    background-color: rgba(225, 121, 33, 0.1) !important;
+    color: #9C4506 !important;
+    border: 1px solid rgba(225, 121, 33, 0.3);
+}
+
+.badge.rounded-circle {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+}
+
+/* Styles pour les boutons */
+.btn {
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.btn-outline-primary {
+    color: #E17921;
+    border: 2px solid #E17921;
+    background: transparent;
+}
+
+.btn-outline-primary:hover {
+    background: linear-gradient(135deg, #E17921, #9C4506);
+    border-color: transparent;
+    color: white;
+    box-shadow: 0 4px 15px rgba(225, 121, 33, 0.2);
+}
+
+.btn-outline-danger {
+    color: #dc3545;
+    border: 2px solid #dc3545;
+    background: transparent;
+}
+
+.btn-outline-danger:hover {
+    background: linear-gradient(135deg, #dc3545, #bd2130);
+    border-color: transparent;
+    color: white;
+    box-shadow: 0 4px 15px rgba(220, 53, 69, 0.2);
+}
+
+/* Styles pour la pagination */
+.pagination .page-item.active .page-link {
+    background-color: #E17921;
+    border-color: #9C4506;
+}
+
+.pagination .page-link {
+    color: #9C4506;
+}
+
+.pagination .page-link:focus {
+    box-shadow: 0 0 0 0.25rem rgba(225, 121, 33, 0.25);
+}
+
+/* Styles pour les modals */
+.modal-content {
+    border: none;
+    border-radius: 15px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+}
+
+.modal-header {
+    background: linear-gradient(135deg, #E17921, #9C4506);
+    color: white;
+    border-radius: 15px 15px 0 0;
+    padding: 1.5rem;
+}
+
+.modal-body {
+    padding: 2rem;
+}
+
+.form-control, .form-select {
+    border-radius: 8px;
+    padding: 0.8rem 1rem;
+    border: 2px solid rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: #E17921;
+    box-shadow: 0 0 0 0.25rem rgba(225, 121, 33, 0.15);
+}
+
+.form-label {
+    color: #666;
+    font-weight: 500;
+}
+
+/* Styles pour les messages d'état vide */
+.text-center .fa-calendar-times {
+    color: #E17921;
+    opacity: 0.5;
+    font-size: 4rem;
+    margin-bottom: 1rem;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.1);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+/* Styles pour les boutons d'action */
+.btn-outline-primary,
+.btn-outline-danger {
+    transition: all 0.3s ease;
+}
+
+.btn-outline-primary:hover {
+    background-color: #E17921;
+    border-color: #E17921;
+}
+
+.btn-outline-danger:hover {
+    background-color: #dc3545;
+    border-color: #dc3545;
+}
+
+/* Styles pour les informations de l'atelier */
+.appointment-item h6 {
+    color: #2c3e50;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.appointment-item .text-muted {
+    color: #6c757d !important;
+    font-size: 0.9rem;
+}
+
+.appointment-item .fa-map-marker-alt {
+    color: #E17921;
+}
+
+/* Styles responsives */
+@media (max-width: 768px) {
+    .card {
+        margin-bottom: 1rem;
+    }
+
+    .date-badge {
+        min-width: 60px;
+        padding: 0.6rem;
+    }
+
+    .date-badge .day {
+        font-size: 1.4rem;
+    }
+
+    .date-badge .month {
+        font-size: 0.8rem;
+    }
+
+    .appointment-item .card-body {
+        padding: 1rem;
+    }
+
+    .status-badge {
+        padding: 0.4em 0.8em;
+        font-size: 0.8rem;
+    }
+
+    .table-calendar td {
+        height: 80px;
+        padding: 0.5rem;
+        font-size: 0.9rem;
+    }
+}
+
+/* Styles pour les badges de date */
+.date-badge {
+    background: linear-gradient(135deg, #E17921, #9C4506);
+    color: white;
+    padding: 0.8rem;
+    border-radius: 12px;
+    text-align: center;
+    min-width: 70px;
+    box-shadow: 0 4px 15px rgba(225, 121, 33, 0.2);
+    position: relative;
+    overflow: hidden;
+}
+
+.date-badge::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(45deg, rgba(255,255,255,0.1), rgba(255,255,255,0));
+    z-index: 1;
+}
+
+.date-badge .day {
+    font-size: 1.8rem;
+    font-weight: 700;
+    display: block;
+    line-height: 1;
+    margin-bottom: 2px;
+    position: relative;
+    z-index: 2;
+}
+
+.date-badge .month {
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    display: block;
+    letter-spacing: 1px;
+    position: relative;
+    z-index: 2;
+}
+
+/* Styles pour les boutons de vue */
+.btn-group .btn-outline-secondary {
+    border-color: #E17921;
+    color: #E17921;
+}
+
+.btn-group .btn-outline-secondary:hover,
+.btn-group .btn-outline-secondary.active {
+    background-color: #E17921;
+    color: white;
+}
+
+/* Styles pour les formulaires */
+.form-control:focus,
+.form-select:focus {
+    border-color: #E17921;
+    box-shadow: 0 0 0 0.25rem rgba(225, 121, 33, 0.25);
+}
+
+/* Animation pour les transitions de vue */
+.appointment-list,
+.calendar-wrapper {
+    transition: all 0.3s ease;
+}
+
+.appointment-item {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.appointment-item:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(225, 121, 33, 0.1);
+}
+
+/* Styles pour les statuts */
+.status-badge.bg-success {
+    background-color: #28a745 !important;
+}
+
+.status-badge.bg-warning {
+    background-color: #ffc107 !important;
+    color: #000 !important;
+}
+
+.status-badge.bg-danger {
+    background-color: #dc3545 !important;
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.appointment-item {
+    animation: fadeIn 0.5s ease-out forwards;
+}

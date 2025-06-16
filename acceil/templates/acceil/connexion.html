@@ -1,0 +1,335 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Atelier de Couture - Connexion et inscription à votre compte pour accéder à nos services personnalisés et profiter de l'élégance africaine moderne">
+    <title>Atelier de Couture - Connexion</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <link rel="stylesheet" href="{% static 'acceil/css/connexion.css' %}">
+</head>
+
+<body>
+
+    {% include 'acceil/section/header.html' %}
+
+
+    <!-- ========================= CONNEXION SECTION ========================= -->
+    <section class="login-page">
+        <div class="login-pattern-bg"></div>
+        <div class="login-container">
+            <div class="form-side-decoration left"></div>
+            <div class="form-side-decoration right"></div>
+            
+            <div class="form-header">
+                <div class="form-logo">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="28" height="28">
+                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z"/>
+                    </svg>
+                    <span class="form-logo-text">Atelier de Couture</span>
+                </div>
+                <h1 class="form-title">Bienvenue à nouveau</h1>
+                <p class="form-subtitle">Connectez-vous à votre compte ou créez-en un nouveau pour découvrir nos créations inspirées de l'élégance africaine</p>
+            </div>
+            
+            <div class="login-tabs">
+                <div class="login-tab active" data-form="connexion">Connexion</div>
+                <div class="login-tab" data-form="inscription">Inscription</div>
+            </div>
+            
+            {% if messages %}
+            <div class="messages" id="messages-container">
+                {% for message in messages %}
+                <div class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %}" data-message-id="{{ forloop.counter }}">
+                    {% if message.tags == 'success' %}
+                        <i class="fas fa-check-circle"></i>
+                    {% elif message.tags == 'error' %}
+                        <i class="fas fa-exclamation-circle"></i>
+                    {% elif message.tags == 'warning' %}
+                        <i class="fas fa-exclamation-triangle"></i>
+                    {% else %}
+                        <i class="fas fa-info-circle"></i>
+                    {% endif %}
+                    {{ message }}
+                </div>
+                {% endfor %}
+            </div>
+
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    const messages = document.querySelectorAll('.alert');
+                    messages.forEach(message => {
+                        setTimeout(() => {
+                            message.style.opacity = '0';
+                            setTimeout(() => {
+                                message.remove();
+                                if (document.querySelectorAll('.alert').length === 0) {
+                                    document.getElementById('messages-container').remove();
+                                }
+                            }, 300);
+                        }, 3000);
+                    });
+                });
+            </script>
+            {% endif %}
+            
+            <!-- Formulaire de connexion -->
+            <form id="connexionForm" class="auth-form" method="POST" action="{% url 'acceil:connexion' %}">
+                {% csrf_token %}
+                <input type="hidden" name="form_type" value="connexion">
+                
+                <div class="form-group animate-item">
+                    <label for="connexionEmail" class="form-label">Email</label>
+                    {{ connexion_form.email }}
+                    {% if connexion_form.email.errors %}
+                    <div class="error-message">{{ connexion_form.email.errors.0 }}</div>
+                    {% endif %}
+                </div>
+                
+                <div class="form-group animate-item">
+                    <label for="connexionPassword" class="form-label">Mot de passe</label>
+                    <div class="password-container">
+                        {{ connexion_form.mot_de_passe }}
+                        <button type="button" class="password-toggle" aria-label="Afficher/Masquer le mot de passe">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                <circle cx="12" cy="12" r="3"></circle>
+                            </svg>
+                        </button>
+                    </div>
+                    {% if connexion_form.mot_de_passe.errors %}
+                    <div class="error-message">{{ connexion_form.mot_de_passe.errors.0 }}</div>
+                    {% endif %}
+                </div>
+
+                <div class="form-options animate-item">
+                    <div class="form-checkbox">
+                        
+                    </div>
+                    
+                    <a href="{% url 'acceil:mot_de_passe_oublie' %}" class="forgot-password">Mot de passe oublié ?</a>
+                </div>
+                
+                <button style="color: black;" type="submit" class="btn-submit animate-item">Se connecter</button>
+                
+                <div class="form-separator animate-item">
+                    <span>Ou</span>
+                </div>
+                
+                <div class="social-login animate-item">
+                    <div class="social-buttons">
+                        <button type="button" class="social-button facebook" aria-label="Connexion avec Facebook">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M9.198 21.5h4v-8.01h3.604l.396-3.98h-4V7.5a1 1 0 0 1 1-1h3v-4h-3a5 5 0 0 0-5 5v2.01h-2l-.396 3.98h2.396v8.01Z" />
+                            </svg>
+                            <span>Facebook</span>
+                        </button>
+                        <button type="button" class="social-button google" aria-label="Connexion avec Google">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M11.99 13.9v-3.72h9.36c.14.63.25 1.22.25 2.05c0 5.71-3.83 9.77-9.6 9.77c-5.52 0-10-4.48-10-10S6.48 2 12 2c2.7 0 4.96.99 6.69 2.61l-2.84 2.76c-.72-.68-1.98-1.48-3.85-1.48c-3.31 0-6.01 2.75-6.01 6.12s2.7 6.12 6.01 6.12c3.83 0 5.24-2.65 5.5-4.22h-5.51v-.01Z" />
+                            </svg>
+                            <span>Google</span>
+                        </button>
+                    </div>
+                </div>
+
+                <p class="register-link animate-item">Vous n'avez pas encore de compte ? <a href="#" data-form="inscription">S'inscrire maintenant</a></p>
+            </form>
+
+            <!-- Formulaire d'inscription -->
+            <form id="inscriptionForm" class="auth-form hidden" method="POST" action="{% url 'acceil:connexion' %}" novalidate>
+                {% csrf_token %}
+                <input type="hidden" name="form_type" value="inscription">
+                
+                <div class="form-row">
+                    <div class="form-group animate-item">
+                        <label for="prenom" class="form-label">Prénom</label>
+                        {{ inscription_form.prenom }}
+                        {% if inscription_form.prenom.errors %}
+                        <div class="error-message">{{ inscription_form.prenom.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="form-group animate-item">
+                        <label for="nom" class="form-label">Nom</label>
+                        {{ inscription_form.nom }}
+                        {% if inscription_form.nom.errors %}
+                        <div class="error-message">{{ inscription_form.nom.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <div class="form-group animate-item">
+                    <label for="inscriptionEmail" class="form-label">Email</label>
+                    {{ inscription_form.email }}
+                    {% if inscription_form.email.errors %}
+                    <div class="error-message">{{ inscription_form.email.errors.0 }}</div>
+                    {% endif %}
+                </div>
+                
+                <div class="form-group animate-item">
+                    <label for="telephone" class="form-label">Numéro de téléphone</label>
+                    {{ inscription_form.telephone }}
+                    {% if inscription_form.telephone.errors %}
+                    <div class="error-message">{{ inscription_form.telephone.errors.0 }}</div>
+                    {% endif %}
+                </div>
+                
+                <div class="form-group animate-item">
+                    <label for="inscriptionPassword" class="form-label">Mot de passe</label>
+                    <div class="password-container">
+                        {{ inscription_form.mot_de_passe }}
+                        <button type="button" class="password-toggle" aria-label="Afficher/Masquer le mot de passe">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                <circle cx="12" cy="12" r="3"></circle>
+                            </svg>
+                        </button>
+                    </div>
+                    {% if inscription_form.mot_de_passe.errors %}
+                    <div class="error-message">{{ inscription_form.mot_de_passe.errors.0 }}</div>
+                    {% endif %}
+                </div>
+
+                <div class="form-group animate-item">
+                    <label for="confirmationPassword" class="form-label">Confirmer le mot de passe</label>
+                    <div class="password-container">
+                        {{ inscription_form.confirmation_mot_de_passe }}
+                        <button type="button" class="password-toggle" aria-label="Afficher/Masquer le mot de passe">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                <circle cx="12" cy="12" r="3"></circle>
+                            </svg>
+                        </button>
+                    </div>
+                    {% if inscription_form.confirmation_mot_de_passe.errors %}
+                    <div class="error-message">{{ inscription_form.confirmation_mot_de_passe.errors.0 }}</div>
+                    {% endif %}
+                </div>
+                
+                <button style="color: black;" type="submit" class="btn-submit animate-item" id="submitInscription">S'inscrire</button>
+                
+                <p class="register-link animate-item">Vous avez déjà un compte ? <a href="#" data-form="connexion">Se connecter</a></p>
+            </form>
+
+            <script>
+                document.getElementById('inscriptionForm').addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    console.log('Formulaire soumis');
+                    
+                    // Effacer les erreurs précédentes
+                    document.querySelectorAll('.error-message').forEach(el => el.remove());
+                    document.querySelectorAll('.invalid').forEach(el => el.classList.remove('invalid'));
+                    
+                    // Récupérer les données du formulaire
+                    const formData = new FormData(this);
+                    
+                    // Afficher les données dans la console
+                    for (let pair of formData.entries()) {
+                        console.log(pair[0] + ': ' + pair[1]);
+                    }
+                    
+                    // Désactiver le bouton de soumission
+                    const submitButton = this.querySelector('button[type="submit"]');
+                    const originalText = submitButton.innerHTML;
+                    submitButton.innerHTML = '<span class="loading-spinner"></span>Chargement...';
+                    submitButton.disabled = true;
+                    
+                    // Fonction pour afficher une notification
+                    function showNotification(message, type = 'success') {
+                        const toast = document.createElement('div');
+                        toast.className = `toast-notification ${type}`;
+                        toast.innerHTML = `
+                            <div class="toast-content">
+                                <div class="toast-icon">${type === 'success' ? '✓' : '✕'}</div>
+                                <span>${message}</span>
+                            </div>
+                            <div class="toast-progress"></div>
+                        `;
+                        document.body.appendChild(toast);
+                        setTimeout(() => toast.classList.add('show'), 100);
+                        
+                        // Supprimer la notification après 5 secondes
+                        setTimeout(() => {
+                            toast.classList.remove('show');
+                            setTimeout(() => toast.remove(), 300);
+                        }, 5000);
+                    }
+                    
+                    // Fonction pour afficher une erreur de champ
+                    function showFieldError(field, message) {
+                        const input = document.querySelector(`[name="${field}"]`);
+                        if (input) {
+                            input.classList.add('invalid');
+                            const errorDiv = document.createElement('div');
+                            errorDiv.className = 'error-message';
+                            errorDiv.textContent = message;
+                            input.parentNode.appendChild(errorDiv);
+                        }
+                    }
+                    
+                    // Envoyer les données au serveur
+                    fetch(this.action, {
+                        method: 'POST',
+                        body: formData,
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest'
+                        }
+                    })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error(`HTTP error! status: ${response.status}`);
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        console.log('Réponse du serveur:', data);
+                        
+                        if (data.success) {
+                            showNotification(data.message);
+                            if (data.redirect) {
+                                setTimeout(() => {
+                                    window.location.href = data.redirect;
+                                }, 1500);
+                            }
+                        } else {
+                            if (data.errors) {
+                                Object.entries(data.errors).forEach(([field, messages]) => {
+                                    showFieldError(field, Array.isArray(messages) ? messages[0] : messages);
+                                });
+                            }
+                            showNotification('Une erreur est survenue lors de l\'inscription', 'error');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Erreur:', error);
+                        showNotification('Une erreur est survenue lors de la communication avec le serveur', 'error');
+                    })
+                    .finally(() => {
+                        // Réactiver le bouton de soumission
+                        submitButton.innerHTML = originalText;
+                        submitButton.disabled = false;
+                    });
+                });
+            </script>
+        </div>
+    </section>
+
+    {% include 'acceil/section/footer.html' %}
+    
+    <!-- Scripts spécifiques à la page connexion -->
+    <script src="{% static 'acceil/js/connexion.js' %}"></script>
+
+</body>
+
+</html>

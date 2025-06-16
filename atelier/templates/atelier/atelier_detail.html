@@ -1,0 +1,377 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{{ atelier.nom_atelier }} - Couture sur mesure à {{ atelier.ville }}</title>
+    <meta name="description" content="{{ atelier.description }}" />
+    <meta name="author" content="{{ atelier.nom_atelier }}" />
+    
+    <meta property="og:title" content="{{ atelier.nom_atelier }}" />
+    <meta property="og:description" content="{{ atelier.description }}" />
+    <meta property="og:type" content="website" />
+    
+    <link rel="stylesheet" href="{% static 'atelier/css/atelier_detail.css' %}">
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <style>
+      .alert {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        padding: 15px;
+        border-radius: 4px;
+        z-index: 1000;
+        animation: slideIn 0.5s ease-out;
+      }
+      
+      .alert-success {
+        background-color: #d4edda;
+        color: #155724;
+        border: 1px solid #c3e6cb;
+      }
+      
+      .alert-error {
+        background-color: #f8d7da;
+        color: #721c24;
+        border: 1px solid #f5c6cb;
+      }
+      
+      @keyframes slideIn {
+        from {
+          transform: translateX(100%);
+          opacity: 0;
+        }
+        to {
+          transform: translateX(0);
+          opacity: 1;
+        }
+      }
+      
+      @keyframes fadeOut {
+        from {
+          opacity: 1;
+        }
+        to {
+          opacity: 0;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    {% include 'acceil/section/header.html' %}
+
+    {% if messages %}
+    <div class="messages">
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }}" id="message-{{ forloop.counter }}">
+            {{ message }}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <div class="main-container" style="margin-top: 55px;">
+      <!-- Sidebar de contact -->
+      <aside class="sidebar">
+        <div class="contact-section">
+          <h3>CONTACTEZ CET ATELIER</h3>
+         
+          
+          <div class="contact-info">
+            <div style="word-break: break-all;" class="contact-item">
+              <span class="icon">📧</span>
+              <span  class="label">EMAIL</span>
+              <a href="mailto:{{ atelier.utilisateur.email }}">{{ atelier.utilisateur.email }}</a>
+            </div>
+            
+            <div class="contact-item">
+              <span class="icon">📞</span>
+              <span class="label">TÉLÉPHONE</span>
+              <a href="tel:{{ atelier.utilisateur.telephone }}">{{ atelier.utilisateur.telephone }}</a>
+            </div>
+          </div>
+        </div>
+      </aside>
+
+      <!-- Contenu principal -->
+      <main class="main-content">
+        <!-- Navigation -->
+        <nav class="navigation">
+          <button class="nav-item active" data-section="presentation">📋 Présentation</button>
+          <button class="nav-item" data-section="services">🛠️ Services</button>
+          <button class="nav-item" data-section="catalogue">📁 Catalogue</button>
+          <button class="nav-item" data-section="rendez-vous">📅 Rendez-vous</button>
+          <button class="nav-item" data-section="photos">📷 Photos</button>
+        </nav>
+
+        <!-- Section Présentation -->
+        <section id="presentation" class="content-section active">
+          <div class="presentation-container full-width">
+            <div class="presentation-text full-width">
+              <h2>Présentation de l'atelier</h2>
+              <p>{{ atelier.description }}</p>
+              
+              <div class="expertise-section">
+                <h3>Notre expertise</h3>
+                <ul class="expertise-list">
+                  {% for service in atelier.services.all %}
+                    <li>{{ service.nom }} - {{ service.description }}</li>
+                  {% endfor %}
+                </ul>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Section Services -->
+        <section id="services" class="content-section">
+          <h2>Nos services</h2>
+          <div class="services-grid">
+            {% for service in atelier.services.all %}
+            <div class="service-card">
+              <div class="service-icon">🪡</div>
+              <h3>{{ service.nom }}</h3>
+              <p>{{ service.description }}</p>
+              <div class="service-price">À partir de {{ service.prix_minimum }} FCFA</div>
+            </div>
+            {% endfor %}
+          </div>
+        </section>
+
+        <!-- Section Catalogue -->
+        <section id="catalogue" class="content-section">
+          <h2>Notre catalogue</h2>
+          
+          <div class="catalogue-stats">
+            <div class="stats-info">
+              Affichage de <span class="results-count">{{ atelier.produits.count }}</span> articles
+            </div>
+          </div>
+          
+          <div class="filter-tabs">
+            <button class="filter-tab active" data-filter="all">Tous</button>
+            <button class="filter-tab" data-filter="femmes">Femmes</button>
+            <button class="filter-tab" data-filter="hommes">Hommes</button>
+            <button class="filter-tab" data-filter="enfants">Enfants</button>
+          </div>
+          
+          <div class="catalogue-grid">
+            {% for produit in atelier.produits.all %}
+            <div class="catalogue-item" data-category="{{ produit.categorie }}">
+              <div class="item-image">
+                {% if produit.photo %}
+                  <img src="{{ produit.photo.url }}" alt="{{ produit.nom }}" loading="lazy">
+                {% else %}
+                  <img src="{% static 'images/default-product.jpg' %}" alt="{{ produit.nom }}" loading="lazy">
+                {% endif %}
+              </div>
+              <h4>{{ produit.nom }}</h4>
+              <p>{{ produit.description }}</p>
+              <div class="item-price">{{ produit.prix }} FCFA</div>
+              <div class="item-actions">
+                {% if request.session.user_id and request.session.user_role == 'client' %}
+                  <a href="{% url 'commande:commande_list' %}?produit_id={{ produit.id }}&atelier_id={{ atelier.id }}" class="btn-secondary">Commander</a>
+                {% else %}
+                  <a href="{% url 'acceil:connexion' %}" class="btn-secondary">Se connecter pour commander</a>
+                {% endif %}
+              </div>
+            </div>
+            {% endfor %}
+          </div>
+        </section>
+
+        <!-- Section Rendez-vous -->
+        <section id="rendez-vous" class="content-section">
+            <!-- Section de prise de rendez-vous -->
+            <section class="appointment-section">
+                <div class="container">
+                   
+                    <h2 class="section-title">Prendre rendez-vous</h2>
+                    
+                    {% if messages %}
+                        <div class="messages">
+                            {% for message in messages %}
+                                <div class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %}">
+                                    {{ message }}
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                    
+                    {% if request.session.user_id %}
+                        {% if request.session.user_role == 'client' %}
+                            <div class="appointment-form-container">
+                                <form method="POST" action="{% url 'atelier:atelier_detail' atelier.id %}" class="appointment-form" id="rdvForm">
+                {% csrf_token %}
+                                    
+                <div class="form-group">
+                                        <label for="{{ form.service.id_for_label }}">Service souhaité *</label>
+                                        {{ form.service }}
+                                        <div id="service-description" class="service-description"></div>
+                                        {% if form.service.errors %}
+                                            <small class="error-message">{{ form.service.errors.0 }}</small>
+                                        {% endif %}
+                </div>
+                
+                <div class="form-group">
+                                        <label for="{{ form.date.id_for_label }}">Date souhaitée *</label>
+                                        {{ form.date }}
+                                        <small>La date doit être dans le futur</small>
+                                        {% if form.date.errors %}
+                                            <small class="error-message">{{ form.date.errors.0 }}</small>
+                                        {% endif %}
+                </div>
+                
+                <div class="form-group">
+                                        <label for="{{ form.heure.id_for_label }}">Heure souhaitée *</label>
+                                        {{ form.heure }}
+                                        <small>Horaires disponibles : 9h00 - 18h00</small>
+                                        {% if form.heure.errors %}
+                                            <small class="error-message">{{ form.heure.errors.0 }}</small>
+                                        {% endif %}
+                </div>
+                
+                <div class="form-group">
+                                        <label for="{{ form.message.id_for_label }}">Message (optionnel)</label>
+                                        {{ form.message }}
+                                        {% if form.message.errors %}
+                                            <small class="error-message">{{ form.message.errors.0 }}</small>
+                                        {% endif %}
+                </div>
+                
+                                    <button type="submit" class="btn btn-primary">Confirmer le rendez-vous</button>
+              </form>
+            </div>
+                        {% else %}
+                            <div class="alert alert-info">
+                                <p>Cette fonctionnalité est réservée aux clients.</p>
+                            </div>
+                        {% endif %}
+                    {% else %}
+                        <div class="alert alert-info">
+                            <p>Vous devez être connecté pour prendre rendez-vous.</p>
+                            <a href="{% url 'acceil:connexion' %}" class="btn btn-primary">Se connecter</a>
+                        </div>
+                    {% endif %}
+          </div>
+            </section>
+        </section>
+
+        <!-- Section Photos -->
+        <section id="photos" class="content-section">
+          <h2>Galerie photos</h2>
+          <div class="photo-grid" id="photoGrid">
+            {% for photo in photos %}
+            <div class="photo-item" onclick="openPhotoModal({{ forloop.counter }})">
+              {% if photo.image %}
+                <img src="{{ photo.image.url }}" alt="{{ photo.titre }}">
+              {% else %}
+                <div class="no-image">
+                  <span class="no-image-icon">📷</span>
+                  <p>Aucune image</p>
+              </div>
+              {% endif %}
+              <div class="photo-overlay">
+                <span class="photo-icon">📷</span>
+              </div>
+            </div>
+            {% empty %}
+            <div class="no-photos">
+              <p>Aucune photo disponible pour le moment.</p>
+            </div>
+            {% endfor %}
+          </div>
+        </section>
+      </main>
+    </div>
+    
+  {% include 'acceil/section/footer.html' %}
+
+    <script src="{% static 'atelier/js/atelier_detail.js' %}"></script>
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Gestion des messages
+        const messages = document.querySelectorAll('.alert');
+        messages.forEach(function(message) {
+            setTimeout(function() {
+                message.style.animation = 'fadeOut 0.5s ease-out forwards';
+                setTimeout(function() {
+                    message.remove();
+                }, 500);
+            }, 3000); // Disparaît après 3 secondes
+        });
+
+        const form = document.getElementById('rdvForm');
+        const serviceSelect = document.getElementById('id_service');
+        const serviceDescription = document.getElementById('service-description');
+        
+        // Afficher la description du service sélectionné
+        serviceSelect.addEventListener('change', function() {
+            const selectedOption = this.options[this.selectedIndex];
+            const description = selectedOption.getAttribute('data-description');
+            serviceDescription.textContent = description || '';
+        });
+        
+        // Validation du formulaire
+        form.addEventListener('submit', function(e) {
+            let isValid = true;
+            let firstError = null;
+            
+            // Validation du service
+            if (!serviceSelect.value) {
+                const errorElement = serviceSelect.nextElementSibling.nextElementSibling;
+                errorElement.textContent = 'Veuillez sélectionner un service';
+                isValid = false;
+                if (!firstError) firstError = serviceSelect;
+            }
+            
+            // Validation de la date
+            const dateInput = document.getElementById('id_date');
+            if (!dateInput.value) {
+                const errorElement = dateInput.nextElementSibling.nextElementSibling;
+                errorElement.textContent = 'Veuillez sélectionner une date';
+                isValid = false;
+                if (!firstError) firstError = dateInput;
+            } else {
+                const selectedDate = new Date(dateInput.value);
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+                
+                if (selectedDate < today) {
+                    const errorElement = dateInput.nextElementSibling.nextElementSibling;
+                    errorElement.textContent = 'La date doit être dans le futur';
+                    isValid = false;
+                    if (!firstError) firstError = dateInput;
+                }
+            }
+            
+            // Validation de l'heure
+            const heureInput = document.getElementById('id_heure');
+            if (!heureInput.value) {
+                const errorElement = heureInput.nextElementSibling.nextElementSibling;
+                errorElement.textContent = 'Veuillez sélectionner une heure';
+                isValid = false;
+                if (!firstError) firstError = heureInput;
+            } else {
+                const hour = parseInt(heureInput.value.split(':')[0]);
+                if (hour < 9 || hour >= 18) {
+                    const errorElement = heureInput.nextElementSibling.nextElementSibling;
+                    errorElement.textContent = 'L\'heure doit être comprise entre 9h et 18h';
+                    isValid = false;
+                    if (!firstError) firstError = heureInput;
+                }
+            }
+            
+            if (!isValid) {
+                e.preventDefault();
+                if (firstError) {
+                    firstError.focus();
+                }
+            }
+        });
+      });
+    </script>
+  </body>
+</html>

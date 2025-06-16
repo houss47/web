@@ -1,0 +1,333 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Client - Couture Hub</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom CSS -->
+    
+    <link rel="stylesheet" href="{% static 'utilisateur/css/dashboard.css' %}">
+    <link rel="stylesheet" href="{% static 'utilisateur/css/african-animations.css' %}">
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+   
+</head>
+<body>
+    <!-- Navigation -->
+    <nav  class="navbar navbar-expand-lg navbar-dark bg-primary sticky-top" style="background: linear-gradient(to right, #E17921, #9C4506) !important;">
+        {% include 'acceil/section/header.html' %}
+    </nav>
+
+    <!-- Main Content -->
+    <div  style="margin-top: 10px;" class="container-fluid">
+        <div class="row">
+            <!--     Sidebar -->
+            <nav id="sidebar" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
+                <div class="position-sticky pt-3">
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link active" href="{% url 'utilisateur:dashboard_client' %}" style="color: #E17921;">
+                                <i class="fas fa-tachometer-alt me-2"></i>Tableau de bord
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'utilisateur:mes_commandes' %}">
+                                <i class="fas fa-shopping-bag me-2"></i>Mes commandes
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'utilisateur:mes_mesures' %}">
+                                <i class="fas fa-ruler me-2"></i>Mes mesures
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'utilisateur:mes_rendez_vous' %}">
+                                <i class="fas fa-calendar-alt me-2"></i>Mes rendez-vous
+                            </a>
+                        </li>
+                      
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'utilisateur:mon_profil' %}">
+                                <i class="fas fa-user me-2"></i>Mon profil
+                            </a>
+                        </li>
+                    </ul>
+
+                </div>
+            </nav>
+
+            <!-- Dashboard Content -->
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                    <h1 class="h2">Tableau de bord client</h1>
+                    
+                </div>
+
+                <!-- Overview Cards -->
+                <div class="row row-cols-1 row-cols-md-4 g-4 mb-4 overview-cards">
+                    <div class="col">
+                        <div class="card h-100 dashboard-card">
+                            <div class="card-body">
+                                <div class="d-flex align-items-center">
+                                    <div class="icon-background bg-primary-light" style="background-color: rgba(225, 121, 33, 0.1);">
+                                        <i class="fas fa-shopping-bag" style="color: #E17921;"></i>
+                                    </div>
+                                    <div class="ms-3">
+                                        <h6 class="card-subtitle text-muted">Commandes</h6>
+                                        <h2 class="card-title mb-0">{{ total_commandes }}</h2>
+                                    </div>
+                                </div>
+                                <div class="progress mt-3" style="height: 5px;">
+                                    <div class="progress-bar bg-primary" role="progressbar" style="width: 75%;"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="card h-100 dashboard-card">
+                            <div class="card-body">
+                                <div class="d-flex align-items-center">
+                                    <div class="icon-background bg-success-light">
+                                        <i class="fas fa-check-circle text-success"></i>
+                                    </div>
+                                    <div class="ms-3">
+                                        <h6 class="card-subtitle text-muted">Terminées</h6>
+                                        <h2 class="card-title mb-0">{{ commandes_terminees }}</h2>
+                                    </div>
+                                </div>
+                                <div class="progress mt-3" style="height: 5px;">
+                                    <div class="progress-bar bg-success" role="progressbar" style="width: 60%;"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col">
+                        <div class="card h-100 dashboard-card">
+                            <div class="card-body">
+                                <div class="d-flex align-items-center">
+                                    <div class="icon-background bg-warning-light">
+                                        <i class="fas fa-spinner text-warning"></i>
+                                    </div>
+                                    <div class="ms-3">
+                                        <h6 class="card-subtitle text-muted">En cours</h6>
+                                        <h2 class="card-title mb-0">{{ commandes_en_cours }}</h2>
+                                    </div>
+                                </div>
+                                <div class="progress mt-3" style="height: 5px;">
+                                    <div class="progress-bar bg-warning" role="progressbar" style="width: 40%;"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col">
+                        <div class="card h-100 dashboard-card">
+                            <div class="card-body">
+                                <div class="d-flex align-items-center">
+                                    <div class="icon-background bg-info-light">
+                                        <i class="fas fa-calendar-alt text-info"></i>
+                                    </div>
+                                    <div class="ms-3">
+                                        <h6 class="card-subtitle text-muted">Rendez-vous terminés</h6>
+                                        <h2 class="card-title mb-0">{{ rdv_termines }}</h2>
+                                    </div>
+                                </div>
+                                <div class="progress mt-3" style="height: 5px;">
+                                    <div class="progress-bar bg-info" role="progressbar" style="width: 30%;"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Orders -->
+                <div class="card mb-4">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">Mes commandes récentes</h5>
+                        <a href="{% url 'utilisateur:mes_commandes' %}" class="btn btn-sm btn-outline-primary">Voir tout</a>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Référence</th>
+                                        <th scope="col">Date</th>
+                                        <th scope="col">Article</th>
+                                        <th scope="col">Montant</th>
+                                        <th scope="col">Statut</th>
+                                        <th scope="col">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for commande in dernieres_commandes %}
+                                    <tr>
+                                        <td>{{ commande.reference }}</td>
+                                        <td>{{ commande.date_creation|date:"d/m/Y" }}</td>
+                                        <td>{{ commande.produit.nom }}</td>
+                                        <td>{{ commande.produit.prix|floatformat:0 }} XOF</td>
+                                        <td>
+                                            {% if commande.status == 'en_attente' %}
+                                                <span class="badge bg-warning">En attente</span>
+                                            {% elif commande.status == 'en_cours' %}
+                                                <span class="badge bg-info">En cours</span>
+                                            {% elif commande.status == 'termine' %}
+                                                <span class="badge bg-success">Terminée</span>
+                                            {% elif commande.status == 'recupere' %}
+                                                <span class="badge bg-primary">Récupérée</span>
+                                            {% else %}
+                                                <span class="badge bg-secondary">{{ commande.status|title }}</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <a href="{% url 'utilisateur:mes_commandes' %}" class="btn btn-sm btn-outline-primary" title="Voir les détails">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    {% empty %}
+                                    <tr>
+                                        <td colspan="6" class="text-center text-muted">
+                                            <p class="mb-0">Aucune commande pour le moment</p>
+                                            <small>Commencez par explorer nos ateliers et produits</small>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Two Column Layout -->
+                <div class="row">
+                    <!-- Upcoming Appointments -->
+                    <div class="col-md-6 mb-4">
+                        <div class="card h-100">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <h5 class="mb-0">Prochains rendez-vous</h5>
+                                <a href="{% url 'utilisateur:mes_rendez_vous' %}" class="btn btn-sm btn-outline-primary">Voir tout</a>
+                            </div>
+                            <div class="card-body">
+                                <ul class="list-group list-group-flush">
+                                    {% for rdv in prochains_rdv %}
+                                    <li class="list-group-item px-0">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <div>
+                                                <h6 class="mb-1">{{ rdv.service.nom }}</h6>
+                                                <p class="text-muted small mb-0">
+                                                    <i class="fas fa-map-marker-alt me-1"></i> {{ rdv.atelier.nom_atelier }}
+                                                </p>
+                                            </div>
+                                            <div class="text-end">
+                                                <p class="text-primary mb-0">{{ rdv.date|date:"d F Y" }}</p>
+                                                <p class="small mb-0">{{ rdv.heure|time:"H:i" }}</p>
+                                            </div>
+                                        </div>
+                                    </li>
+                                    {% empty %}
+                                    <li class="list-group-item px-0">
+                                        <div class="text-center text-muted">
+                                            <p class="mb-0">Aucun rendez-vous à venir</p>
+                                        </div>
+                                    </li>
+                                    {% endfor %}
+                                </ul>
+                                <div class="text-center mt-3">
+                                    <a href="{% url 'utilisateur:mes_rendez_vous' %}" class="btn btn-primary" style="background: linear-gradient(to right, #E17921, #9C4506) !important; border-color: #9C4506;">
+                                        <i class="fas fa-plus-circle me-1"></i> Voir tous les rendez-vous
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- My Measurements -->
+                    <div class="col-md-6 mb-4">
+                        <div class="card h-100">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <h5 class="mb-0">Mes mesures</h5>
+                                <a href="{% url 'utilisateur:mes_mesures' %}" class="btn btn-sm btn-outline-primary">Détails</a>
+                            </div>
+                            <div class="card-body">
+                                <div class="row row-cols-2 g-3 mb-3">
+                                    <div class="col">
+                                        <div class="measurement-item">
+                                            <span class="measurement-label">Tour de poitrine</span>
+                                            <span class="measurement-value">{% if mesures %}{{ mesures.tour_poitrine }} cm{% else %}Aucune mesure{% endif %}</span>
+                                        </div>
+                                    </div>
+                                    <div class="col">
+                                        <div class="measurement-item">
+                                            <span class="measurement-label">Tour de taille</span>
+                                            <span class="measurement-value">{% if mesures %}{{ mesures.tour_taille }} cm{% else %}Aucune mesure{% endif %}</span>
+                                        </div>
+                                    </div>
+                                    <div class="col">
+                                        <div class="measurement-item">
+                                            <span class="measurement-label">Tour de hanches</span>
+                                            <span class="measurement-value">{% if mesures %}{{ mesures.tour_hanches }} cm{% else %}Aucune mesure{% endif %}</span>
+                                        </div>
+                                    </div>
+                                    <div class="col">
+                                        <div class="measurement-item">
+                                            <span class="measurement-label">Hauteur épaule</span>
+                                            <span class="measurement-value">{% if mesures %}{{ mesures.hauteur_epaule }} cm{% else %}Aucune mesure{% endif %}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="text-center">
+                                    <a href="{% url 'utilisateur:mes_mesures' %}" class="btn btn-sm btn-outline-primary" style="color: #E17921; border-color: #E17921;">
+                                        <i class="fas fa-ruler me-1"></i> Voir toutes mes mesures
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+              
+
+                <!-- Footer -->
+                <footer class="mt-auto py-3">
+                    <div class="text-center text-muted">
+                        <p>© 2025 Couture Hub - Tous droits réservés</p>
+                    </div>
+                </footer>
+            </main>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Custom JS -->
+    <script src="{% static 'utilisateur/js/dashboard.js' %}"></script>
+    
+    <!-- Viewport Height Management Script -->
+    <script>
+        // Function to update viewport height
+        function updateViewportHeight() {
+            let vh = window.innerHeight * 0.01;
+            document.documentElement.style.setProperty('--vh', `${vh}px`);
+        }
+
+        // Initial update
+        updateViewportHeight();
+
+        // Update on resize and orientation change
+        window.addEventListener('resize', updateViewportHeight);
+        window.addEventListener('orientationchange', updateViewportHeight);
+
+        // Update on fullscreen change
+        document.addEventListener('fullscreenchange', updateViewportHeight);
+        document.addEventListener('webkitfullscreenchange', updateViewportHeight);
+        document.addEventListener('mozfullscreenchange', updateViewportHeight);
+        document.addEventListener('MSFullscreenChange', updateViewportHeight);
+    </script>
+</body>
+</html>

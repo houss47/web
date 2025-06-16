@@ -1,0 +1,167 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AttelierCouture - La plateforme pour les ateliers de couture</title>
+    <meta name="description" content="La plateforme qui connecte les ateliers de couture avec leurs clients">
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <link rel="stylesheet" href="{% static 'acceil/css/styles.css' %}">
+    
+</head>
+<body>
+    {% include 'acceil/section/header.html' %}
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <div class="hero-text">
+                    <div class="badge">Plateforme N°1 pour les ateliers de couture</div>
+                    <h1 class="hero-title">
+                        La plateforme pour gérer et découvrir les 
+                        <span class="text-primary">meilleurs ateliers</span>
+                        de couture
+                    </h1>
+                    <p class="hero-description">
+                        Nous aidons les ateliers de couture à gérer leurs commandes et leurs clients, 
+                        tout en permettant aux passionnés de découvrir des créateurs exceptionnels.
+                    </p>
+                    <div class="hero-buttons">
+                        <a href="{% url 'acceil:creer_atelier' %}" class="btn btn-primary btn-large">
+                            Créer mon atelier
+                            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                <path d="m9 18 6-6-6-6"/>
+                            </svg>
+                        </a>
+                       
+                    </div>
+                    
+                </div>
+                <div class="hero-image">
+                    <img src="{% static 'acceil/images/2.png' %}" alt="Plateforme Atelier de Couture" class="hero-showcase-image">
+                    <div class="image-overlay">
+                        <div class="overlay-content">
+                            <span class="overlay-badge">Notre plateforme</span>
+                            <p class="overlay-text">Connectez les artisans de la couture avec leurs clients passionnés</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- À propos / Avantages -->
+    <section class="features">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Pourquoi choisir notre plateforme ?</h2>
+                <p class="section-description">
+                    Une solution complète pour connecter les ateliers de couture avec leurs clients
+                </p>
+            </div>
+            
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+                            <circle cx="9" cy="7" r="4"/>
+                            <path d="m22 21-3-3m3 3 3-3m-3 3V9"/>
+                        </svg>
+                    </div>
+                    <h3 class="feature-title">Gestion simplifiée</h3>
+                    <p class="feature-description">
+                        Gérez vos commandes, clients et planning en toute simplicité avec notre interface intuitive.
+                    </p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"/>
+                        </svg>
+                    </div>
+                    <h3 class="feature-title">Visibilité accrue</h3>
+                    <p class="feature-description">
+                        Augmentez votre visibilité et attirer de nouveaux clients grâce à notre réseau de passionnés.
+                    </p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <circle cx="12" cy="12" r="10"/>
+                            <polyline points="12,6 12,12 16,14"/>
+                        </svg>
+                    </div>
+                    <h3 class="feature-title">Gain de temps</h3>
+                    <p class="feature-description">
+                        Automatisez vos tâches répétitives et concentrez-vous sur votre passion : la couture.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Ateliers populaires -->
+    <section class="ateliers">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Ateliers populaires</h2>
+                <p class="section-description">
+                    Découvrez quelques-uns de nos ateliers les plus appréciés
+                </p>
+            </div>
+            
+            <div class="ateliers-grid">
+                {% for atelier in ateliers %}
+                <div class="atelier-card">
+                    <div class="atelier-image" {% if atelier.photo_atelier %}style="background-image: url('{{ atelier.photo_atelier.url }}');"{% else %}style="background-color: #f5f5f5;"{% endif %}>
+                        {% if not atelier.photo_atelier %}
+                        <div class="no-image">
+                            <span class="no-image-icon">🏪</span>
+                        </div>
+                        {% endif %}
+                    </div>
+                    <div class="atelier-content">
+                        <h3 class="atelier-name">{{ atelier.nom_atelier }}</h3>
+                        <div class="atelier-location">
+                            <svg class="location-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+                                <circle cx="12" cy="10" r="3"/>
+                            </svg>
+                            {{ atelier.ville }}
+                        </div>
+                        <p class="atelier-description">{{ atelier.description }}</p>
+                        <div class="atelier-footer">
+                            <div class="rating">
+                                <svg class="star-icon" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor">
+                                    <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"/>
+                                </svg>
+                            </div>
+                            <a href="{% url 'atelier:atelier_detail' atelier.id %}" class="btn btn-small btn-outline">Voir plus</a>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            
+            <div class="section-cta">
+                <a href=" {% url 'atelier:ateliers' %}" class="btn btn-primary btn-large">
+                    Voir tous les ateliers
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <path d="m9 18 6-6-6-6"/>
+                    </svg>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    {% include 'acceil/section/footer.html' %}
+    
+    <!-- Scripts spécifiques à la page home -->
+    <script src="{% static 'acceil/js/home.js' %}"></script>
+</body>
+</html>

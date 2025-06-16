@@ -1,0 +1,513 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mes Commandes - Couture Hub</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom CSS -->
+   
+    <link rel="stylesheet" href="{% static 'utilisateur/css/dashboard.css' %}">
+    <link rel="stylesheet" href="{% static 'utilisateur/css/african-animations.css' %}">
+    <link rel="stylesheet" href="{% static 'utilisateur/css/mes_commandes.css' %}">
+    <link rel="stylesheet" href="{% static 'utilisateur/css/responsive.css' %}">
+     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+
+</head>
+<body>
+    <!-- Navigation -->
+    
+        {% include 'acceil/section/header.html' %}
+    
+
+    <!-- Main Content -->
+    <div  style="margin-top: 55px;" class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <nav id="sidebar" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
+                <div class="position-sticky pt-3">
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'utilisateur:dashboard_client' %}">
+                                <i class="fas fa-tachometer-alt me-2"></i>Tableau de bord
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link active" href="{% url 'utilisateur:mes_commandes' %}" style="color: #E17921;">
+                                <i class="fas fa-shopping-bag me-2"></i>Mes commandes
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'utilisateur:mes_mesures' %}">
+                                <i class="fas fa-ruler me-2"></i>Mes mesures
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'utilisateur:mes_rendez_vous' %}">
+                                <i class="fas fa-calendar-alt me-2"></i>Mes rendez-vous
+                            </a>
+                        </li>
+                       
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'utilisateur:mon_profil' %}">
+                                <i class="fas fa-user me-2"></i>Mon profil
+                            </a>
+                        </li>
+                    </ul>
+
+                </div>
+            </nav>
+
+            <!-- Main Content -->
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                    <h1 class="h2"><i class="fas fa-shopping-bag me-2" style="color: #E17921;"></i>Mes Commandes</h1>
+                    
+                </div>
+
+                <!-- Messages -->
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %} alert-dismissible fade show" role="alert">
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+
+                <!-- Filtres de commandes -->
+                <div class="card mb-4 filter-card">
+                    <div class="card-header d-flex justify-content-between align-items-center" style="background: rgba(225, 121, 33, 0.1);">
+                        <h5 class="mb-0"><i class="fas fa-filter me-2" style="color: #E17921;"></i>Filtres</h5>
+                        <button class="btn btn-sm btn-outline-primary" id="toggleFilters" style="color: #E17921; border-color: #E17921;">
+                            <i class="fas fa-sliders-h"></i> Afficher/Masquer
+                        </button>
+                    </div>
+                    <div class="card-body" id="filtersContainer">
+                        <form class="row g-3" method="get">
+                            <div class="col-md-3">
+                                <label class="form-label">Statut</label>
+                                <select class="form-select" name="status">
+                                    <option value="">Tous</option>
+                                    <option value="en-attente" {% if current_status == 'en-attente' %}selected{% endif %}>En attente</option>
+                                    <option value="en-cours" {% if current_status == 'en-cours' %}selected{% endif %}>En cours</option>
+                                    <option value="terminee" {% if current_status == 'terminee' %}selected{% endif %}>Terminée</option>
+                                    <option value="recupere" {% if current_status == 'recupere' %}selected{% endif %}>Récupérée</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">Date</label>
+                                <select class="form-select" name="period">
+                                    <option value="">Toutes les périodes</option>
+                                    <option value="this-month" {% if current_period == 'this-month' %}selected{% endif %}>Ce mois</option>
+                                    <option value="last-month" {% if current_period == 'last-month' %}selected{% endif %}>Mois dernier</option>
+                                    <option value="last-3-months" {% if current_period == 'last-3-months' %}selected{% endif %}>3 derniers mois</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">Prix</label>
+                                <select class="form-select" name="price">
+                                    <option value="">Tous les prix</option>
+                                    <option value="0-25000" {% if current_price == '0-25000' %}selected{% endif %}>Moins de 25 000 XOF</option>
+                                    <option value="25000-50000" {% if current_price == '25000-50000' %}selected{% endif %}>25 000 - 50 000 XOF</option>
+                                    <option value="50000+" {% if current_price == '50000+' %}selected{% endif %}>Plus de 50 000 XOF</option>
+                                </select>
+                            </div>
+                            
+                            <div class="col-12 text-end">
+                                <a href="{% url 'utilisateur:mes_commandes' %}" class="btn btn-outline-secondary me-2"><i class="fas fa-undo me-1"></i>Réinitialiser</a>
+                                <button type="submit" class="btn btn-primary" style="background: linear-gradient(to right, #E17921, #9C4506) !important; border-color: #9C4506; box-shadow: 0 4px 8px rgba(225, 121, 33, 0.2);"><i class="fas fa-check me-1"></i>Appliquer</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Liste des Commandes -->
+                <div class="card mb-4 order-card">
+                    <div class="card-header d-flex justify-content-between align-items-center" style="background: rgba(225, 121, 33, 0.1);">
+                        <h5 class="mb-0"><i class="fas fa-shopping-bag me-2" style="color: #E17921;"></i>Mes commandes</h5>
+                        <span class="badge rounded-pill" style="background-color: rgba(225, 121, 33, 0.7); color: white;">{{ commandes_actives }} commande{{ commandes_actives|pluralize }} active{{ commandes_actives|pluralize }}</span>
+                    </div>
+                    <div class="card-body">
+                        {% if commandes %}
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Référence</th>
+                                        <th scope="col">Date</th>
+                                        <th scope="col">Article</th>
+                                            <th scope="col">Atelier</th>
+                                        <th scope="col">Montant</th>
+                                        <th scope="col">Statut</th>
+                                        <th scope="col">Progression</th>
+                                        <th scope="col">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                        {% for commande in commandes %}
+                                        <tr>
+                                            <td>{{ commande.reference }}</td>
+                                            <td>{{ commande.date_creation|date:"d/m/Y" }}</td>
+                                            <td>{{ commande.produit.nom }}</td>
+                                            <td>{{ commande.atelier.nom_atelier }}</td>
+                                            <td>{{ commande.produit.prix }} XOF</td>
+                                            <td>
+                                                {% if commande.status == 'en_attente' %}
+                                                    <span class="badge bg-warning status-badge" style="background-color: #ffc107 !important; box-shadow: 0 2px 4px rgba(255, 193, 7, 0.2);">En attente</span>
+                                                {% elif commande.status == 'en_cours' %}
+                                                    <span class="badge bg-warning status-badge" style="background-color: #E17921 !important; box-shadow: 0 2px 4px rgba(225, 121, 33, 0.2);">En cours</span>
+                                                {% elif commande.status == 'termine' %}
+                                                    <span class="badge bg-success status-badge" style="background-color: #28a745 !important; box-shadow: 0 2px 4px rgba(40, 167, 69, 0.2);">Terminée</span>
+                                                {% elif commande.status == 'recupere' %}
+                                                    <span class="badge bg-info status-badge" style="background-color: #17a2b8 !important; box-shadow: 0 2px 4px rgba(23, 162, 184, 0.2);">Récupérée</span>
+                                                {% endif %}
+                                        </td>
+                                        <td>
+                                            <div class="progress" style="height: 6px;">
+                                                    <div class="progress-bar {{ commande.progression_class }}" role="progressbar" 
+                                                         style="width: {{ commande.progression }}%; background-color: {{ commande.progression_color }};" 
+                                                         aria-valuenow="{{ commande.progression }}" aria-valuemin="0" aria-valuemax="100"></div>
+                                            </div>
+                                                <small class="text-muted d-block mt-1">
+                                                    {% if commande.progression_text %}
+                                                        {{ commande.progression_text }}
+                                                    {% else %}
+                                                        {{ commande.progression }}% complété
+                                                    {% endif %}
+                                                </small>
+                                                {% if commande.jours_restants is not None %}
+                                                    <small class="{% if commande.retard %}text-danger{% elif commande.jours_restants <= 3 %}text-warning{% else %}text-success{% endif %}">
+                                                        {% if commande.retard %}
+                                                            <i class="fas fa-exclamation-triangle"></i> En retard ({{ commande.jours_restants_abs }} jours)
+                                                        {% elif commande.jours_restants == 0 %}
+                                                            <i class="fas fa-clock"></i> Échéance aujourd'hui
+                                                        {% elif commande.jours_restants <= 3 %}
+                                                            <i class="fas fa-clock"></i> {{ commande.jours_restants }} jours restants
+                                                        {% else %}
+                                                            <i class="fas fa-calendar"></i> {{ commande.jours_restants }} jours restants
+                                                        {% endif %}
+                                                    </small>
+                                                {% endif %}
+                                        </td>
+                                        <td>
+                                            <div class="btn-group">
+                                                    <button class="btn btn-sm btn-outline-primary" style="color: #E17921; border-color: #E17921;" title="Voir les détails" 
+                                                            data-commande-id="{{ commande.id }}"
+                                                            data-commande-reference="{{ commande.reference }}"
+                                                            data-commande-date="{{ commande.date_creation|date:'d/m/Y' }}"
+                                                            data-commande-produit="{{ commande.produit.nom }}"
+                                                            data-commande-atelier="{{ commande.atelier.nom_atelier }}"
+                                                            data-commande-prix="{{ commande.produit.prix }}"
+                                                            data-commande-status="{{ commande.status }}"
+                                                            data-commande-progression="{{ commande.progression }}"
+                                                            data-commande-description="{% if commande.produit.description %}{{ commande.produit.description }}{% else %}Aucune description disponible{% endif %}"
+                                                            data-commande-categorie="{% if commande.produit.categorie %}{{ commande.produit.get_categorie_display }}{% else %}Non définie{% endif %}"
+                                                            data-commande-echeance="{% if commande.date_echeance %}{{ commande.date_echeance|date:'d/m/Y' }}{% else %}À définir par le gérant{% endif %}"
+                                                            data-commande-progression-text="{{ commande.progression_text }}"
+                                                            data-commande-jours-restants="{{ commande.jours_restants }}"
+                                                            data-commande-retard="{{ commande.retard|yesno:'true,false' }}"
+                                                            data-commande-atelier-telephone="{{ commande.atelier_contact.telephone }}"
+                                                            data-commande-atelier-email="{{ commande.atelier_contact.email }}"
+                                                            data-commande-progression-color="{{ commande.progression_color }}"
+                                                            data-commande-progression-class="{{ commande.progression_class }}"
+                                                            data-action="open-modal">
+                                                        <i class="fas fa-eye"></i>
+                                                    </button>
+                                                    {% if commande.status == 'termine' %}
+                                                        <a href="{% url 'utilisateur:telecharger_commande' commande.id %}" 
+                                                           class="btn btn-sm btn-outline-secondary" 
+                                                           title="Télécharger le PDF" 
+                                                           download="commande_{{ commande.reference }}.pdf"
+                                                           target="_blank">
+                                                            <i class="fas fa-download"></i>
+                                                        </a>
+                                                    {% elif commande.status == 'en_attente' %}
+                                                        <button class="btn btn-sm btn-outline-danger" title="Annuler la commande" 
+                                                                onclick="confirmerAnnulation({{ commande.id }}, '{{ commande.reference }}')">
+                                                            <i class="fas fa-times"></i>
+                                                        </button>
+                                                    {% else %}
+                                                        <button class="btn btn-sm btn-outline-secondary" title="Contacter"
+                                                                data-commande-id="{{ commande.id }}"
+                                                                data-commande-reference="{{ commande.reference }}"
+                                                                data-commande-date="{{ commande.date_creation|date:'d/m/Y' }}"
+                                                                data-commande-produit="{{ commande.produit.nom }}"
+                                                                data-commande-atelier="{{ commande.atelier.nom_atelier }}"
+                                                                data-commande-prix="{{ commande.produit.prix }}"
+                                                                data-commande-status="{{ commande.status }}"
+                                                                data-commande-progression="{{ commande.progression }}"
+                                                                data-commande-description="{% if commande.produit.description %}{{ commande.produit.description }}{% else %}Aucune description disponible{% endif %}"
+                                                                data-commande-categorie="{% if commande.produit.categorie %}{{ commande.produit.get_categorie_display }}{% else %}Non définie{% endif %}"
+                                                                data-commande-echeance="{% if commande.date_echeance %}{{ commande.date_echeance|date:'d/m/Y' }}{% else %}À définir par le gérant{% endif %}"
+                                                                data-commande-progression-text="{{ commande.progression_text }}"
+                                                                data-commande-jours-restants="{{ commande.jours_restants }}"
+                                                                data-commande-retard="{{ commande.retard|yesno:'true,false' }}"
+                                                                data-commande-atelier-telephone="{{ commande.atelier_contact.telephone }}"
+                                                                data-commande-atelier-email="{{ commande.atelier_contact.email }}"
+                                                                data-commande-progression-color="{{ commande.progression_color }}"
+                                                                data-commande-progression-class="{{ commande.progression_class }}"
+                                                                data-action="open-modal">
+                                                            <i class="fas fa-comment"></i>
+                                                        </button>
+                                                    {% endif %}
+                                            </div>
+                                        </td>
+                                    </tr>
+                                        {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        {% else %}
+                            <div class="text-center py-5">
+                                <i class="fas fa-shopping-bag fa-3x text-muted mb-3"></i>
+                                <h5 class="text-muted">Aucune commande trouvée</h5>
+                                <p class="text-muted">Vous n'avez pas encore passé de commande ou aucun résultat ne correspond à vos filtres.</p>
+                                <a href="{% url 'atelier:ateliers' %}" class="btn btn-primary" style="background: linear-gradient(to right, #E17921, #9C4506) !important; border-color: #9C4506;">
+                                    <i class="fas fa-plus me-2"></i>Découvrir nos ateliers
+                                </a>
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                    {% if commandes and paginator.num_pages > 1 %}
+                    <div class="card-footer">
+                        <nav aria-label="Page navigation">
+                            <ul class="pagination justify-content-center mb-0">
+                                {% if commandes.has_previous %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page={{ commandes.previous_page_number }}{% if current_status %}&status={{ current_status }}{% endif %}{% if current_period %}&period={{ current_period }}{% endif %}{% if current_price %}&price={{ current_price }}{% endif %}" aria-label="Previous" style="color: #E17921;">
+                                            <span aria-hidden="true">&laquo;</span>
+                                        </a>
+                                    </li>
+                                {% else %}
+                                <li class="page-item disabled">
+                                    <a class="page-link" href="#" aria-label="Previous">
+                                        <span aria-hidden="true">&laquo;</span>
+                                    </a>
+                                </li>
+                                {% endif %}
+                                
+                                {% for num in paginator.page_range %}
+                                    {% if commandes.number == num %}
+                                        <li class="page-item active">
+                                            <a class="page-link" href="#" style="background-color: #E17921; border-color: #9C4506;">{{ num }}</a>
+                                        </li>
+                                    {% elif num > commandes.number|add:'-3' and num < commandes.number|add:'3' %}
+                                        <li class="page-item">
+                                            <a class="page-link" href="?page={{ num }}{% if current_status %}&status={{ current_status }}{% endif %}{% if current_period %}&period={{ current_period }}{% endif %}{% if current_price %}&price={{ current_price }}{% endif %}" style="color: #E17921;">{{ num }}</a>
+                                        </li>
+                                    {% endif %}
+                                {% endfor %}
+                                
+                                {% if commandes.has_next %}
+                                <li class="page-item">
+                                        <a class="page-link" href="?page={{ commandes.next_page_number }}{% if current_status %}&status={{ current_status }}{% endif %}{% if current_period %}&period={{ current_period }}{% endif %}{% if current_price %}&price={{ current_price }}{% endif %}" aria-label="Next" style="color: #E17921;">
+                                            <span aria-hidden="true">&raquo;</span>
+                                        </a>
+                                    </li>
+                                {% else %}
+                                    <li class="page-item disabled">
+                                        <a class="page-link" href="#" aria-label="Next">
+                                        <span aria-hidden="true">&raquo;</span>
+                                    </a>
+                                </li>
+                                {% endif %}
+                            </ul>
+                        </nav>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- Modal Détails Commande -->
+                <div class="modal fade" id="commandeModal" tabindex="-1" aria-labelledby="commandeModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-lg">
+                        <div class="modal-content">
+                            <div class="modal-header" style="background: linear-gradient(to right, #E17921, #9C4506); color: white;">
+                                <h5 class="modal-title" id="commandeModalLabel">
+                                    <i class="fas fa-shopping-bag me-2"></i>Détails de la commande
+                                </h5>
+                                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="row">
+                                    <!-- Informations générales -->
+                                    <div class="col-md-6">
+                                        <div class="card mb-3">
+                                            <div class="card-header" style="background-color: rgba(225, 121, 33, 0.1);">
+                                                <h6 class="mb-0"><i class="fas fa-info-circle me-2" style="color: #E17921;"></i>Informations générales</h6>
+                                            </div>
+                                            <div class="card-body">
+                                                <div class="row mb-2">
+                                                    <div class="col-5"><strong>Référence:</strong></div>
+                                                    <div class="col-7" id="modal-reference"></div>
+                                                </div>
+                                                <div class="row mb-2">
+                                                    <div class="col-5"><strong>Date de création:</strong></div>
+                                                    <div class="col-7" id="modal-date"></div>
+                                                </div>
+                                                <div class="row mb-2">
+                                                    <div class="col-5"><strong>Statut:</strong></div>
+                                                    <div class="col-7" id="modal-status"></div>
+                                                </div>
+                                                <div class="row mb-2">
+                                                    <div class="col-5"><strong>Date d'échéance:</strong></div>
+                                                    <div class="col-7" id="modal-echeance"></div>
+                                                </div>
+                                                <div class="row mb-2">
+                                                    <div class="col-5"><strong>Progression:</strong></div>
+                                                    <div class="col-7">
+                                                        <div class="progress" style="height: 8px;">
+                                                            <div class="progress-bar" id="modal-progression-bar" role="progressbar" style="background-color: #E17921;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+                                                        </div>
+                                                        <small class="text-muted" id="modal-progression-text"></small>
+                                                        <div id="modal-progression-details" class="mt-1"></div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Informations produit -->
+                                    <div class="col-md-6">
+                                        <div class="card mb-3">
+                                            <div class="card-header" style="background-color: rgba(225, 121, 33, 0.1);">
+                                                <h6 class="mb-0"><i class="fas fa-tshirt me-2" style="color: #E17921;"></i>Informations produit</h6>
+                                            </div>
+                                            <div class="card-body">
+                                                <div class="row mb-2">
+                                                    <div class="col-5"><strong>Produit:</strong></div>
+                                                    <div class="col-7" id="modal-produit"></div>
+                                                </div>
+                                                <div class="row mb-2">
+                                                    <div class="col-5"><strong>Catégorie:</strong></div>
+                                                    <div class="col-7" id="modal-categorie"></div>
+                                                </div>
+                                                <div class="row mb-2">
+                                                    <div class="col-5"><strong>Prix:</strong></div>
+                                                    <div class="col-7" id="modal-prix"></div>
+                                                </div>
+                                                <div class="row mb-2">
+                                                    <div class="col-5"><strong>Atelier:</strong></div>
+                                                    <div class="col-7" id="modal-atelier"></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Description du produit -->
+                                <div class="card">
+                                    <div class="card-header" style="background-color: rgba(225, 121, 33, 0.1);">
+                                        <h6 class="mb-0"><i class="fas fa-align-left me-2" style="color: #E17921;"></i>Description du produit</h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <p id="modal-description" class="mb-0"></p>
+                                    </div>
+                                </div>
+
+                                <!-- Informations de contact de l'atelier -->
+                                <div class="card">
+                                    <div class="card-header" style="background-color: rgba(225, 121, 33, 0.1);">
+                                        <h6 class="mb-0"><i class="fas fa-phone me-2" style="color: #E17921;"></i>Contact de l'atelier</h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="contact-info">
+                                                    <div class="mb-2">
+                                                        <strong>Atelier:</strong> <span id="modal-atelier-contact"></span>
+                                                    </div>
+                                                    <div class="mb-2">
+                                                        <strong>Téléphone:</strong> 
+                                                        <span id="modal-atelier-telephone">
+                                                            <em>Non disponible</em>
+                                                        </span>
+                                                    </div>
+                                                    <div class="mb-2">
+                                                        <strong>Email:</strong> 
+                                                        <span id="modal-atelier-email">
+                                                            <em>Non disponible</em>
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="contact-actions">
+                                                    <button class="btn btn-outline-primary btn-sm mb-2 w-100" id="modal-call-btn" style="color: #E17921; border-color: #E17921;">
+                                                        <i class="fas fa-phone me-2"></i>Appeler l'atelier
+                                                    </button>
+                                                    <button class="btn btn-outline-secondary btn-sm w-100" id="modal-email-btn">
+                                                        <i class="fas fa-envelope me-2"></i>Envoyer un email
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Actions -->
+                                <div class="mt-4">
+                                    <div class="d-flex justify-content-between">
+                                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                                            <i class="fas fa-times me-2"></i>Fermer
+                                        </button>
+                                        <div>
+                                            <button type="button" class="btn btn-outline-primary me-2" id="modal-contact-btn" style="color: #E17921; border-color: #E17921;">
+                                                <i class="fas fa-comment me-2"></i>Contacter l'atelier
+                                            </button>
+                                           
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Modal de Confirmation d'Annulation -->
+                <div class="modal fade" id="confirmationModal" tabindex="-1" aria-labelledby="confirmationModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header bg-danger text-white">
+                                <h5 class="modal-title" id="confirmationModalLabel">
+                                    <i class="fas fa-exclamation-triangle me-2"></i>Confirmer l'annulation
+                                </h5>
+                                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <p>Êtes-vous sûr de vouloir annuler la commande <strong id="commande-reference-confirm"></strong> ?</p>
+                                <div class="alert alert-warning">
+                                    <i class="fas fa-info-circle me-2"></i>
+                                    <strong>Attention :</strong> Cette action est irréversible. Une fois annulée, la commande sera définitivement supprimée.
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                                    <i class="fas fa-times me-2"></i>Annuler
+                                </button>
+                                <button type="button" class="btn btn-danger" id="confirmAnnulationBtn">
+                                    <i class="fas fa-trash me-2"></i>Confirmer l'annulation
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Footer -->
+                <footer class="mt-auto py-3">
+                    <div class="text-center text-muted">
+                        <p>© 2025 Couture Hub - Tous droits réservés</p>
+                    </div>
+                </footer>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<!-- Custom JS -->
+<script src="{% static 'utilisateur/js/mes_commandes.js' %}"></script>
+</body>
+</html>

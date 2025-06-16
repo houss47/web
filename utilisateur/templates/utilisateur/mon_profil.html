@@ -1,0 +1,219 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mon Profil - Couture Hub</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <link rel="stylesheet" href="{% static 'utilisateur/css/dashboard.css' %}">
+    <link rel="stylesheet" href="{% static 'utilisateur/css/african-animations.css' %}">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary sticky-top" style="background: linear-gradient(to right, #E17921, #9C4506) !important;">
+        {% include 'acceil/section/header.html' %}
+    </nav>
+
+    <!-- Main Content -->
+    <div  style="margin-top: 30px;" class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <nav id="sidebar" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
+                <div class="position-sticky pt-3">
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'utilisateur:dashboard_client' %}">
+                                <i class="fas fa-tachometer-alt me-2"></i>Tableau de bord
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'utilisateur:mes_commandes' %}">
+                                <i class="fas fa-shopping-bag me-2"></i>Mes commandes
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'utilisateur:mes_mesures' %}">
+                                <i class="fas fa-ruler me-2"></i>Mes mesures
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'utilisateur:mes_rendez_vous' %}">
+                                <i class="fas fa-calendar-alt me-2"></i>Mes rendez-vous
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link active" href="{% url 'utilisateur:mon_profil' %}" style="color: #E17921;">
+                                <i class="fas fa-user me-2"></i>Mon profil
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+
+            <!-- Main Content -->
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                    <h1 class="h2"><i class="fas fa-user me-2" style="color: #E17921;"></i>Mon Profil</h1>
+                    <div class="btn-toolbar mb-2 mb-md-0">
+                        <div class="btn-group me-2">
+                            <button type="button" class="btn btn-sm btn-primary" id="editProfileBtn" style="background: linear-gradient(to right, #E17921, #9C4506) !important; border-color: #9C4506;"><i class="fas fa-edit me-1"></i> Modifier</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Profile Overview -->
+                <div class="row">
+                    <!-- Left Column - Avatar and Summary -->
+                    <div class="col-md-4 mb-4">
+                        <div class="card mb-4">
+                            <div class="card-header">
+                                <h5 class="mb-0">Photo de profil</h5>
+                            </div>
+                            <div class="card-body text-center">
+                                <div class="avatar-container mb-3">
+                                    <div class="profile-avatar">
+                                        <img src="{% if user.photo %}{{ user.photo.url }}{% else %}https://via.placeholder.com/150?text={{ user.nom|first }}{{ user.prenom|first }}{% endif %}" alt="Avatar" class="img-fluid rounded-circle" width="150">
+                                        <button class="btn btn-sm btn-light avatar-edit-btn" id="changeAvatarBtn">
+                                            <i class="fas fa-camera"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <h5 class="card-title mb-1">{{ user.nom }} {{ user.prenom }}</h5>
+                                <p class="text-muted mb-2">Membre depuis {{ user.date_inscription|date:"F Y" }}</p>
+                                <p class="text-muted mb-0">Rôle: {{ user.get_role_display }}</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right Column - Profile Details -->
+                    <div class="col-md-8">
+                        <div class="card mb-4">
+                            <div class="card-header">
+                                <h5 class="mb-0">Informations personnelles</h5>
+                            </div>
+                            <div class="card-body">
+                                <div id="viewProfileForm">
+                                    <div class="row mb-3">
+                                        <div class="col-md-6">
+                                            <label class="form-label text-muted">Nom complet</label>
+                                            <div class="form-control-plaintext">{{ user.nom }} {{ user.prenom }}</div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label text-muted">Email</label>
+                                            <div class="form-control-plaintext">{{ user.email }}</div>
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3">
+                                        <div class="col-md-6">
+                                            <label class="form-label text-muted">Téléphone</label>
+                                            <div class="form-control-plaintext">{{ user.telephone }}</div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label text-muted">Rôle</label>
+                                            <div class="form-control-plaintext">{{ user.get_role_display }}</div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Formulaire de modification (caché par défaut) -->
+                                <div id="editProfileForm" class="d-none">
+                                    <form method="POST" action="{% url 'utilisateur:mon_profil' %}" enctype="multipart/form-data">
+                                        {% csrf_token %}
+                                        <div class="row mb-3">
+                                            <div class="col-md-6">
+                                                <label class="form-label">Nom</label>
+                                                <input type="text" class="form-control" name="nom" value="{{ user.nom }}" required>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label class="form-label">Prénom</label>
+                                                <input type="text" class="form-control" name="prenom" value="{{ user.prenom }}" required>
+                                            </div>
+                                        </div>
+                                        <div class="row mb-3">
+                                            <div class="col-md-6">
+                                                <label class="form-label">Email</label>
+                                                <input type="email" class="form-control" name="email" value="{{ user.email }}" required>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label class="form-label">Téléphone</label>
+                                                <input type="tel" class="form-control" name="telephone" value="{{ user.telephone }}" required>
+                                            </div>
+                                        </div>
+                                        <div class="row mb-3">
+                                            <div class="col-12">
+                                                <label class="form-label">Photo de profil</label>
+                                                <input type="file" class="form-control" name="photo" accept="image/*">
+                                            </div>
+                                        </div>
+                                        <div class="d-flex justify-content-end">
+                                            <button type="button" class="btn btn-outline-secondary me-2" id="cancelEditBtn">Annuler</button>
+                                            <button type="submit" class="btn btn-primary" style="background: linear-gradient(to right, #E17921, #9C4506) !important; border-color: #9C4506;">Enregistrer</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Footer -->
+                <footer class="mt-auto py-3">
+                    <div class="text-center text-muted">
+                        <p>© 2025 Couture Hub - Tous droits réservés</p>
+                    </div>
+                </footer>
+            </main>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Custom JS -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const editProfileBtn = document.getElementById('editProfileBtn');
+            const cancelEditBtn = document.getElementById('cancelEditBtn');
+            const viewProfileForm = document.getElementById('viewProfileForm');
+            const editProfileForm = document.getElementById('editProfileForm');
+            const changeAvatarBtn = document.getElementById('changeAvatarBtn');
+            const photoInput = document.querySelector('input[name="photo"]');
+
+            // Gestion du bouton Modifier
+            editProfileBtn.addEventListener('click', function() {
+                viewProfileForm.classList.add('d-none');
+                editProfileForm.classList.remove('d-none');
+                editProfileBtn.classList.add('d-none');
+            });
+
+            // Gestion du bouton Annuler
+            cancelEditBtn.addEventListener('click', function() {
+                viewProfileForm.classList.remove('d-none');
+                editProfileForm.classList.add('d-none');
+                editProfileBtn.classList.remove('d-none');
+            });
+
+            // Gestion du changement de photo
+            changeAvatarBtn.addEventListener('click', function() {
+                photoInput.click();
+            });
+
+            // Prévisualisation de la photo
+            photoInput.addEventListener('change', function(e) {
+                if (e.target.files && e.target.files[0]) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        document.querySelector('.profile-avatar img').src = e.target.result;
+                    };
+                    reader.readAsDataURL(e.target.files[0]);
+                }
+            });
+        });
+    </script>
+</body>
+</html>

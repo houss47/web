@@ -1,0 +1,2013 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Gestion des rendez-vous clients et des disponibilités des ateliers de couture africaine Couture Hub">
+  <title>Gestion des Rendez-vous | Couture Hub</title>
+  
+  <!-- Google Fonts avec preload pour améliorer les performances -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Meta pour les réseaux sociaux -->
+  <meta property="og:title" content="Gestion des Rendez-vous | Couture Hub">
+  <meta property="og:description" content="Système de gestion des rendez-vous pour ateliers de couture africaine">
+  <meta property="og:image" content="images/og-commandes.jpg">
+  <meta property="og:url" content="https://couturehub.com/admin/commandes">
+  
+  <!-- Favicon -->
+  <link rel="icon" href="images/favicon.ico" type="image/x-icon">
+  <link rel="apple-touch-icon" href="images/apple-touch-icon.png">
+  
+  <!-- CSS -->
+  <link rel="stylesheet" href="{% static 'administration/css/style.css' %}">
+  <link rel="stylesheet" href="{% static 'administration/css/orders.css' %}">
+  <link rel="stylesheet" href="{% static 'administration/css/sidebar.css' %}">
+  <link rel="stylesheet" href="{% static 'administration/css/african-animations.css' %}">
+  <link rel="stylesheet" href="{% static 'administration/css/responsive.css' %}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- CSRF Token pour les requêtes AJAX -->
+  <meta name="csrf-token" content="{% csrf_token %}">
+  
+  <style>
+    /* Styles pour les modals */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0,0,0,0.5);
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .modal.show {
+      display: flex;
+    }
+    
+    .modal-content {
+      background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+      border-radius: 20px;
+      padding: 0;
+      width: 95%;
+      max-width: 800px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+      animation: modalSlideIn 0.4s ease;
+      border: 1px solid #e9ecef;
+    }
+    
+    @keyframes modalSlideIn {
+      from {
+        opacity: 0;
+        transform: translateY(-60px) scale(0.9);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+    
+    .modal-header {
+      background: linear-gradient(135deg, #e67e22, #d35400);
+      color: white;
+      padding: 25px 30px;
+      border-radius: 20px 20px 0 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .modal-header::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="rgba(255,255,255,0.1)"/><circle cx="75" cy="75" r="1" fill="rgba(255,255,255,0.1)"/><circle cx="50" cy="10" r="0.5" fill="rgba(255,255,255,0.1)"/><circle cx="10" cy="60" r="0.5" fill="rgba(255,255,255,0.1)"/><circle cx="90" cy="40" r="0.5" fill="rgba(255,255,255,0.1)"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+      opacity: 0.3;
+    }
+    
+    .modal-header h2 {
+      margin: 0;
+      font-size: 1.4rem;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 600;
+      position: relative;
+      z-index: 1;
+    }
+    
+    .close-btn {
+      background: none;
+      border: none;
+      color: white;
+      font-size: 1.5rem;
+      cursor: pointer;
+      padding: 5px;
+      border-radius: 50%;
+      transition: all 0.3s ease;
+    }
+    
+    .close-btn:hover {
+      background-color: rgba(255,255,255,0.2);
+      transform: scale(1.1);
+    }
+    
+    .modal-body {
+      padding: 30px;
+      max-height: 70vh;
+      overflow-y: auto;
+    }
+    
+    .modal-body::-webkit-scrollbar {
+      width: 8px;
+    }
+    
+    .modal-body::-webkit-scrollbar-track {
+      background: #f1f1f1;
+      border-radius: 10px;
+    }
+    
+    .modal-body::-webkit-scrollbar-thumb {
+      background: linear-gradient(135deg, #e67e22, #d35400);
+      border-radius: 10px;
+    }
+    
+    .modal-body::-webkit-scrollbar-thumb:hover {
+      background: linear-gradient(135deg, #d35400, #e67e22);
+    }
+    
+    .order-details {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+    
+    .detail-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px 0;
+      border-bottom: 1px solid #f1f3f4;
+      transition: all 0.2s ease;
+    }
+    
+    .detail-row:hover {
+      background-color: rgba(230, 126, 34, 0.05);
+      padding-left: 15px;
+      padding-right: 15px;
+      margin-left: -15px;
+      margin-right: -15px;
+      border-radius: 8px;
+    }
+    
+    .detail-label {
+      font-weight: 600;
+      color: #2c3e50;
+      min-width: 140px;
+      font-size: 0.95rem;
+    }
+    
+    .detail-value {
+      color: #495057;
+      text-align: right;
+      flex: 1;
+      font-weight: 500;
+      font-size: 0.95rem;
+    }
+    
+    .form-group {
+      margin-bottom: 20px;
+    }
+    
+    .form-group label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+      color: #333;
+    }
+    
+    .form-group input,
+    .form-group select {
+      width: 100%;
+      padding: 12px;
+      border: 2px solid #ddd;
+      border-radius: 8px;
+      font-size: 16px;
+      transition: all 0.3s ease;
+    }
+    
+    .form-group input:focus,
+    .form-group select:focus {
+      outline: none;
+      border-color: #e67e22;
+      box-shadow: 0 0 0 3px rgba(230, 126, 34, 0.1);
+    }
+    
+    .form-help {
+      font-size: 0.85rem;
+      color: #666;
+      margin-top: 5px;
+    }
+    
+    .btn {
+      padding: 12px 24px;
+      border: none;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+      transition: left 0.5s;
+    }
+    
+    .btn:hover::before {
+      left: 100%;
+    }
+    
+    .btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+    }
+    
+    .btn:active {
+      transform: translateY(-1px);
+    }
+    
+    .btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+    
+    .primary-btn {
+      background: linear-gradient(135deg, #e67e22, #d35400);
+      color: white;
+      box-shadow: 0 4px 15px rgba(230, 126, 34, 0.3);
+    }
+    
+    .primary-btn:hover {
+      background: linear-gradient(135deg, #d35400, #e67e22);
+      box-shadow: 0 8px 25px rgba(230, 126, 34, 0.4);
+    }
+    
+    .outline-btn {
+      background: transparent;
+      color: #495057;
+      border: 2px solid #e9ecef;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    
+    .outline-btn:hover {
+      border-color: #e67e22;
+      color: #e67e22;
+      background: rgba(230, 126, 34, 0.05);
+      box-shadow: 0 4px 15px rgba(230, 126, 34, 0.2);
+    }
+    
+    .danger-btn {
+      background: linear-gradient(135deg, #e74c3c, #c0392b);
+      color: white;
+      box-shadow: 0 4px 15px rgba(231, 76, 60, 0.3);
+    }
+    
+    .danger-btn:hover {
+      background: linear-gradient(135deg, #c0392b, #e74c3c);
+      box-shadow: 0 8px 25px rgba(231, 76, 60, 0.4);
+    }
+    
+    /* Animations pour les messages */
+    @keyframes slideIn {
+      from {
+        transform: translateX(100%);
+        opacity: 0;
+      }
+      to {
+        transform: translateX(0);
+        opacity: 1;
+      }
+    }
+    
+    @keyframes slideOut {
+      from {
+        transform: translateX(0);
+        opacity: 1;
+      }
+      to {
+        transform: translateX(100%);
+        opacity: 0;
+      }
+    }
+    
+    /* Styles pour les boutons d'action */
+    .action-buttons {
+      display: flex;
+      gap: 8px;
+      justify-content: center;
+    }
+    
+    .icon-btn {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: #f8f9fa;
+      border: 1px solid #dee2e6;
+      color: #6c757d;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-size: 14px;
+    }
+    
+    .icon-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    
+    .view-btn:hover {
+      background-color: rgba(0, 122, 255, 0.1);
+      color: #007aff;
+      border-color: #007aff;
+    }
+    
+    .status-btn:hover {
+      background-color: rgba(255, 159, 67, 0.1);
+      color: #ff9f43;
+      border-color: #ff9f43;
+    }
+    
+    .deadline-btn:hover {
+      background-color: rgba(40, 199, 111, 0.1);
+      color: #28c76f;
+      border-color: #28c76f;
+    }
+    
+    .delete-btn:hover {
+      background-color: rgba(234, 84, 85, 0.1);
+      color: #ea5455;
+      border-color: #ea5455;
+    }
+    
+    /* Styles pour les sections de détails */
+    .detail-section {
+      margin-bottom: 30px;
+      padding: 25px;
+      background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+      border-radius: 15px;
+      border: 1px solid #e9ecef;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+      position: relative;
+      overflow: hidden;
+      animation: fadeInUp 0.6s ease;
+    }
+    
+    .detail-section::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 5px;
+      height: 100%;
+      background: linear-gradient(135deg, #e67e22, #d35400);
+    }
+    
+    .section-title {
+      margin: 0 0 25px 0;
+      font-size: 1.3rem;
+      color: #2c3e50;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 600;
+      position: relative;
+    }
+    
+    .section-title i {
+      color: #e67e22;
+      font-size: 1.2rem;
+      background: linear-gradient(135deg, #e67e22, #d35400);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    
+    /* Styles pour la grille des mesures */
+    .mesures-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 25px;
+      margin-top: 20px;
+    }
+    
+    .mesures-category {
+      background: linear-gradient(145deg, #ffffff, #f8f9fa);
+      padding: 20px;
+      border-radius: 12px;
+      border: 1px solid #e9ecef;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+      animation: fadeInUp 0.6s ease;
+      animation-delay: 0.1s;
+      animation-fill-mode: both;
+    }
+    
+    .mesures-category:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+      border-color: #e67e22;
+    }
+    
+    .mesures-category::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, #e67e22, #d35400, #e67e22);
+      background-size: 200% 100%;
+      animation: shimmer 2s infinite;
+    }
+    
+    @keyframes shimmer {
+      0% { background-position: -200% 0; }
+      100% { background-position: 200% 0; }
+    }
+    
+    .category-title {
+      margin: 0 0 20px 0;
+      font-size: 1.1rem;
+      color: #2c3e50;
+      font-weight: 600;
+      padding-bottom: 10px;
+      border-bottom: 2px solid #e67e22;
+      position: relative;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .category-title::before {
+      content: '';
+      width: 8px;
+      height: 8px;
+      background: #e67e22;
+      border-radius: 50%;
+      display: inline-block;
+    }
+    
+    .mesure-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 0;
+      border-bottom: 1px solid #f1f3f4;
+      transition: all 0.2s ease;
+    }
+    
+    .mesure-item:hover {
+      background-color: rgba(230, 126, 34, 0.05);
+      padding-left: 10px;
+      padding-right: 10px;
+      margin-left: -10px;
+      margin-right: -10px;
+      border-radius: 8px;
+    }
+    
+    .mesure-item:last-child {
+      border-bottom: none;
+    }
+    
+    .mesure-label {
+      font-weight: 500;
+      color: #495057;
+      font-size: 0.95rem;
+      flex: 1;
+    }
+    
+    .mesure-value {
+      font-weight: 700;
+      color: #ffffff;
+      background: linear-gradient(135deg, #e67e22, #d35400);
+      padding: 8px 12px;
+      border-radius: 20px;
+      font-size: 0.9rem;
+      min-width: 70px;
+      text-align: center;
+      box-shadow: 0 2px 8px rgba(230, 126, 34, 0.3);
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .mesure-value::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+      transition: left 0.5s;
+    }
+    
+    .mesure-value:hover::before {
+      left: 100%;
+    }
+    
+    .mesure-value:hover {
+      transform: scale(1.05);
+      box-shadow: 0 4px 15px rgba(230, 126, 34, 0.4);
+    }
+    
+    .mesures-footer {
+      margin-top: 20px;
+      padding-top: 20px;
+      border-top: 2px solid #e9ecef;
+      text-align: center;
+      background: linear-gradient(135deg, #f8f9fa, #ffffff);
+      border-radius: 10px;
+      padding: 15px;
+    }
+    
+    .text-muted {
+      color: #6c757d;
+      font-size: 0.9rem;
+      font-style: italic;
+    }
+    
+    /* Responsive pour les mesures */
+    @media (max-width: 768px) {
+      .mesures-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+      }
+      
+      .mesure-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+        padding: 15px 0;
+      }
+      
+      .mesure-value {
+        align-self: flex-end;
+        min-width: 80px;
+      }
+      
+      .modal-content {
+        width: 98%;
+        margin: 10px;
+      }
+      
+      .modal-body {
+        padding: 20px;
+      }
+      
+      .detail-section {
+        padding: 20px;
+      }
+    }
+    
+    @media (max-width: 480px) {
+      .mesures-category {
+        padding: 15px;
+      }
+      
+      .category-title {
+        font-size: 1rem;
+      }
+      
+      .mesure-label {
+        font-size: 0.9rem;
+      }
+      
+      .mesure-value {
+        font-size: 0.85rem;
+        padding: 6px 10px;
+      }
+    }
+    
+    .modal-footer {
+      padding: 25px 30px;
+      border-top: 1px solid #e9ecef;
+      display: flex;
+      justify-content: flex-end;
+      gap: 15px;
+      background: linear-gradient(135deg, #f8f9fa, #ffffff);
+      border-radius: 0 0 20px 20px;
+    }
+    
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    .mesures-category:nth-child(2) {
+      animation-delay: 0.2s;
+    }
+    
+    .mesures-category:nth-child(3) {
+      animation-delay: 0.3s;
+    }
+    
+    .mesures-category:nth-child(4) {
+      animation-delay: 0.4s;
+    }
+    
+    /* ===== STYLES DASHBOARD STATS FORCÉS ===== */
+    .dashboard-stats {
+      display: grid !important;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+      margin-bottom: 30px;
+      padding: 0 20px;
+      visibility: visible !important;
+      opacity: 1 !important;
+      min-height: 120px;
+      background: transparent;
+    }
+    
+    .stat-card {
+      background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%) !important;
+      border-radius: 15px !important;
+      padding: 25px !important;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1) !important;
+      display: flex !important;
+      align-items: center !important;
+      position: relative !important;
+      overflow: hidden !important;
+      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
+      border: 1px solid #e9ecef !important;
+      backdrop-filter: blur(10px) !important;
+      visibility: visible !important;
+      opacity: 1 !important;
+      min-height: 100px !important;
+    }
+    
+    .stat-card::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      right: 0;
+      width: 100px;
+      height: 100px;
+      background-image: radial-gradient(circle, rgba(230, 126, 34, 0.1) 1px, transparent 1px);
+      background-size: 10px 10px;
+      opacity: 0.08;
+      border-radius: 50% 0 0 0;
+      z-index: 0;
+    }
+    
+    .stat-card:hover {
+      transform: translateY(-8px) scale(1.02) !important;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15) !important;
+      border-color: rgba(230, 126, 34, 0.3) !important;
+    }
+    
+    .stat-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 4px;
+      height: 100%;
+      background: linear-gradient(135deg, #e67e22, #d35400);
+      border-radius: 0 15px 15px 0;
+      transition: all 0.3s ease;
+    }
+    
+    .stat-card:hover::before {
+      width: 6px;
+      background: linear-gradient(135deg, #f39c12, #e67e22);
+    }
+    
+    .stat-icon {
+      width: 60px !important;
+      height: 60px !important;
+      border-radius: 50% !important;
+      background: linear-gradient(135deg, #e67e22, #d35400) !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      color: white !important;
+      font-size: 1.5rem !important;
+      margin-right: 20px !important;
+      flex-shrink: 0 !important;
+      position: relative !important;
+      overflow: hidden !important;
+      box-shadow: 0 4px 10px rgba(230, 126, 34, 0.3) !important;
+      visibility: visible !important;
+      opacity: 1 !important;
+    }
+    
+    .stat-icon.pending {
+      background: linear-gradient(135deg, #f39c12, #e67e22) !important;
+    }
+    
+    .stat-icon.in-progress {
+      background: linear-gradient(135deg, #3498db, #2980b9) !important;
+    }
+    
+    .stat-icon.completed {
+      background: linear-gradient(135deg, #27ae60, #1e8449) !important;
+    }
+    
+    .stat-content {
+      flex: 1 !important;
+      visibility: visible !important;
+      opacity: 1 !important;
+    }
+    
+    .stat-content h3 {
+      font-size: 2rem !important;
+      font-weight: 700 !important;
+      color: #2c3e50 !important;
+      margin: 0 0 5px 0 !important;
+      visibility: visible !important;
+      opacity: 1 !important;
+    }
+    
+    .stat-content p {
+      color: #7f8c8d !important;
+      margin: 0 !important;
+      font-size: 0.9rem !important;
+      font-weight: 500 !important;
+      visibility: visible !important;
+      opacity: 1 !important;
+    }
+
+    /* HEADER MODERNE ET ÉPURÉ */
+    .header {
+      background: #fcf8f3 !important;
+      border-radius: 18px;
+      box-shadow: 0 2px 12px rgba(242,161,33,0.07);
+      padding: 28px 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 32px;
+      border: none;
+      transition: box-shadow 0.3s;
+    }
+
+    .header:hover {
+      box-shadow: 0 4px 24px rgba(242,161,33,0.13);
+    }
+
+    .header-title h1 {
+      color: #F2A121 !important;
+      font-size: 2.4rem;
+      font-weight: 800;
+      margin: 0;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      letter-spacing: 0.5px;
+      text-shadow: none !important;
+    }
+
+    .header-title h1 i {
+      color: #F2A121 !important;
+      background: none !important;
+      font-size: 2.4rem;
+      border: none;
+      box-shadow: none;
+      padding: 0;
+    }
+
+    .header-subtitle {
+      color: #7b8a8b !important;
+      font-size: 1.15rem;
+      margin-top: 0.7rem;
+      font-style: normal;
+      text-shadow: none !important;
+      font-weight: 500;
+      letter-spacing: 0.1px;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+    }
+
+    .user-menu {
+      background: #fff !important;
+      border-radius: 32px;
+      box-shadow: 0 2px 8px rgba(242,161,33,0.07);
+      padding: 8px 28px 8px 8px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      border: none;
+      min-width: 220px;
+      transition: box-shadow 0.3s;
+    }
+
+    .user-menu img.avatar {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      border: 2.5px solid #F2A121;
+      object-fit: cover;
+      background: #fff;
+    }
+
+    .user-menu span {
+      color: #2c3e50;
+      font-weight: 700;
+      font-size: 1.13rem;
+      text-shadow: none;
+      margin-left: 2px;
+      white-space: nowrap;
+    }
+
+    .theme-toggle {
+      background: #F2A121 !important;
+      color: #fff !important;
+      border: none !important;
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 2px 8px rgba(242,161,33,0.10);
+      margin-left: 8px;
+      transition: background 0.2s, box-shadow 0.2s;
+    }
+
+    .theme-toggle:hover {
+      background: #e67e22 !important;
+      box-shadow: 0 4px 16px rgba(242,161,33,0.18);
+    }
+
+    .theme-toggle i {
+      font-size: 1.3rem;
+    }
+
+    /* .btn-logout {
+      display: none !important;
+    } */
+
+    /* Responsive */
+    @media (max-width: 900px) {
+      .header {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 18px 10px;
+        gap: 18px;
+      }
+      .header-actions {
+        width: 100%;
+        justify-content: flex-end;
+      }
+      .user-menu {
+        min-width: 0;
+        padding: 8px 12px 8px 8px;
+        gap: 10px;
+      }
+      .header-title h1 {
+        font-size: 1.3rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      
+      <nav class="sidebar-nav">
+        <ul>
+          <li><a href="{% url 'administration:dashboard' %}"><i class="fas fa-home"></i> Tableau de bord</a></li>
+          <li class="active"><a href="{% url 'administration:orders' %}"><i class="fas fa-shopping-bag"></i> Commandes</a></li>
+         
+          <li><a href="{% url 'administration:ateliers' %}"><i class="fas fa-cut"></i> Ateliers</a></li>
+          <li><a href="{% url 'administration:models' %}"><i class="fas fa-tshirt"></i> Modèles</a></li>
+          <li><a href="{% url 'administration:calendar' %}"><i class="fas fa-calendar-alt"></i> Rendez-vous</a></li>
+        
+          <li><a href="{% url 'administration:settings' %}"><i class="fas fa-cog"></i> Paramètres</a></li>
+        </ul>
+      </nav>
+      <div class="sidebar-footer">
+        <p>© 2025 Couture Hub - Ateliers de couture africaine</p>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <!-- Header -->
+      <header class="header">
+        <div class="header-title">
+          <h1><i class="fas fa-calendar-alt"></i> Gestion des Rendez-vous </h1>
+          <p class="header-subtitle">
+            Gérez les rendez-vous clients et les disponibilités des ateliers
+          </p>
+        </div>
+        <div class="header-actions">
+          <div class="user-menu">
+            {% if utilisateur and utilisateur.photo %}
+              <img src="{{ utilisateur.photo.url }}" alt="Avatar de {{ utilisateur.prenom }} {{ utilisateur.nom }}" class="avatar">
+            {% else %}
+              <img src="{% static 'administration/images/default-avatar.png' %}" alt="Avatar par défaut" class="avatar">
+            {% endif %}
+            <span>
+              {% if utilisateur %}
+                {{ utilisateur.prenom }} {{ utilisateur.nom }} 
+              {% else %}
+                Admin Couture Hub
+              {% endif %}
+            </span>
+           
+            <a href="{% url 'administration:logout' %}" class="btn danger-btn btn-logout" title="Se déconnecter">
+              <i class="fas fa-sign-out-alt"></i>
+            </a>
+          </div>
+        </div>
+      </header>
+
+      <!-- Orders Content -->
+      <div class="orders-content">
+        <!-- Dashboard Stats -->
+        <div class="dashboard-stats">
+          <div class="stat-card">
+            <div class="stat-icon"><i class="fas fa-shopping-bag"></i></div>
+            <div class="stat-content">
+              <h3>{{ total_commandes|default:"0" }}</h3>
+              <p>Commandes totales</p>
+            </div>
+          </div>
+          
+          <div class="stat-card">
+            <div class="stat-icon pending"><i class="fas fa-clock"></i></div>
+            <div class="stat-content">
+              <h3>{{ commandes_en_attente|default:"0" }}</h3>
+              <p>En attente</p>
+            </div>
+          </div>
+          
+          <div class="stat-card">
+            <div class="stat-icon in-progress"><i class="fas fa-spinner"></i></div>
+            <div class="stat-content">
+              <h3>{{ commandes_en_cours|default:"0" }}</h3>
+              <p>En cours</p>
+            </div>
+          </div>
+          
+          <div class="stat-card">
+            <div class="stat-icon completed"><i class="fas fa-check-circle"></i></div>
+            <div class="stat-content">
+              <h3>{{ commandes_terminees|default:"0" }}</h3>
+              <p>Terminées</p>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Actions Bar avec statistiques et fonctionnalités avancées -->
+        <div class="actions-bar">
+          <div class="left-actions">
+            
+            <button class="btn outline-btn" id="refreshBtn">
+              <i class="fas fa-sync-alt"></i> Actualiser
+            </button>
+            <button class="btn outline-btn" id="exportBtn">
+              <i class="fas fa-download"></i> Exporter
+            </button>
+            
+          </div>
+          
+        </div>
+
+        <!-- Filtres simplifiés avec style africain et fonctionnalités avancées -->
+        <div class="quick-filters-bar">
+          <div class="search-container">
+            <i class="fas fa-search search-icon"></i>
+            <input type="text" id="searchOrders" placeholder="Rechercher une commande..." value="{{ current_search|default:'' }}">
+            <button class="search-clear" id="clearSearch" title="Effacer la recherche"><i class="fas fa-times"></i></button>
+          </div>
+          
+          <div class="filter-chips">
+            <div class="filter-chip-label"><i class="fas fa-filter"></i> Filtres:</div>
+            <button class="filter-chip {% if not current_status or current_status == 'all' %}active{% endif %}" data-filter="all">Tous</button>
+            <button class="filter-chip {% if current_status == 'en_attente' %}active{% endif %}" data-filter="en_attente">En attente</button>
+            <button class="filter-chip {% if current_status == 'en_cours' %}active{% endif %}" data-filter="en_cours">En cours</button>
+            <button class="filter-chip {% if current_status == 'termine' %}active{% endif %}" data-filter="termine">Terminées</button>
+            <button class="filter-chip {% if current_status == 'recupere' %}active{% endif %}" data-filter="recupere">Récupérées</button>
+          </div>
+          
+          
+        </div>
+
+        <!-- Indicateur des filtres actifs -->
+        {% if current_search or current_status %}
+        <div class="active-filters">
+          <div class="active-filters-label">
+            <i class="fas fa-filter"></i> Filtres actifs:
+          </div>
+          {% if current_search %}
+          <span class="active-filter-tag">
+            Recherche: "{{ current_search }}"
+            <a href="?{% if current_status %}status={{ current_status }}{% endif %}" class="remove-filter">
+              <i class="fas fa-times"></i>
+            </a>
+          </span>
+          {% endif %}
+          {% if current_status and current_status != 'all' %}
+          <span class="active-filter-tag">
+            Statut: {{ current_status|title }}
+            <a href="?{% if current_search %}search={{ current_search }}{% endif %}" class="remove-filter">
+              <i class="fas fa-times"></i>
+            </a>
+          </span>
+          {% endif %}
+          <a href="?" class="clear-all-filters">
+            <i class="fas fa-times-circle"></i> Effacer tous les filtres
+          </a>
+        </div>
+        {% endif %}
+
+        <!-- Orders Table avec style africain -->
+        <div class="table-panel">
+          <div class="table-header">
+            <h3><i class="fas fa-list"></i> Liste des commandes</h3>
+            <div class="table-actions">
+              <button class="btn text-btn" id="refresh-table"><i class="fas fa-sync-alt"></i> Actualiser</button>
+              
+            </div>
+          </div>
+          <div class="table-container">
+            <table class="data-table orders-table">
+              <thead>
+                <tr>
+                  <th class="sortable {% if current_sort == 'reference' %}sort-asc{% elif current_sort == '-reference' %}sort-desc{% endif %}" data-sort="reference">
+                    <div class="th-content">
+                      Référence 
+                      <i class="fas fa-sort{% if current_sort == 'reference' %}-up{% elif current_sort == '-reference' %}-down{% endif %}"></i>
+                    </div>
+                  </th>
+                  <th class="sortable {% if current_sort == 'date_creation' %}sort-asc{% elif current_sort == '-date_creation' %}sort-desc{% endif %}" data-sort="date_creation">
+                    <div class="th-content">
+                      Date 
+                      <i class="fas fa-sort{% if current_sort == 'date_creation' %}-up{% elif current_sort == '-date_creation' %}-down{% endif %}"></i>
+                    </div>
+                  </th>
+                  <th class="sortable {% if current_sort == 'client__nom' %}sort-asc{% elif current_sort == '-client__nom' %}sort-desc{% endif %}" data-sort="client__nom">
+                    <div class="th-content">
+                      Client 
+                      <i class="fas fa-sort{% if current_sort == 'client__nom' %}-up{% elif current_sort == '-client__nom' %}-down{% endif %}"></i>
+                    </div>
+                  </th>
+                  <th class="sortable {% if current_sort == 'produit__nom' %}sort-asc{% elif current_sort == '-produit__nom' %}sort-desc{% endif %}" data-sort="produit__nom">
+                    <div class="th-content">
+                      Produit 
+                      <i class="fas fa-sort{% if current_sort == 'produit__nom' %}-up{% elif current_sort == '-produit__nom' %}-down{% endif %}"></i>
+                    </div>
+                  </th>
+                  <th class="sortable {% if current_sort == 'status' %}sort-asc{% elif current_sort == '-status' %}sort-desc{% endif %}" data-sort="status">
+                    <div class="th-content">
+                      Statut 
+                      <i class="fas fa-sort{% if current_sort == 'status' %}-up{% elif current_sort == '-status' %}-down{% endif %}"></i>
+                    </div>
+                  </th>
+                  <th class="sortable {% if current_sort == 'date_echeance' %}sort-asc{% elif current_sort == '-date_echeance' %}sort-desc{% endif %}" data-sort="date_echeance">
+                    <div class="th-content">
+                      Échéance 
+                      <i class="fas fa-sort{% if current_sort == 'date_echeance' %}-up{% elif current_sort == '-date_echeance' %}-down{% endif %}"></i>
+                    </div>
+                  </th>
+                  <th class="sortable {% if current_sort == 'produit__prix' %}sort-asc{% elif current_sort == '-produit__prix' %}sort-desc{% endif %}" data-sort="produit__prix">
+                    <div class="th-content">
+                      Montant 
+                      <i class="fas fa-sort{% if current_sort == 'produit__prix' %}-up{% elif current_sort == '-produit__prix' %}-down{% endif %}"></i>
+                    </div>
+                  </th>
+                  <th class="actions-column">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for commande in commandes %}
+                <tr>
+                  <td class="order-ref" data-label="Référence">{{ commande.reference }}</td>
+                  <td data-label="Date">{{ commande.date_creation|date:"d/m/Y" }}</td>
+                  <td data-label="Client">
+                    {% if commande.client %}
+                      {{ commande.client.prenom }} {{ commande.client.nom }}
+                    {% else %}
+                      Client non défini
+                    {% endif %}
+                  </td>
+                  <td data-label="Service">
+                    {% if commande.produit %}
+                      {{ commande.produit.nom }}
+                    {% else %}
+                      Produit non défini
+                    {% endif %}
+                  </td>
+                  <td data-label="Statut">
+                    {% if commande.status == 'en_attente' %}
+                      <span class="status-badge pending">En attente</span>
+                    {% elif commande.status == 'en_cours' %}
+                      <span class="status-badge in-progress">En cours</span>
+                    {% elif commande.status == 'termine' %}
+                      <span class="status-badge completed">Terminé</span>
+                    {% elif commande.status == 'recupere' %}
+                      <span class="status-badge completed">Récupérée</span>
+                    {% else %}
+                      <span class="status-badge pending">{{ commande.status|title }}</span>
+                    {% endif %}
+                  </td>
+                  <td class="deadline" data-label="Échéance">
+                    {% if commande.date_echeance %}
+                      {{ commande.date_echeance|date:"d/m/Y" }}
+                    {% else %}
+                      À définir
+                    {% endif %}
+                  </td>
+                  <td class="amount" data-label="Montant">
+                    {% if commande.produit %}
+                      {{ commande.produit.prix|floatformat:0 }} XOF
+                    {% else %}
+                      Non défini
+                    {% endif %}
+                  </td>
+                  <td data-label="Actions">
+                    <div class="action-buttons">
+                      <button class="icon-btn view-btn" data-id="{{ commande.id }}" title="Voir les détails"><i class="fas fa-eye"></i></button>
+                      <button class="icon-btn status-btn" data-id="{{ commande.id }}" title="Changer le statut"><i class="fas fa-exchange-alt"></i></button>
+                      <button class="icon-btn deadline-btn" data-id="{{ commande.id }}" title="Définir échéance"><i class="fas fa-calendar-plus"></i></button>
+                      <button class="icon-btn delete-btn" data-id="{{ commande.id }}" title="Supprimer"><i class="fas fa-trash"></i></button>
+                    </div>
+                  </td>
+                </tr>
+                {% empty %}
+                <tr>
+                  <td colspan="8" class="text-center text-muted">
+                    <p>Aucune commande trouvée pour votre atelier</p>
+                    <small>
+                      {% if atelier %}
+                        Les commandes pour l'atelier "{{ atelier.nom_atelier }}" apparaîtront ici une fois créées
+                      {% else %}
+                        Les commandes apparaîtront ici une fois créées
+                      {% endif %}
+                    </small>
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+          
+          <!-- Pagination avec style africain -->
+          <div class="pagination-container">
+            <div class="pagination-info">
+              <i class="fas fa-info-circle"></i>
+              <span class="pagination-text">
+                Affichage de <strong>{{ commandes.start_index }}-{{ commandes.end_index }}</strong> sur <strong class="total-count">{{ paginator.count }}</strong> commandes
+              </span>
+            </div>
+            <div class="pagination-controls">
+              {% if commandes.has_previous %}
+                <button class="pagination-btn prev-btn" aria-label="Page précédente">
+                  <a href="?page={{ commandes.previous_page_number }}"><i class="fas fa-chevron-left"></i></a>
+                </button>
+              {% else %}
+              <button class="pagination-btn prev-btn" disabled aria-label="Page précédente">
+                <i class="fas fa-chevron-left"></i>
+              </button>
+              {% endif %}
+              
+              <div class="page-numbers">
+                {% for num in paginator.page_range %}
+                  {% if num == commandes.number %}
+                    <button class="page-number active" aria-current="page">{{ num }}</button>
+                  {% elif num > commandes.number|add:'-3' and num < commandes.number|add:'3' %}
+                    <button class="page-number">
+                      <a href="?page={{ num }}">{{ num }}</a>
+                    </button>
+                  {% endif %}
+                {% endfor %}
+              </div>
+              
+              {% if commandes.has_next %}
+              <button class="pagination-btn next-btn" aria-label="Page suivante">
+                  <a href="?page={{ commandes.next_page_number }}"><i class="fas fa-chevron-right"></i></a>
+                </button>
+              {% else %}
+                <button class="pagination-btn next-btn" disabled aria-label="Page suivante">
+                <i class="fas fa-chevron-right"></i>
+              </button>
+              {% endif %}
+              
+              <div class="rows-selector">
+                <label for="rowsPerPage" class="rows-label">Afficher:</label>
+                <select id="rowsPerPage" class="rows-per-page" aria-label="Nombre de lignes par page">
+                  <option value="5">5</option>
+                  <option value="10" selected>10</option>
+                  <option value="25">25</option>
+                  <option value="50">50</option>
+                </select>
+                <span class="rows-suffix">par page</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Modal Nouvelle Commande -->
+  <div class="modal" id="newOrderModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2><i class="fas fa-plus"></i> Nouvelle Commande</h2>
+        <button class="close-btn"><i class="fas fa-times"></i></button>
+      </div>
+      <div class="modal-body">
+        <form id="newOrderForm">
+          <div class="form-group">
+            <label for="orderClient">Client</label>
+              <select id="orderClient" required>
+                <option value="">Sélectionner un client</option>
+                <option value="Marie Dupont">Marie Dupont</option>
+                <option value="Jean Martin">Jean Martin</option>
+              <option value="Sophie Bernard">Sophie Bernard</option>
+              </select>
+            <button type="button" class="btn text-btn" id="newClientBtn">
+              <i class="fas fa-plus"></i> Nouveau client
+            </button>
+          </div>
+          <div class="form-group">
+            <label for="orderService">Produit</label>
+            <select id="orderService" required>
+              <option value="">Sélectionner un produit</option>
+              <option value="Robe Ankara Fleurie">Robe Ankara Fleurie</option>
+              <option value="Costume Homme Élégant">Costume Homme Élégant</option>
+              <option value="Robe sur-mesure">Robe sur-mesure</option>
+              <option value="Costume traditionnel">Costume traditionnel</option>
+              <option value="Accessoires">Accessoires</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="orderAmount">Montant (XOF)</label>
+            <input type="number" id="orderAmount" min="0" step="0.01" required>
+          </div>
+          <div class="form-group">
+            <label for="orderDeadline">Date d'échéance</label>
+            <input type="date" id="orderDeadline">
+            <small class="form-help">Optionnel - sera définie par le gérant</small>
+          </div>
+          <div class="form-group">
+            <label for="orderNotes">Notes</label>
+            <textarea id="orderNotes" rows="3"></textarea>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button class="btn outline-btn" id="cancelOrderBtn">Annuler</button>
+        <button class="btn primary-btn" id="saveOrderBtn">Enregistrer</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Nouveau Client -->
+  <div class="modal" id="newClientModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2><i class="fas fa-user-plus"></i> Nouveau Client</h2>
+        <button class="close-btn"><i class="fas fa-times"></i></button>
+      </div>
+      <div class="modal-body">
+        <form id="newClientForm">
+          <div class="form-group">
+            <label for="clientName">Nom complet</label>
+            <input type="text" id="clientName" required>
+          </div>
+          <div class="form-group">
+            <label for="clientPhone">Téléphone</label>
+            <input type="tel" id="clientPhone" required>
+          </div>
+          <div class="form-group">
+            <label for="clientEmail">Email</label>
+            <input type="email" id="clientEmail">
+          </div>
+          <div class="form-group">
+            <label for="clientAddress">Adresse</label>
+            <textarea id="clientAddress" rows="2"></textarea>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button class="btn outline-btn" id="cancelClientBtn">Annuler</button>
+        <button class="btn primary-btn" id="saveClientBtn">Enregistrer</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Voir Détails Commande -->
+  <div class="modal" id="viewOrderModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2><i class="fas fa-eye"></i> Détails de la Commande</h2>
+        <button class="close-btn"><i class="fas fa-times"></i></button>
+      </div>
+      <div class="modal-body">
+        <div class="order-details">
+          <!-- Informations de base de la commande -->
+          <div class="detail-section">
+            <h3 class="section-title"><i class="fas fa-info-circle"></i> Informations de la commande</h3>
+            <div class="detail-row">
+              <span class="detail-label">Référence:</span>
+              <span class="detail-value" id="detailReference"></span>
+            </div>
+            <div class="detail-row">
+              <span class="detail-label">Date de création:</span>
+              <span class="detail-value" id="detailDateCreation"></span>
+            </div>
+            <div class="detail-row">
+              <span class="detail-label">Date d'échéance:</span>
+              <span class="detail-value" id="detailDateEcheance"></span>
+            </div>
+            <div class="detail-row">
+              <span class="detail-label">Statut:</span>
+              <span class="detail-value" id="detailStatus"></span>
+            </div>
+            <div class="detail-row">
+              <span class="detail-label">Client:</span>
+              <span class="detail-value" id="detailClient"></span>
+            </div>
+            <div class="detail-row">
+              <span class="detail-label">Produit:</span>
+              <span class="detail-value" id="detailProduit"></span>
+            </div>
+            <div class="detail-row">
+              <span class="detail-label">Montant:</span>
+              <span class="detail-value" id="detailMontant"></span>
+            </div>
+          </div>
+
+          <!-- Mesures du client -->
+          <div class="detail-section" id="mesuresSection" style="display: none;">
+            <h3 class="section-title"><i class="fas fa-ruler"></i> Mesures du client</h3>
+            <div class="mesures-grid">
+              <!-- Mesures du haut du corps -->
+              <div class="mesures-category">
+                <h4 class="category-title">Haut du corps</h4>
+                <div class="mesure-item">
+                  <span class="mesure-label">Tour de poitrine:</span>
+                  <span class="mesure-value" id="mesureTourPoitrine"></span>
+                </div>
+                <div class="mesure-item">
+                  <span class="mesure-label">Tour de taille:</span>
+                  <span class="mesure-value" id="mesureTourTaille"></span>
+                </div>
+                <div class="mesure-item">
+                  <span class="mesure-label">Tour de hanches:</span>
+                  <span class="mesure-value" id="mesureTourHanches"></span>
+                </div>
+                <div class="mesure-item">
+                  <span class="mesure-label">Longueur d'épaule:</span>
+                  <span class="mesure-value" id="mesureLongueurEpaule"></span>
+                </div>
+                <div class="mesure-item">
+                  <span class="mesure-label">Hauteur d'épaule:</span>
+                  <span class="mesure-value" id="mesureHauteurEpaule"></span>
+                </div>
+                <div class="mesure-item">
+                  <span class="mesure-label">Longueur du buste:</span>
+                  <span class="mesure-value" id="mesureLongueurBuste"></span>
+                </div>
+              </div>
+
+              <!-- Mesures des bras -->
+              <div class="mesures-category">
+                <h4 class="category-title">Bras</h4>
+                <div class="mesure-item">
+                  <span class="mesure-label">Longueur de bras:</span>
+                  <span class="mesure-value" id="mesureLongueurBras"></span>
+                </div>
+                <div class="mesure-item">
+                  <span class="mesure-label">Tour de biceps:</span>
+                  <span class="mesure-value" id="mesureTourBiceps"></span>
+                </div>
+                <div class="mesure-item">
+                  <span class="mesure-label">Tour de poignet:</span>
+                  <span class="mesure-value" id="mesureTourPoignet"></span>
+                </div>
+                <div class="mesure-item">
+                  <span class="mesure-label">Longueur épaule à coude:</span>
+                  <span class="mesure-value" id="mesureLongueurEpauleCoude"></span>
+                </div>
+              </div>
+
+              <!-- Mesures des jambes -->
+              <div class="mesures-category">
+                <h4 class="category-title">Jambes</h4>
+                <div class="mesure-item">
+                  <span class="mesure-label">Longueur de jambe:</span>
+                  <span class="mesure-value" id="mesureLongueurJambe"></span>
+                </div>
+                <div class="mesure-item">
+                  <span class="mesure-label">Entrejambe:</span>
+                  <span class="mesure-value" id="mesureEntrejambe"></span>
+                </div>
+                <div class="mesure-item">
+                  <span class="mesure-label">Tour de cuisse:</span>
+                  <span class="mesure-value" id="mesureTourCuisse"></span>
+                </div>
+                <div class="mesure-item">
+                  <span class="mesure-label">Tour de genou:</span>
+                  <span class="mesure-value" id="mesureTourGenou"></span>
+                </div>
+                <div class="mesure-item">
+                  <span class="mesure-label">Tour de mollet:</span>
+                  <span class="mesure-value" id="mesureTourMollet"></span>
+                </div>
+                <div class="mesure-item">
+                  <span class="mesure-label">Tour de cheville:</span>
+                  <span class="mesure-value" id="mesureTourCheville"></span>
+                </div>
+              </div>
+
+              <!-- Autres mesures -->
+              <div class="mesures-category">
+                <h4 class="category-title">Autres mesures</h4>
+                <div class="mesure-item">
+                  <span class="mesure-label">Tour de cou:</span>
+                  <span class="mesure-value" id="mesureTourCou"></span>
+                </div>
+                <div class="mesure-item">
+                  <span class="mesure-label">Hauteur du dos:</span>
+                  <span class="mesure-value" id="mesureHauteurDos"></span>
+                </div>
+                <div class="mesure-item">
+                  <span class="mesure-label">Carrure du dos:</span>
+                  <span class="mesure-value" id="mesureCarrureDos"></span>
+                </div>
+                <div class="mesure-item">
+                  <span class="mesure-label">Largeur des épaules:</span>
+                  <span class="mesure-value" id="mesureLargeurEpaules"></span>
+                </div>
+              </div>
+            </div>
+            <div class="mesures-footer">
+              <small class="text-muted">Dernière mise à jour: <span id="mesuresDateModification"></span></small>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn outline-btn" id="closeViewBtn">Fermer</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Changer Statut -->
+  <div class="modal" id="changeStatusModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2><i class="fas fa-exchange-alt"></i> Changer le Statut</h2>
+        <button class="close-btn"><i class="fas fa-times"></i></button>
+      </div>
+      <div class="modal-body">
+        <form id="changeStatusForm">
+          <input type="hidden" id="statusCommandeId">
+          <div class="form-group">
+            <label for="newStatus">Nouveau statut</label>
+            <select id="newStatus" required>
+              <option value="">Sélectionner un statut</option>
+              <option value="en_attente">En attente</option>
+              <option value="en_cours">En cours</option>
+              <option value="termine">Terminé</option>
+              <option value="recupere">Récupérée</option>
+            </select>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button class="btn outline-btn" id="cancelStatusBtn">Annuler</button>
+        <button class="btn primary-btn" id="saveStatusBtn">Enregistrer</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Définir Échéance -->
+  <div class="modal" id="setDeadlineModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2><i class="fas fa-calendar-plus"></i> Définir la Date d'Échéance</h2>
+        <button class="close-btn"><i class="fas fa-times"></i></button>
+      </div>
+      <div class="modal-body">
+        <form id="setDeadlineForm">
+          <input type="hidden" id="deadlineCommandeId">
+          <div class="form-group">
+            <label for="deadlineDate">Date d'échéance</label>
+            <input type="date" id="deadlineDate" required>
+            <small class="form-help">Date limite de livraison pour cette commande</small>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button class="btn outline-btn" id="cancelDeadlineBtn">Annuler</button>
+        <button class="btn primary-btn" id="saveDeadlineBtn">Enregistrer</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Confirmation Suppression -->
+  <div class="modal" id="deleteOrderModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2><i class="fas fa-exclamation-triangle"></i> Confirmer la Suppression</h2>
+        <button class="close-btn"><i class="fas fa-times"></i></button>
+      </div>
+      <div class="modal-body">
+        <p>Êtes-vous sûr de vouloir supprimer cette commande ?</p>
+        <p class="text-muted">Cette action est irréversible.</p>
+        <input type="hidden" id="deleteCommandeId">
+      </div>
+      <div class="modal-footer">
+        <button class="btn outline-btn" id="cancelDeleteBtn">Annuler</button>
+        <button class="btn danger-btn" id="confirmDeleteBtn">Supprimer</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mobile Sidebar Toggle -->
+  <button class="sidebar-toggle" id="sidebarToggle">
+    <i class="fas fa-bars"></i>
+  </button>
+
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+  <script>
+    // Token CSRF pour les requêtes AJAX
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+    
+    // Ajouter le token CSRF à toutes les requêtes fetch
+    const csrftoken = getCookie('csrftoken');
+    if (csrftoken) {
+        // Configuration globale pour fetch
+        const originalFetch = window.fetch;
+        window.fetch = function(url, options = {}) {
+            if (options.method && options.method !== 'GET') {
+                options.headers = options.headers || {};
+                options.headers['X-CSRFToken'] = csrftoken;
+            }
+            return originalFetch(url, options);
+        };
+    }
+    
+    // Script principal pour les actions des commandes
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Page orders chargée');
+        
+        // Gestion des modals
+        const modals = document.querySelectorAll('.modal');
+        const closeButtons = document.querySelectorAll('.close-btn');
+        
+        // Fonction pour ouvrir un modal
+        function openModal(modalId) {
+            console.log('Ouverture du modal:', modalId);
+            const modal = document.getElementById(modalId);
+            if (modal) {
+                modal.style.display = 'flex';
+                modal.classList.add('show');
+            }
+        }
+        
+        // Fonction pour fermer un modal
+        function closeModal(modalId) {
+            console.log('Fermeture du modal:', modalId);
+            const modal = document.getElementById(modalId);
+            if (modal) {
+                modal.style.display = 'none';
+                modal.classList.remove('show');
+            }
+        }
+        
+        // Fermer les modals avec les boutons de fermeture
+        closeButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const modal = this.closest('.modal');
+                if (modal) {
+                    closeModal(modal.id);
+                }
+            });
+        });
+        
+        // Fermer les modals en cliquant en dehors
+        window.addEventListener('click', function(event) {
+            modals.forEach(modal => {
+                if (event.target === modal) {
+                    closeModal(modal.id);
+                }
+            });
+        });
+        
+        // Fonction pour afficher les messages
+        function showMessage(message, type = 'success') {
+            console.log('Message:', message, 'Type:', type);
+            
+            // Créer un élément de message
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `alert alert-${type}`;
+            messageDiv.textContent = message;
+            messageDiv.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                z-index: 10000;
+                padding: 15px 20px;
+                border-radius: 5px;
+                color: white;
+                font-weight: 500;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                animation: slideIn 0.3s ease;
+            `;
+            
+            // Couleurs selon le type
+            if (type === 'success') {
+                messageDiv.style.backgroundColor = '#28a745';
+            } else if (type === 'error') {
+                messageDiv.style.backgroundColor = '#dc3545';
+            } else if (type === 'warning') {
+                messageDiv.style.backgroundColor = '#ffc107';
+                messageDiv.style.color = '#212529';
+            }
+            
+            document.body.appendChild(messageDiv);
+            
+            // Supprimer le message après 5 secondes
+            setTimeout(() => {
+                messageDiv.style.animation = 'slideOut 0.3s ease';
+                setTimeout(() => {
+                    if (messageDiv.parentNode) {
+                        messageDiv.parentNode.removeChild(messageDiv);
+                    }
+                }, 300);
+            }, 5000);
+        }
+        
+        // Gestion des boutons d'action
+        document.addEventListener('click', function(e) {
+            const target = e.target.closest('.icon-btn');
+            if (!target) return;
+            
+            console.log('Bouton cliqué:', target.className);
+            
+            const commandeId = target.dataset.id;
+            if (!commandeId) {
+                console.error('ID de commande manquant');
+                return;
+            }
+            
+            console.log('ID de commande:', commandeId);
+            
+            // Bouton Voir détails
+            if (target.classList.contains('view-btn')) {
+                console.log('Action: Voir détails');
+                fetchOrderDetails(commandeId);
+                openModal('viewOrderModal');
+            }
+            
+            // Bouton Changer statut
+            else if (target.classList.contains('status-btn')) {
+                console.log('Action: Changer statut');
+                document.getElementById('statusCommandeId').value = commandeId;
+                openModal('changeStatusModal');
+            }
+            
+            // Bouton Définir échéance
+            else if (target.classList.contains('deadline-btn')) {
+                console.log('Action: Définir échéance');
+                document.getElementById('deadlineCommandeId').value = commandeId;
+                openModal('setDeadlineModal');
+            }
+            
+            // Bouton Supprimer
+            else if (target.classList.contains('delete-btn')) {
+                console.log('Action: Supprimer');
+                document.getElementById('deleteCommandeId').value = commandeId;
+                openModal('deleteOrderModal');
+            }
+        });
+        
+        // Fonction pour récupérer les détails d'une commande
+        function fetchOrderDetails(commandeId) {
+            console.log('Récupération des détails pour la commande:', commandeId);
+            
+            const formData = new FormData();
+            formData.append('action', 'get_details');
+            formData.append('commande_id', commandeId);
+            
+            fetch(window.location.href, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRFToken': csrftoken
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Réponse reçue:', data);
+                if (data.success) {
+                    const commande = data.commande;
+                    
+                    // Afficher les informations de base
+                    document.getElementById('detailReference').textContent = commande.reference;
+                    document.getElementById('detailDateCreation').textContent = commande.date_creation;
+                    document.getElementById('detailDateEcheance').textContent = commande.date_echeance || 'Non définie';
+                    document.getElementById('detailStatus').textContent = getStatusDisplay(commande.status);
+                    document.getElementById('detailClient').textContent = commande.client_nom;
+                    document.getElementById('detailProduit').textContent = commande.produit_nom;
+                    document.getElementById('detailMontant').textContent = commande.montant + ' XOF';
+                    
+                    // Afficher les mesures si disponibles
+                    const mesuresSection = document.getElementById('mesuresSection');
+                    if (commande.mesures) {
+                        // Afficher la section des mesures
+                        mesuresSection.style.display = 'block';
+                        
+                        // Remplir toutes les mesures
+                        document.getElementById('mesureTourPoitrine').textContent = commande.mesures.tour_poitrine + ' cm';
+                        document.getElementById('mesureTourTaille').textContent = commande.mesures.tour_taille + ' cm';
+                        document.getElementById('mesureTourHanches').textContent = commande.mesures.tour_hanches + ' cm';
+                        document.getElementById('mesureLongueurEpaule').textContent = commande.mesures.longueur_epaule + ' cm';
+                        document.getElementById('mesureHauteurEpaule').textContent = commande.mesures.hauteur_epaule + ' cm';
+                        document.getElementById('mesureLongueurBuste').textContent = commande.mesures.longueur_buste + ' cm';
+                        document.getElementById('mesureLongueurBras').textContent = commande.mesures.longueur_bras + ' cm';
+                        document.getElementById('mesureTourBiceps').textContent = commande.mesures.tour_biceps + ' cm';
+                        document.getElementById('mesureTourPoignet').textContent = commande.mesures.tour_poignet + ' cm';
+                        document.getElementById('mesureLongueurEpauleCoude').textContent = commande.mesures.longueur_epaule_coude + ' cm';
+                        document.getElementById('mesureLongueurJambe').textContent = commande.mesures.longueur_jambe + ' cm';
+                        document.getElementById('mesureEntrejambe').textContent = commande.mesures.entrejambe + ' cm';
+                        document.getElementById('mesureTourCuisse').textContent = commande.mesures.tour_cuisse + ' cm';
+                        document.getElementById('mesureTourGenou').textContent = commande.mesures.tour_genou + ' cm';
+                        document.getElementById('mesureTourMollet').textContent = commande.mesures.tour_mollet + ' cm';
+                        document.getElementById('mesureTourCheville').textContent = commande.mesures.tour_cheville + ' cm';
+                        document.getElementById('mesureTourCou').textContent = commande.mesures.tour_cou + ' cm';
+                        document.getElementById('mesureHauteurDos').textContent = commande.mesures.hauteur_dos + ' cm';
+                        document.getElementById('mesureCarrureDos').textContent = commande.mesures.carrure_dos + ' cm';
+                        document.getElementById('mesureLargeurEpaules').textContent = commande.mesures.largeur_epaules + ' cm';
+                        document.getElementById('mesuresDateModification').textContent = commande.mesures.date_modification;
+                    } else {
+                        // Masquer la section des mesures
+                        mesuresSection.style.display = 'none';
+                    }
+                } else {
+                    showMessage(data.message, 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Erreur:', error);
+                showMessage('Erreur lors du chargement des détails', 'error');
+            });
+        }
+        
+        // Fonction pour obtenir l'affichage du statut
+        function getStatusDisplay(status) {
+            const statusMap = {
+                'en_attente': 'En attente',
+                'en_cours': 'En cours',
+                'termine': 'Terminé',
+                'recupere': 'Récupérée'
+            };
+            return statusMap[status] || status;
+        }
+        
+        // Gestion du changement de statut
+        const saveStatusBtn = document.getElementById('saveStatusBtn');
+        if (saveStatusBtn) {
+            saveStatusBtn.addEventListener('click', function() {
+                const commandeId = document.getElementById('statusCommandeId').value;
+                const newStatus = document.getElementById('newStatus').value;
+                
+                if (!newStatus) {
+                    showMessage('Veuillez sélectionner un statut', 'warning');
+                    return;
+                }
+                
+                const formData = new FormData();
+                formData.append('action', 'change_status');
+                formData.append('commande_id', commandeId);
+                formData.append('status', newStatus);
+                
+                this.disabled = true;
+                this.textContent = 'Enregistrement...';
+                
+                fetch(window.location.href, {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'X-CSRFToken': csrftoken
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        showMessage(data.message, 'success');
+                        closeModal('changeStatusModal');
+                        setTimeout(() => {
+                            window.location.reload();
+                        }, 1000);
+                    } else {
+                        showMessage(data.message, 'error');
+                    }
+                })
+                .catch(error => {
+                    console.error('Erreur:', error);
+                    showMessage('Erreur lors du changement de statut', 'error');
+                })
+                .finally(() => {
+                    this.disabled = false;
+                    this.textContent = 'Enregistrer';
+                });
+            });
+        }
+        
+        // Gestion de la définition de l'échéance
+        const saveDeadlineBtn = document.getElementById('saveDeadlineBtn');
+        if (saveDeadlineBtn) {
+            saveDeadlineBtn.addEventListener('click', function() {
+                const commandeId = document.getElementById('deadlineCommandeId').value;
+                const deadlineDate = document.getElementById('deadlineDate').value;
+                
+                if (!deadlineDate) {
+                    showMessage('Veuillez sélectionner une date', 'warning');
+                    return;
+                }
+                
+                const formData = new FormData();
+                formData.append('action', 'set_deadline');
+                formData.append('commande_id', commandeId);
+                formData.append('date_echeance', deadlineDate);
+                
+                this.disabled = true;
+                this.textContent = 'Enregistrement...';
+                
+                fetch(window.location.href, {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'X-CSRFToken': csrftoken
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        showMessage(data.message, 'success');
+                        closeModal('setDeadlineModal');
+                        setTimeout(() => {
+                            window.location.reload();
+                        }, 1000);
+                    } else {
+                        showMessage(data.message, 'error');
+                    }
+                })
+                .catch(error => {
+                    console.error('Erreur:', error);
+                    showMessage('Erreur lors de la définition de l\'échéance', 'error');
+                })
+                .finally(() => {
+                    this.disabled = false;
+                    this.textContent = 'Enregistrer';
+                });
+            });
+        }
+        
+        // Gestion de la suppression
+        const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
+        if (confirmDeleteBtn) {
+            confirmDeleteBtn.addEventListener('click', function() {
+                const commandeId = document.getElementById('deleteCommandeId').value;
+                
+                const formData = new FormData();
+                formData.append('action', 'delete');
+                formData.append('commande_id', commandeId);
+                
+                this.disabled = true;
+                this.textContent = 'Suppression...';
+                
+                fetch(window.location.href, {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'X-CSRFToken': csrftoken
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        showMessage(data.message, 'success');
+                        closeModal('deleteOrderModal');
+                        setTimeout(() => {
+                            window.location.reload();
+                        }, 1000);
+                    } else {
+                        showMessage(data.message, 'error');
+                    }
+                })
+                .catch(error => {
+                    console.error('Erreur:', error);
+                    showMessage('Erreur lors de la suppression', 'error');
+                })
+                .finally(() => {
+                    this.disabled = false;
+                    this.textContent = 'Supprimer';
+                });
+            });
+        }
+        
+        // Boutons d'annulation
+        const cancelStatusBtn = document.getElementById('cancelStatusBtn');
+        if (cancelStatusBtn) {
+            cancelStatusBtn.addEventListener('click', function() {
+                closeModal('changeStatusModal');
+            });
+        }
+        
+        const cancelDeadlineBtn = document.getElementById('cancelDeadlineBtn');
+        if (cancelDeadlineBtn) {
+            cancelDeadlineBtn.addEventListener('click', function() {
+                closeModal('setDeadlineModal');
+            });
+        }
+        
+        const cancelDeleteBtn = document.getElementById('cancelDeleteBtn');
+        if (cancelDeleteBtn) {
+            cancelDeleteBtn.addEventListener('click', function() {
+                closeModal('deleteOrderModal');
+            });
+        }
+        
+        const closeViewBtn = document.getElementById('closeViewBtn');
+        if (closeViewBtn) {
+            closeViewBtn.addEventListener('click', function() {
+                closeModal('viewOrderModal');
+            });
+        }
+        
+        console.log('Initialisation terminée');
+    });
+  </script>
+  <script src="{% static 'administration/js/orders.js' %}"></script>
+  <script src="{% static 'administration/js/sidebar.js' %}"></script>
+</body>
+</html>

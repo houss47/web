@@ -1,0 +1,619 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mes Mesures - Couture Hub</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <link rel="stylesheet" href="{% static 'utilisateur/css/dashboard.css' %}">
+    <link rel="stylesheet" href="{% static 'utilisateur/css/african-animations.css' %}">
+    <link rel="stylesheet" href="{% static 'utilisateur/css/mes_mesures.css' %}">
+    <link rel="stylesheet" href="{% static 'utilisateur/css/responsive.css' %}">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary sticky-top" style="background: linear-gradient(to right, #E17921, #9C4506) !important;">
+      {% include 'acceil/section/header.html' %}
+    </nav>
+
+    <!-- Main Content -->
+    <div  style="margin-top: 55px;" class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <nav id="sidebar" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
+                <div class="position-sticky pt-3">
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'utilisateur:dashboard_client' %}">
+                                <i class="fas fa-tachometer-alt me-2"></i>Tableau de bord
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'utilisateur:mes_commandes' %}">
+                                <i class="fas fa-shopping-bag me-2"></i>Mes commandes
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link active" href="{% url 'utilisateur:mes_mesures' %}" style="color: #E17921;">
+                                <i class="fas fa-ruler me-2"></i>Mes mesures
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'utilisateur:mes_rendez_vous' %}">
+                                <i class="fas fa-calendar-alt me-2"></i>Mes rendez-vous
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'utilisateur:mon_profil' %}">
+                                <i class="fas fa-user me-2"></i>Mon profil
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+
+            <!-- Main Content -->
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                    <h1 class="h2"><i class="fas fa-ruler me-2" style="color: #E17921;"></i>Mes Mesures</h1>
+                    <div class="btn-toolbar mb-2 mb-md-0">
+                        <div class="btn-group me-2">
+                            <button type="button" class="btn btn-sm btn-outline-primary" style="color: #E17921; border-color: #E17921;">
+                                <i class="fas fa-download me-1"></i> Télécharger
+                            </button>
+                            <button type="button" class="btn btn-sm btn-primary" style="background: linear-gradient(to right, #E17921, #9C4506) !important; border-color: #9C4506;">
+                                <i class="fas fa-sync-alt me-1"></i> Mettre à jour
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Dernière mise à jour et info -->
+                <div class="alert alert-info mb-4" role="alert">
+                    <div class="d-flex align-items-center">
+                        <i class="fas fa-info-circle me-2"></i>
+                        <div>
+                            <strong>Dernière mise à jour:</strong> 
+                            {% if mesures %}
+                                {{ mesures.date_modification|date:"d/m/Y" }}
+                            {% else %}
+                                Aucune mesure enregistrée
+                            {% endif %}
+                            <p class="mb-0 small">Des mesures précises sont essentielles pour des vêtements parfaitement ajustés. Prenez rendez-vous pour mettre à jour vos mesures si nécessaire.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <!-- Toutes les mesures -->
+                    <div class="col-lg-8">
+                        <div class="card mb-4">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <h5 class="mb-0">Mesures détaillées</h5>
+                                <div>
+                                    <select class="form-select form-select-sm" id="measureUnitSelect">
+                                        <option value="cm" selected>Centimètres (cm)</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div class="accordion" id="measurementsAccordion">
+                                    <!-- Section Haut du Corps -->
+                                    <div class="accordion-item">
+                                        <h2 class="accordion-header" id="headingUpper">
+                                            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseUpper" aria-expanded="true" aria-controls="collapseUpper">
+                                                <i class="fas fa-tshirt me-2" style="color: #E17921;"></i> Haut du corps
+                                            </button>
+                                        </h2>
+                                        <div id="collapseUpper" class="accordion-collapse collapse show" aria-labelledby="headingUpper">
+                                            <div class="accordion-body">
+                                                <div class="row row-cols-1 row-cols-md-2 g-3">
+                                                   
+                                                    <div class="col">
+                                                        <div class="measurement-item">
+                                                            <div class="d-flex justify-content-between align-items-center">
+                                                                <span class="measurement-label">Tour de poitrine</span>
+                                                                <div class="measurement-actions">
+                                                                    <span class="measurement-value me-3">{{ mesures.tour_poitrine }} cm</span>
+                                                                    <button class="btn btn-sm btn-primary edit-measurement" data-bs-toggle="modal" data-bs-target="#editMeasurementModal" data-measurement="tour_poitrine" data-value="{{ mesures.tour_poitrine|default:0 }}" style="background: linear-gradient(to right, #E17921, #9C4506); border: none;">
+                                                                        <i class="fas fa-edit"></i>
+                                                                    </button>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col">
+                                                        <div class="measurement-item">
+                                                            <div class="d-flex justify-content-between align-items-center">
+                                                                <span class="measurement-label">Tour de taille</span>
+                                                                <div class="measurement-actions">
+                                                                    <span class="measurement-value me-3">{{ mesures.tour_taille }} cm</span>
+                                                                    <button class="btn btn-sm btn-outline-primary edit-measurement" data-bs-toggle="modal" data-bs-target="#editMeasurementModal" data-measurement="tour_taille" data-value="{{ mesures.tour_taille }}">
+                                                                        <i class="fas fa-edit"></i>
+                                                                    </button>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col">
+                                                        <div class="measurement-item">
+                                                            <div class="d-flex justify-content-between align-items-center">
+                                                                <span class="measurement-label">Tour de hanches</span>
+                                                                <div class="measurement-actions">
+                                                                    <span class="measurement-value me-3">{{ mesures.tour_hanches }} cm</span>
+                                                                    <button class="btn btn-sm btn-outline-primary edit-measurement" data-bs-toggle="modal" data-bs-target="#editMeasurementModal" data-measurement="tour_hanches" data-value="{{ mesures.tour_hanches }}">
+                                                                        <i class="fas fa-edit"></i>
+                                                                    </button>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col">
+                                                        <div class="measurement-item">
+                                                            <div class="d-flex justify-content-between align-items-center">
+                                                                <span class="measurement-label">Longueur d'épaule</span>
+                                                                <div class="measurement-actions">
+                                                                    <span class="measurement-value me-3">{{ mesures.longueur_epaule }} cm</span>
+                                                                    <button class="btn btn-sm btn-outline-primary edit-measurement" data-bs-toggle="modal" data-bs-target="#editMeasurementModal" data-measurement="longueur_epaule" data-value="{{ mesures.longueur_epaule }}">
+                                                                        <i class="fas fa-edit"></i>
+                                                                    </button>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col">
+                                                        <div class="measurement-item">
+                                                            <div class="d-flex justify-content-between align-items-center">
+                                                                <span class="measurement-label">Hauteur épaule</span>
+                                                                <div class="measurement-actions">
+                                                                    <span class="measurement-value me-3">{{ mesures.hauteur_epaule }} cm</span>
+                                                                    <button class="btn btn-sm btn-outline-primary edit-measurement" data-bs-toggle="modal" data-bs-target="#editMeasurementModal" data-measurement="hauteur_epaule" data-value="{{ mesures.hauteur_epaule }}">
+                                                                        <i class="fas fa-edit"></i>
+                                                                    </button>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col">
+                                                        <div class="measurement-item">
+                                                            <div class="d-flex justify-content-between align-items-center">
+                                                                <span class="measurement-label">Longueur buste</span>
+                                                                <div class="measurement-actions">
+                                                                    <span class="measurement-value me-3">{{ mesures.longueur_buste }} cm</span>
+                                                                    <button class="btn btn-sm btn-outline-primary edit-measurement" data-bs-toggle="modal" data-bs-target="#editMeasurementModal" data-measurement="longueur_buste" data-value="{{ mesures.longueur_buste }}">
+                                                                        <i class="fas fa-edit"></i>
+                                                                    </button>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Section Bras -->
+                                    <div class="accordion-item">
+                                        <h2 class="accordion-header" id="headingArms">
+                                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseArms" aria-expanded="false" aria-controls="collapseArms">
+                                                <i class="fas fa-hand-paper me-2" style="color: #E17921;"></i> Bras
+                                            </button>
+                                        </h2>
+                                        <div id="collapseArms" class="accordion-collapse collapse" aria-labelledby="headingArms">
+                                            <div class="accordion-body">
+                                                <div class="row row-cols-1 row-cols-md-2 g-3">
+                                                    <div class="col">
+                                                        <div class="measurement-item">
+                                                            <div class="d-flex justify-content-between align-items-center">
+                                                                <span class="measurement-label">Longueur de bras</span>
+                                                                <div class="measurement-actions">
+                                                                    <span class="measurement-value me-3">{{ mesures.longueur_bras }} cm</span>
+                                                                    <button class="btn btn-sm btn-outline-primary edit-measurement" data-bs-toggle="modal" data-bs-target="#editMeasurementModal" data-measurement="longueur_bras" data-value="{{ mesures.longueur_bras }}">
+                                                                        <i class="fas fa-edit"></i>
+                                                                    </button>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col">
+                                                        <div class="measurement-item">
+                                                            <div class="d-flex justify-content-between align-items-center">
+                                                                <span class="measurement-label">Tour de biceps</span>
+                                                                <div class="measurement-actions">
+                                                                    <span class="measurement-value me-3">{{ mesures.tour_biceps }} cm</span>
+                                                                    <button class="btn btn-sm btn-outline-primary edit-measurement" data-bs-toggle="modal" data-bs-target="#editMeasurementModal" data-measurement="tour_biceps" data-value="{{ mesures.tour_biceps }}">
+                                                                        <i class="fas fa-edit"></i>
+                                                                    </button>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col">
+                                                        <div class="measurement-item">
+                                                            <div class="d-flex justify-content-between align-items-center">
+                                                                <span class="measurement-label">Tour de poignet</span>
+                                                                <div class="measurement-actions">
+                                                                    <span class="measurement-value me-3">{{ mesures.tour_poignet }} cm</span>
+                                                                    <button class="btn btn-sm btn-outline-primary edit-measurement" data-bs-toggle="modal" data-bs-target="#editMeasurementModal" data-measurement="tour_poignet" data-value="{{ mesures.tour_poignet }}">
+                                                                        <i class="fas fa-edit"></i>
+                                                                    </button>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col">
+                                                        <div class="measurement-item">
+                                                            <div class="d-flex justify-content-between align-items-center">
+                                                                <span class="measurement-label">Longueur épaule à coude</span>
+                                                                <div class="measurement-actions">
+                                                                    <span class="measurement-value me-3">{{ mesures.longueur_epaule_coude }} cm</span>
+                                                                    <button class="btn btn-sm btn-outline-primary edit-measurement" data-bs-toggle="modal" data-bs-target="#editMeasurementModal" data-measurement="longueur_epaule_coude" data-value="{{ mesures.longueur_epaule_coude }}">
+                                                                        <i class="fas fa-edit"></i>
+                                                                    </button>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Section Jambes -->
+                                    <div class="accordion-item">
+                                        <h2 class="accordion-header" id="headingLegs">
+                                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseLegs" aria-expanded="false" aria-controls="collapseLegs">
+                                                <i class="fas fa-socks me-2" style="color: #E17921;"></i> Jambes
+                                            </button>
+                                        </h2>
+                                        <div id="collapseLegs" class="accordion-collapse collapse" aria-labelledby="headingLegs">
+                                            <div class="accordion-body">
+                                                <div class="row row-cols-1 row-cols-md-2 g-3">
+                                                    <div class="col">
+                                                        <div class="measurement-item">
+                                                            <div class="d-flex justify-content-between align-items-center">
+                                                                <span class="measurement-label">Longueur jambe</span>
+                                                                <div class="measurement-actions">
+                                                                    <span class="measurement-value me-3">{{ mesures.longueur_jambe }} cm</span>
+                                                                    <button class="btn btn-sm btn-outline-primary edit-measurement" data-bs-toggle="modal" data-bs-target="#editMeasurementModal" data-measurement="longueur_jambe" data-value="{{ mesures.longueur_jambe }}">
+                                                                        <i class="fas fa-edit"></i>
+                                                                    </button>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col">
+                                                        <div class="measurement-item">
+                                                            <div class="d-flex justify-content-between align-items-center">
+                                                                <span class="measurement-label">Entrejambe</span>
+                                                                <div class="measurement-actions">
+                                                                    <span class="measurement-value me-3">{{ mesures.entrejambe }} cm</span>
+                                                                    <button class="btn btn-sm btn-outline-primary edit-measurement" data-bs-toggle="modal" data-bs-target="#editMeasurementModal" data-measurement="entrejambe" data-value="{{ mesures.entrejambe }}">
+                                                                        <i class="fas fa-edit"></i>
+                                                                    </button>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col">
+                                                        <div class="measurement-item">
+                                                            <div class="d-flex justify-content-between align-items-center">
+                                                                <span class="measurement-label">Tour de cuisse</span>
+                                                                <div class="measurement-actions">
+                                                                    <span class="measurement-value me-3">{{ mesures.tour_cuisse }} cm</span>
+                                                                    <button class="btn btn-sm btn-outline-primary edit-measurement" data-bs-toggle="modal" data-bs-target="#editMeasurementModal" data-measurement="tour_cuisse" data-value="{{ mesures.tour_cuisse }}">
+                                                                        <i class="fas fa-edit"></i>
+                                                                    </button>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col">
+                                                        <div class="measurement-item">
+                                                            <div class="d-flex justify-content-between align-items-center">
+                                                                <span class="measurement-label">Tour de genou</span>
+                                                                <div class="measurement-actions">
+                                                                    <span class="measurement-value me-3">{{ mesures.tour_genou }} cm</span>
+                                                                    <button class="btn btn-sm btn-outline-primary edit-measurement" data-bs-toggle="modal" data-bs-target="#editMeasurementModal" data-measurement="tour_genou" data-value="{{ mesures.tour_genou }}">
+                                                                        <i class="fas fa-edit"></i>
+                                                                    </button>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col">
+                                                        <div class="measurement-item">
+                                                            <div class="d-flex justify-content-between align-items-center">
+                                                                <span class="measurement-label">Tour de mollet</span>
+                                                                <div class="measurement-actions">
+                                                                    <span class="measurement-value me-3">{{ mesures.tour_mollet }} cm</span>
+                                                                    <button class="btn btn-sm btn-outline-primary edit-measurement" data-bs-toggle="modal" data-bs-target="#editMeasurementModal" data-measurement="tour_mollet" data-value="{{ mesures.tour_mollet }}">
+                                                                        <i class="fas fa-edit"></i>
+                                                                    </button>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col">
+                                                        <div class="measurement-item">
+                                                            <div class="d-flex justify-content-between align-items-center">
+                                                                <span class="measurement-label">Tour de cheville</span>
+                                                                <div class="measurement-actions">
+                                                                    <span class="measurement-value me-3">{{ mesures.tour_cheville }} cm</span>
+                                                                    <button class="btn btn-sm btn-outline-primary edit-measurement" data-bs-toggle="modal" data-bs-target="#editMeasurementModal" data-measurement="tour_cheville" data-value="{{ mesures.tour_cheville }}">
+                                                                        <i class="fas fa-edit"></i>
+                                                                    </button>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Section Autres -->
+                                    <div class="accordion-item">
+                                        <h2 class="accordion-header" id="headingOther">
+                                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOther" aria-expanded="false" aria-controls="collapseOther">
+                                                <i class="fas fa-ruler-combined me-2" style="color: #E17921;"></i> Autres mesures
+                                            </button>
+                                        </h2>
+                                        <div id="collapseOther" class="accordion-collapse collapse" aria-labelledby="headingOther">
+                                            <div class="accordion-body">
+                                                <div class="row row-cols-1 row-cols-md-2 g-3">
+                                                    <div class="col">
+                                                        <div class="measurement-item">
+                                                            <div class="d-flex justify-content-between align-items-center">
+                                                                <span class="measurement-label">Tour de cou</span>
+                                                                <div class="measurement-actions">
+                                                                    <span class="measurement-value me-3">{{ mesures.tour_cou }} cm</span>
+                                                                    <button class="btn btn-sm btn-outline-primary edit-measurement" data-bs-toggle="modal" data-bs-target="#editMeasurementModal" data-measurement="tour_cou" data-value="{{ mesures.tour_cou }}">
+                                                                        <i class="fas fa-edit"></i>
+                                                                    </button>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col">
+                                                        <div class="measurement-item">
+                                                            <div class="d-flex justify-content-between align-items-center">
+                                                                <span class="measurement-label">Hauteur dos</span>
+                                                                <div class="measurement-actions">
+                                                                    <span class="measurement-value me-3">{{ mesures.hauteur_dos }} cm</span>
+                                                                    <button class="btn btn-sm btn-outline-primary edit-measurement" data-bs-toggle="modal" data-bs-target="#editMeasurementModal" data-measurement="hauteur_dos" data-value="{{ mesures.hauteur_dos }}">
+                                                                        <i class="fas fa-edit"></i>
+                                                                    </button>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col">
+                                                        <div class="measurement-item">
+                                                            <div class="d-flex justify-content-between align-items-center">
+                                                                <span class="measurement-label">Carrure dos</span>
+                                                                <div class="measurement-actions">
+                                                                    <span class="measurement-value me-3">{{ mesures.carrure_dos }} cm</span>
+                                                                    <button class="btn btn-sm btn-outline-primary edit-measurement" data-bs-toggle="modal" data-bs-target="#editMeasurementModal" data-measurement="carrure_dos" data-value="{{ mesures.carrure_dos }}">
+                                                                        <i class="fas fa-edit"></i>
+                                                                    </button>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col">
+                                                        <div class="measurement-item">
+                                                            <div class="d-flex justify-content-between align-items-center">
+                                                                <span class="measurement-label">Largeur épaules</span>
+                                                                <div class="measurement-actions">
+                                                                    <span class="measurement-value me-3">{{ mesures.largeur_epaules }} cm</span>
+                                                                    <button class="btn btn-sm btn-primary edit-measurement" data-bs-toggle="modal" data-bs-target="#editMeasurementModal" data-measurement="largeur_epaules" data-value="{{ mesures.largeur_epaules|default:0 }}" style="background: linear-gradient(to right, #E17921, #9C4506); border: none;">
+                                                                        <i class="fas fa-edit"></i>
+                                                                    </button>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Footer -->
+                <footer class="mt-auto py-3">
+                    <div class="text-center text-muted">
+                        <p>© 2025 Couture Hub - Tous droits réservés</p>
+                    </div>
+                </footer>
+            </main>
+        </div>
+    </div>
+
+    <!-- Mobile Sidebar Toggle Button -->
+    <button class="sidebar-toggle-btn d-md-none" id="sidebarToggleBtn">
+        <i class="fas fa-bars"></i>
+    </button>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Custom JS -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Gestion de la modification des mesures
+            const editButtons = document.querySelectorAll('.edit-measurement');
+            const modal = document.getElementById('editMeasurementModal');
+            const form = document.getElementById('editMeasurementForm');
+            const typeInput = document.getElementById('measurementType');
+            const valueInput = document.getElementById('measurementValue');
+            const labelInput = document.getElementById('measurementLabel');
+            const saveButton = document.getElementById('saveMeasurement');
+            const measurementError = document.getElementById('measurementError');
+            const measurementInfo = document.getElementById('measurementInfo');
+            const measurementInfoText = document.getElementById('measurementInfoText');
+            const toast = new bootstrap.Toast(document.getElementById('measurementToast'));
+            
+            // Fonction pour afficher les messages
+            function showMessage(title, message, type = 'success') {
+                const toastTitle = document.getElementById('toastTitle');
+                const toastMessage = document.getElementById('toastMessage');
+                
+                toastTitle.textContent = title;
+                toastMessage.textContent = message;
+                toastMessage.className = `toast-body text-${type}`;
+                toast.show();
+            }
+            
+            // Validation de la valeur
+            valueInput.addEventListener('input', function() {
+                const value = parseFloat(this.value);
+                if (value < 0 || value > 300) {
+                    this.setCustomValidity('La valeur doit être comprise entre 0 et 300 cm');
+                    measurementError.textContent = 'La valeur doit être comprise entre 0 et 300 cm';
+                    measurementError.style.display = 'block';
+                    saveButton.disabled = true;
+                } else {
+                    this.setCustomValidity('');
+                    measurementError.style.display = 'none';
+                    saveButton.disabled = false;
+                }
+            });
+            
+            editButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const type = this.dataset.measurement;
+                    const value = this.dataset.value;
+                    const label = this.closest('.measurement-item').querySelector('.measurement-label').textContent;
+                    
+                    typeInput.value = type;
+                    valueInput.value = value;
+                    labelInput.textContent = label;
+                    
+                    // Réinitialiser les messages d'erreur
+                    measurementError.style.display = 'none';
+                    measurementInfo.classList.add('d-none');
+                    saveButton.disabled = false;
+                });
+            });
+            
+            saveButton.addEventListener('click', function() {
+                if (!form.checkValidity()) {
+                    form.reportValidity();
+                    return;
+                }
+                
+                const formData = new FormData(form);
+                saveButton.disabled = true;
+                saveButton.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i> Enregistrement...';
+                
+                fetch('{% url "utilisateur:modifier_mesure" %}', {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        // Mettre à jour l'affichage
+                        const valueSpan = document.querySelector(`[data-measurement="${typeInput.value}"]`)
+                            .closest('.measurement-actions')
+                            .querySelector('.measurement-value');
+                        valueSpan.textContent = `${data.value} cm`;
+                        
+                        // Fermer le modal
+                        bootstrap.Modal.getInstance(modal).hide();
+                        
+                        // Afficher le message de succès
+                        showMessage('Succès', data.message);
+                    } else if (data.status === 'info') {
+                        measurementInfo.classList.remove('d-none');
+                        measurementInfoText.textContent = data.message;
+                        saveButton.disabled = false;
+                        saveButton.innerHTML = '<i class="fas fa-save me-1"></i> Enregistrer';
+                    } else {
+                        measurementError.textContent = data.message;
+                        measurementError.style.display = 'block';
+                        saveButton.disabled = false;
+                        saveButton.innerHTML = '<i class="fas fa-save me-1"></i> Enregistrer';
+                    }
+                })
+                .catch(error => {
+                    console.error('Erreur:', error);
+                    showMessage('Erreur', 'Une erreur est survenue lors de la mise à jour', 'danger');
+                    saveButton.disabled = false;
+                    saveButton.innerHTML = '<i class="fas fa-save me-1"></i> Enregistrer';
+                });
+            });
+            
+            // Réinitialiser le formulaire à la fermeture du modal
+            modal.addEventListener('hidden.bs.modal', function() {
+                form.reset();
+                measurementError.style.display = 'none';
+                measurementInfo.classList.add('d-none');
+                saveButton.disabled = false;
+                saveButton.innerHTML = '<i class="fas fa-save me-1"></i> Enregistrer';
+            });
+        });
+    </script>
+
+    <!-- Modal d'édition des mesures -->
+    <div class="modal fade" id="editMeasurementModal" tabindex="-1" aria-labelledby="editMeasurementModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editMeasurementModalLabel">Modifier la mesure</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="editMeasurementForm">
+                        {% csrf_token %}
+                        <input type="hidden" id="measurementType" name="type">
+                        <div class="mb-3">
+                            <label id="measurementLabel" class="form-label">Mesure</label>
+                            <div class="input-group">
+                                <input type="number" class="form-control" id="measurementValue" name="value" min="0" max="300" step="0.1" required>
+                                <span class="input-group-text">cm</span>
+                            </div>
+                            <div id="measurementError" class="invalid-feedback" style="display: none;"></div>
+                            <div id="measurementInfo" class="alert alert-info mt-2 d-none">
+                                <i class="fas fa-info-circle me-2"></i>
+                                <span id="measurementInfoText"></span>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                    <button type="button" class="btn btn-primary" id="saveMeasurement" style="background: linear-gradient(to right, #E17921, #9C4506); border: none;">
+                        <i class="fas fa-save me-1"></i> Enregistrer
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast pour les notifications -->
+    <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
+        <div id="measurementToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast-header">
+                <strong class="me-auto" id="toastTitle">Notification</strong>
+                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            <div class="toast-body" id="toastMessage"></div>
+        </div>
+    </div>
+</body>
+</html>

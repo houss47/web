@@ -1,0 +1,359 @@
+{% load static %}
+<!-- En-tête -->
+<header class="header">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <div class="container">
+        <div class="nav">
+            <div class="nav-logo">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="24" height="24">
+                    <path d="M21.731 2.039c.474-.268 1.03-.236 1.534.113l3.5 2.025a.75.75 0 0 1 .554.892l-10.92 18.63a1.5 1.5 0 0 1-1.144.808L3.087 19.768a.75.75 0 0 1-.876-.353L1.03 17.02a.75.75 0 0 1 .215-.876l8.53-5.09a1.5 1.5 0 0 1 1.144-.808L22.077 2.349a.75.75 0 0 1-.346-.31z" />
+                </svg>
+                <a href=" {% url 'acceil:index' %}">Atelier de Couture</a>
+            </div>
+            
+            <button class="hamburger" id="hamburger" aria-label="Menu" aria-expanded="false">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            
+            <nav class="nav-links" id="nav-links">
+                <a href=" {% url 'atelier:ateliers' %}" class="nav-link {% if request.resolver_match.url_name == 'ateliers' %}active{% endif %}">Ateliers</a>
+                <a href=" {% url 'acceil:contact' %}" class="nav-link {% if request.resolver_match.url_name == 'contact' %}active{% endif %}">Contact</a>
+                
+                {% if request.session.user_id %}
+                    <div class="user-profile">
+                        <div class="user-info">
+                            <span class="user-name">{{ request.session.user_nom }} {{ request.session.user_prenom }}</span>
+                            {% if request.session.user_role == 'gérant' %}
+                                <a href="{% url 'administration:dashboard' %}" class="nav-link dashboard-link">
+                                    <i class="fas fa-tachometer-alt"></i> Dashboard
+                                </a>
+                            {% else %}
+                                <a href="{% url 'utilisateur:dashboard_client' %}" class="nav-link dashboard-link">
+                                    <i class="fas fa-tachometer-alt"></i> Dashboard
+                                </a>
+                            {% endif %}
+                            <a style="color: red;" href="{% url 'acceil:deconnexion' %}" class="nav-link logout-link" title="Déconnexion">
+                                <i class="fas fa-sign-out-alt"></i>
+                            </a>
+                        </div>
+                    </div>
+                {% else %}
+                    <a href=" {% url 'acceil:creer_atelier' %}" class="nav-link {% if request.resolver_match.url_name == 'creer_atelier' %}active{% endif %}">creer mon atelier</a>
+                    <a href=" {% url 'acceil:connexion' %}" class="nav-link {% if request.resolver_match.url_name == 'connexion' %}active{% endif %}">Connexion</a>
+                {% endif %}
+            </nav>
+        </div>
+    </div>
+</header>
+
+<style>
+/* Styles de base */
+.header {
+    background-color: white;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    position: fixed;
+    width: 100%;
+    top: 0;
+    z-index: 1000;
+}
+
+.nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    /* Further reduced top/bottom padding to shrink header height */
+    padding: 0.25rem 0;
+}
+
+.nav-logo {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    /* Smaller logo text */
+    font-size: 1rem;
+    font-weight: 600;
+    color: #EC9712;
+}
+
+.nav-logo svg {
+    width: 1.5rem;
+    height: 1.5rem;
+}
+
+.nav-links {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.nav-link {
+    color: #333;
+    text-decoration: none;
+    font-weight: 500;
+    padding: 0.25rem 0.75rem;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.nav-link:hover {
+    color: #EC9712;
+    background-color: rgba(236, 151, 18, 0.1);
+}
+
+.nav-link.active {
+    color: #EC9712;
+    background-color: rgba(236, 151, 18, 0.1);
+}
+
+/* Styles pour le menu hamburger */
+.hamburger {
+    display: none;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 30px;
+    height: 21px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    z-index: 1000;
+}
+
+.hamburger span {
+    width: 100%;
+    height: 3px;
+    background-color: #EC9712;
+    border-radius: 3px;
+    transition: all 0.3s ease;
+}
+
+.hamburger.active span:nth-child(1) {
+    transform: translateY(9px) rotate(45deg);
+}
+
+.hamburger.active span:nth-child(2) {
+    opacity: 0;
+}
+
+.hamburger.active span:nth-child(3) {
+    transform: translateY(-9px) rotate(-45deg);
+}
+
+/* Styles pour le profil utilisateur */
+.user-profile {
+    background-color: rgba(236, 151, 18, 0.1);
+    padding: 1rem;
+    border-radius: 12px;
+    margin-left: 1rem;
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.user-name {
+    color: #EC9712;
+    font-weight: 500;
+}
+
+.dashboard-link, .logout-link {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.25rem 0.75rem;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.dashboard-link:hover, .logout-link:hover {
+    background-color: rgba(236, 151, 18, 0.2);
+}
+
+/* Styles pour les messages */
+.messages {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
+    max-width: 400px;
+}
+
+.alert {
+    padding: 1rem;
+    margin-bottom: 0.5rem;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    animation: slideIn 0.3s ease;
+}
+
+/* Media queries pour les petits écrans */
+@media (max-width: 768px) {
+    .container {
+        padding: 0 1rem;
+    }
+
+    .nav-logo {
+        font-size: 1.1rem;
+    }
+
+    .nav-logo svg {
+        width: 1.75rem;
+        height: 1.75rem;
+    }
+
+    .hamburger {
+        display: flex;
+    }
+    
+    .nav-links {
+        position: fixed;
+        top: 0;
+        right: -100%;
+        width: 85%;
+        max-width: 350px;
+        height: 100vh;
+        background-color: white;
+        padding: 5rem 1.5rem 2rem;
+        flex-direction: column;
+        gap: 1rem;
+        transition: right 0.3s ease;
+        box-shadow: -5px 0 15px rgba(0, 0, 0, 0.1);
+        z-index: 999;
+    }
+    
+    .nav-links.active {
+        right: 0;
+    }
+    
+    .nav-link {
+        width: 100%;
+        padding: 1rem;
+        font-size: 1.1rem;
+        border-radius: 12px;
+        text-align: left;
+    }
+    
+    .user-profile {
+        width: 100%;
+        margin: 1rem 0;
+        padding: 1.5rem;
+    }
+    
+    .user-info {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+    
+    .user-name {
+        font-size: 1.1rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    .dashboard-link, .logout-link {
+        width: 100%;
+        padding: 1rem;
+        font-size: 1.1rem;
+        justify-content: flex-start;
+    }
+
+    .messages {
+        left: 1rem;
+        right: 1rem;
+        max-width: none;
+    }
+
+    .alert {
+        padding: 1rem;
+        font-size: 0.95rem;
+    }
+}
+
+/* Overlay pour le menu mobile */
+.menu-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 998;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    backdrop-filter: blur(4px);
+}
+
+.menu-overlay.active {
+    display: block;
+    opacity: 1;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+</style>
+
+<!-- Messages -->
+{% if messages %}
+<div class="messages">
+    {% for message in messages %}
+    <div class="alert alert-{{ message.tags }}">
+        {% if message.tags == 'success' %}
+            <i class="fas fa-check-circle"></i>
+        {% elif message.tags == 'error' %}
+            <i class="fas fa-exclamation-circle"></i>
+        {% elif message.tags == 'warning' %}
+            <i class="fas fa-exclamation-triangle"></i>
+        {% else %}
+            <i class="fas fa-info-circle"></i>
+        {% endif %}
+        {{ message }}
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+
+<!-- Overlay pour le menu mobile -->
+<div class="menu-overlay" id="menu-overlay"></div>
+
+<!-- Script pour le menu mobile -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const hamburger = document.getElementById('hamburger');
+    const navLinks = document.getElementById('nav-links');
+    const menuOverlay = document.getElementById('menu-overlay');
+    
+    function toggleMenu() {
+        hamburger.classList.toggle('active');
+        navLinks.classList.toggle('active');
+        menuOverlay.classList.toggle('active');
+        document.body.style.overflow = navLinks.classList.contains('active') ? 'hidden' : '';
+    }
+    
+    hamburger.addEventListener('click', toggleMenu);
+    menuOverlay.addEventListener('click', toggleMenu);
+    
+    // Fermer le menu lors du redimensionnement de la fenêtre
+    window.addEventListener('resize', function() {
+        if (window.innerWidth > 768 && navLinks.classList.contains('active')) {
+            toggleMenu();
+        }
+    });
+});
+</script>

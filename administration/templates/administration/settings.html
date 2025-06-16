@@ -1,0 +1,418 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Paramètres de l'atelier de couture africaine Couture Hub">
+  <title>Paramètres | Couture Hub</title>
+  
+  <!-- Google Fonts avec preload pour améliorer les performances -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Meta pour les réseaux sociaux -->
+  <meta property="og:title" content="Paramètres | Couture Hub">
+  <meta property="og:description" content="Configurez votre atelier de couture africaine">
+  <meta property="og:image" content="images/og-settings.jpg">
+  <meta property="og:url" content="https://couturehub.com/admin/parametres">
+  
+  <!-- Favicon -->
+  <link rel="icon" href="images/favicon.ico" type="image/x-icon">
+  <link rel="apple-touch-icon" href="images/apple-touch-icon.png">
+  
+  <!-- CSS -->
+  <link rel="stylesheet" href="{% static 'administration/css/style.css' %}">
+  <link rel="stylesheet" href="{% static 'administration/css/settings.css' %}">
+  <link rel="stylesheet" href="{% static 'administration/css/sidebar.css' %}">
+  <link rel="stylesheet" href="{% static 'administration/css/responsive.css' %}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+  <div class="layout">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      
+      <nav class="sidebar-nav">
+        <ul>
+          <li><a href="{% url 'administration:dashboard' %}"><i class="fas fa-home"></i> Tableau de bord</a></li>
+          <li><a href="{% url 'administration:orders' %}"><i class="fas fa-shopping-bag"></i> Commandes</a></li>
+
+          <li><a href="{% url 'administration:ateliers' %}"><i class="fas fa-cut"></i> Ateliers</a></li>
+          <li><a href="{% url 'administration:models' %}"><i class="fas fa-tshirt"></i> Modèles</a></li>
+          <li><a href="{% url 'administration:calendar' %}"><i class="fas fa-calendar-alt"></i> Rendez-vous</a></li>
+       
+          <li class="active"><a href="{% url 'administration:settings' %}"><i class="fas fa-cog"></i> Paramètres</a></li>
+        </ul>
+      </nav>
+      <div class="sidebar-footer">
+        <p>© 2025 Couture Hub - Ateliers de couture africaine</p>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <!-- Header -->
+      <header class="header">
+        <div class="header-title">
+          <h1>Paramètres</h1>
+        </div>
+        <div class="header-actions">
+          <div class="user-menu">
+            {% if utilisateur and utilisateur.photo %}
+            <img src="{{ utilisateur.photo.url }}" alt="Avatar de {{ utilisateur.prenom }} {{ utilisateur.nom }}" class="avatar">
+          {% else %}
+            <img src="{% static 'administration/images/default-avatar.png' %}" alt="Avatar par défaut" class="avatar">
+          {% endif %}
+              <span>
+                {% if utilisateur %}
+                {{ utilisateur.prenom }} {{ utilisateur.nom }} 
+              {% else %}
+                Admin Couture Hub
+              {% endif %}
+            </span>
+           
+            <a href="{% url 'administration:logout' %}" class="btn danger-btn btn-logout" title="Se déconnecter">
+              <i class="fas fa-sign-out-alt"></i>
+            </a>
+          </div>
+        </div>
+      </header>
+
+      <!-- Messages -->
+      {% if messages %}
+      <div class="messages">
+        {% for message in messages %}
+        <div class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %}">
+          {{ message }}
+        </div>
+        {% endfor %}
+      </div>
+      {% endif %}
+
+      <!-- Settings Content -->
+      <div class="settings-content">
+        <!-- Tabs Navigation -->
+        <div class="settings-tabs">
+          <button class="settings-tab active" data-tab="account">Compte</button>
+          <button class="settings-tab" data-tab="company">Entreprise</button>
+          
+        </div>
+
+        <!-- Tab Content -->
+        <div class="settings-tab-content">
+          <!-- Account Tab -->
+          <div class="tab-pane active" id="account">
+            <div class="settings-cards">
+              <!-- Profile Information -->
+<div class="settings-card">
+                <div class="settings-card-header">
+                  <h3>Informations du profil</h3>
+                  <p>Mettez à jour les informations de votre profil</p>
+                </div>
+                <div class="settings-card-body">
+                  <form id="profileForm" method="POST" action="{% url 'administration:settings' %}" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <input type="hidden" name="form_type" value="profile">
+                    
+                    <div class="form-group">
+                      <label for="nom">Nom</label>
+                      <input type="text" id="nom" name="nom" value="{{ utilisateur.nom }}" required>
+                      <div class="error-message"></div>
+                    </div>
+                    
+                    <div class="form-group">
+                      <label for="prenom">Prénom</label>
+                      <input type="text" id="prenom" name="prenom" value="{{ utilisateur.prenom }}" required>
+                      <div class="error-message"></div>
+                    </div>
+                    
+                    <div class="form-group">
+                      <label for="email">Email</label>
+                      <input type="email" id="email" name="email" value="{{ utilisateur.email }}" required>
+                      <div class="error-message"></div>
+                    </div>
+                    
+                    <div class="form-group">
+                      <label for="telephone">Téléphone</label>
+                      <input type="tel" id="telephone" name="telephone" value="{{ utilisateur.telephone }}" required>
+                      <div class="error-message"></div>
+                    </div>
+                    
+                    <div class="form-group">
+                      <label for="photo">Photo de profil</label>
+                      <input type="file" id="photo" name="photo" accept="image/*">
+                      {% if utilisateur.photo %}
+                        <div class="current-photo">
+                          <img src="{{ utilisateur.photo.url }}" alt="Photo de profil actuelle" style="max-width: 100px; margin-top: 10px;">
+                        </div>
+                      {% endif %}
+                    </div>
+                    
+                    <div class="form-actions">
+                      <button type="submit" class="btn primary-btn">Enregistrer</button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+
+              <!-- Password -->
+              <div class="settings-card">
+                <div class="settings-card-header">
+                  <h3>Mot de passe</h3>
+                  <p>Changez votre mot de passe</p>
+                </div>
+                <div class="settings-card-body">
+                  <form id="passwordForm" method="POST" action="{% url 'administration:settings' %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="form_type" value="password">
+                    
+                    <div class="form-group">
+                      <label for="currentPassword">Mot de passe actuel</label>
+                      <input type="password" id="currentPassword" name="currentPassword" required>
+                    </div>
+                    
+                    <div class="form-group">
+                      <label for="newPassword">Nouveau mot de passe</label>
+                      <input type="password" id="newPassword" name="newPassword" required>
+                    </div>
+                    
+                    <div class="form-group">
+                      <label for="confirmPassword">Confirmer le mot de passe</label>
+                      <input type="password" id="confirmPassword" name="confirmPassword" required>
+                    </div>
+                    
+                    <div class="form-actions">
+                      <button type="submit" class="btn primary-btn">Mettre à jour</button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+
+              <!-- Danger Zone -->
+              <div class="settings-card">
+                <div class="settings-card-header">
+                  <h3>Danger Zone</h3>
+                  <p>Actions irréversibles pour votre compte</p>
+                </div>
+                <div class="settings-card-body">
+                  <div class="danger-zone-content">
+                    <div class="danger-zone-text">
+                      <h4>Supprimer mon compte</h4>
+                      <p>Cette action est irréversible. Toutes vos données seront définitivement supprimées.</p>
+                    </div>
+                    <button class="btn danger-btn" id="deleteAccountBtn">Supprimer mon compte</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Company Tab -->
+          <div class="tab-pane" id="company">
+            <div class="settings-cards">
+              <div class="settings-card full-width">
+                <div class="settings-card-header">
+                  <h3>Informations de l'atelier</h3>
+                  <p>Ces informations apparaîtront sur vos documents et factures</p>
+                </div>
+                <div class="settings-card-body">
+                  <form id="companyForm" method="POST" action="{% url 'administration:settings' %}" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <input type="hidden" name="form_type" value="company">
+                    
+                    <div class="form-group">
+                      <label for="nom_atelier">Nom de l'atelier</label>
+                      <input type="text" id="nom_atelier" name="nom_atelier" value="{{ atelier.nom_atelier }}" required>
+                      <div class="error-message"></div>
+                    </div>
+                    
+                    <div class="form-group">
+                      <label for="adresse">Adresse</label>
+                      <textarea id="adresse" name="adresse" rows="2" required>{{ atelier.adresse }}</textarea>
+                      <div class="error-message"></div>
+                    </div>
+                    
+                    <div class="form-group">
+                      <label for="ville">Ville</label>
+                      <input type="text" id="ville" name="ville" value="{{ atelier.ville }}" required>
+                      <div class="error-message"></div>
+                    </div>
+                    
+                    <div class="form-group">
+                      <label for="description">Description</label>
+                      <textarea id="description" name="description" rows="4" required>{{ atelier.description }}</textarea>
+                      <div class="error-message"></div>
+                    </div>
+                    
+                    <div class="form-group">
+                      <label for="photo_atelier">Photo de l'atelier</label>
+                      <input type="file" id="photo_atelier" name="photo_atelier" accept="image/*">
+                      {% if atelier.photo_atelier %}
+                        <div class="current-photo">
+                          <img src="{{ atelier.photo_atelier.url }}" alt="Photo de l'atelier" style="max-width: 200px; margin-top: 10px;">
+                        </div>
+                      {% endif %}
+                    </div>
+                    
+                    <div class="form-actions">
+                      <button type="submit" class="btn primary-btn">Enregistrer</button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+
+
+
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Delete Account Confirmation Modal -->
+  <div class="modal" id="deleteAccountModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Êtes-vous absolument sûr?</h2>
+        <button class="close-btn">&times;</button>
+      </div>              
+      <div class="modal-body">
+        <p class="alert-message">
+          Cette action est irréversible. Elle supprimera définitivement votre compte et toutes les données associées.
+        </p>
+        <form id="deleteAccountForm" method="POST" action="{% url 'administration:settings' %}">
+          {% csrf_token %}
+          <input type="hidden" name="form_type" value="delete_account">
+          <div class="form-group">
+            <label for="password">Veuillez entrer votre mot de passe pour confirmer</label>
+            <input type="password" id="password" name="password" required>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button class="btn outline-btn" id="cancelDeleteBtn">Annuler</button>
+        <button class="btn danger-btn" id="confirmDeleteBtn">Supprimer</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mobile Sidebar Toggle -->
+  <button class="sidebar-toggle" id="sidebarToggle">
+    <i class="fas fa-bars"></i>
+  </button>
+
+  <!-- Scripts -->
+  <script src="{% static 'administration/js/settings.js' %}"></script>
+  <script src="{% static 'administration/js/sidebar.js' %}"></script>
+  <script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Fonction pour afficher les messages
+    function showMessage(message, type = 'success') {
+      const messagesDiv = document.querySelector('.messages') || document.createElement('div');
+      if (!document.querySelector('.messages')) {
+        messagesDiv.className = 'messages';
+        document.querySelector('.main-content').insertBefore(messagesDiv, document.querySelector('.settings-content'));
+      }
+      
+      const alertDiv = document.createElement('div');
+      alertDiv.className = `alert alert-${type}`;
+      alertDiv.textContent = message;
+      messagesDiv.appendChild(alertDiv);
+      
+      setTimeout(() => {
+        alertDiv.style.opacity = '0';
+        setTimeout(() => alertDiv.remove(), 500);
+      }, 5000);
+    }
+
+    // Gestion des formulaires
+    const forms = document.querySelectorAll('form');
+    forms.forEach(form => {
+      form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const submitButton = this.querySelector('button[type="submit"]');
+        const originalText = submitButton.textContent;
+        submitButton.disabled = true;
+        submitButton.textContent = 'Enregistrement en cours...';
+        
+        const formData = new FormData(this);
+        
+        fetch(this.action, {
+          method: 'POST',
+          body: formData,
+          headers: {
+            'X-Requested-With': 'XMLHttpRequest'
+          }
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            showMessage(data.message, 'success');
+            if (data.redirect) {
+              window.location.href = data.redirect;
+            } else {
+              // Recharger la page après 1 seconde
+              setTimeout(() => {
+                window.location.reload();
+              }, 1000);
+            }
+          } else {
+            showMessage(data.message, 'error');
+            submitButton.disabled = false;
+            submitButton.textContent = originalText;
+          }
+        })
+        .catch(error => {
+          console.error('Erreur:', error);
+          showMessage('Une erreur est survenue lors de l\'enregistrement', 'error');
+          submitButton.disabled = false;
+          submitButton.textContent = originalText;
+        });
+      });
+    });
+
+    // Gestion du modal de suppression de compte
+    const deleteAccountBtn = document.getElementById('deleteAccountBtn');
+    const deleteAccountModal = document.getElementById('deleteAccountModal');
+    const closeBtn = document.querySelector('.close-btn');
+    const cancelDeleteBtn = document.getElementById('cancelDeleteBtn');
+    const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
+    const deleteAccountForm = document.getElementById('deleteAccountForm');
+
+    // Ouvrir le modal
+    deleteAccountBtn.addEventListener('click', function() {
+      deleteAccountModal.style.display = 'block';
+    });
+
+    // Fermer le modal
+    function closeModal() {
+      deleteAccountModal.style.display = 'none';
+    }
+
+    closeBtn.addEventListener('click', closeModal);
+    cancelDeleteBtn.addEventListener('click', closeModal);
+
+    // Fermer le modal si on clique en dehors
+    window.addEventListener('click', function(event) {
+      if (event.target === deleteAccountModal) {
+        closeModal();
+      }
+    });
+
+    // Soumettre le formulaire de suppression
+    confirmDeleteBtn.addEventListener('click', function() {
+      const password = document.getElementById('password').value;
+      if (!password) {
+        showMessage('Veuillez entrer votre mot de passe pour confirmer la suppression.', 'error');
+        return;
+      }
+      deleteAccountForm.submit();
+    });
+  });
+  </script>
+</body>
+</html>

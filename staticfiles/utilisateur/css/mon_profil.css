@@ -1,0 +1,290 @@
+/* Styles spécifiques pour la page Mon Profil */
+
+/* Style pour le conteneur d'avatar */
+.profile-avatar {
+    position: relative;
+    display: inline-block;
+    border-radius: 50%;
+    border: 4px solid #E17921;
+    box-shadow: 0 8px 25px rgba(225, 121, 33, 0.25);
+    background: linear-gradient(135deg, #F6F3ED, #e6e2dc);
+    transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+    overflow: hidden;
+}
+
+.profile-avatar:hover {
+    transform: scale(1.02);
+    box-shadow: 0 12px 30px rgba(225, 121, 33, 0.35);
+}
+
+.profile-avatar img {
+    transition: all 0.4s ease;
+}
+
+.profile-avatar:hover img {
+    transform: scale(1.05);
+}
+
+.avatar-container {
+    position: relative;
+    display: inline-block;
+    padding: 1rem;
+}
+
+.avatar-edit-btn {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: white;
+    color: #E17921;
+    border: 2px solid #E17921;
+    transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+    box-shadow: 0 4px 12px rgba(225, 121, 33, 0.2);
+}
+
+.avatar-edit-btn:hover {
+    background: #E17921;
+    color: white;
+    transform: scale(1.1) rotate(5deg);
+    box-shadow: 0 6px 15px rgba(225, 121, 33, 0.3);
+}
+
+/* Styles pour les cartes de profil */
+.card {
+    border-radius: 16px;
+    border: none;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+    transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+    overflow: hidden;
+    background: #ffffff;
+    margin-bottom: 1.5rem;
+}
+
+.card:hover {
+    box-shadow: 0 12px 30px rgba(225, 121, 33, 0.15);
+    transform: translateY(-5px);
+}
+
+.card-header {
+    background: linear-gradient(to right, rgba(225, 121, 33, 0.05), rgba(156, 69, 6, 0.05));
+    border-bottom: 1px solid rgba(225, 121, 33, 0.1);
+    padding: 1.2rem;
+}
+
+.card-header h5 {
+    color: #2c3e50;
+    font-weight: 600;
+    margin: 0;
+}
+
+/* Style pour les badges de préférences */
+.badge.rounded-pill {
+    background: linear-gradient(135deg, rgba(225, 121, 33, 0.1), rgba(156, 69, 6, 0.1)) !important;
+    color: #9C4506 !important;
+    border: 1px solid rgba(225, 121, 33, 0.2);
+    padding: 0.6em 1em;
+    margin-right: 0.4em;
+    margin-bottom: 0.4em;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.badge.rounded-pill:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(225, 121, 33, 0.15);
+}
+
+/* Style pour les badges de statut */
+.status-badge {
+    padding: 0.5em 1em;
+    border-radius: 8px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    background: linear-gradient(135deg, rgba(225, 121, 33, 0.8), rgba(156, 69, 6, 0.8)) !important;
+    box-shadow: 0 4px 12px rgba(225, 121, 33, 0.2);
+}
+
+/* Styles pour les boutons */
+.btn-outline-primary {
+    color: #E17921;
+    border: 2px solid #E17921;
+    background: transparent;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    font-weight: 500;
+    transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+
+.btn-outline-primary:hover {
+    background: linear-gradient(135deg, #E17921, #9C4506);
+    border-color: transparent;
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(225, 121, 33, 0.2);
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #E17921, #9C4506) !important;
+    border: none !important;
+    padding: 0.6rem 1.2rem;
+    border-radius: 8px;
+    font-weight: 500;
+    box-shadow: 0 4px 15px rgba(225, 121, 33, 0.2);
+    transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(225, 121, 33, 0.3);
+}
+
+/* Styles pour les formulaires */
+.form-control, .form-select {
+    border-radius: 10px;
+    padding: 0.8rem 1rem;
+    border: 2px solid rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    font-size: 0.95rem;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: #E17921;
+    box-shadow: 0 0 0 0.25rem rgba(225, 121, 33, 0.15);
+}
+
+.form-control-plaintext {
+    color: #2c3e50;
+    font-weight: 500;
+    padding: 0.8rem 0;
+}
+
+.form-check-input:checked {
+    background-color: #E17921;
+    border-color: #E17921;
+}
+
+.form-switch .form-check-input {
+    width: 3em;
+    height: 1.5em;
+    margin-top: 0.25em;
+}
+
+.form-switch .form-check-input:focus {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='3' fill='rgba(225, 121, 33, 0.25)'/%3e%3c/svg%3e");
+}
+
+/* Styles pour les modals */
+.modal-content {
+    border: none;
+    border-radius: 16px;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+.modal-header {
+    background: linear-gradient(135deg, #E17921, #9C4506);
+    color: white;
+    border-bottom: none;
+    padding: 1.5rem;
+}
+
+.modal-body {
+    padding: 2rem;
+}
+
+.modal-footer {
+    border-top: 1px solid rgba(225, 121, 33, 0.1);
+    padding: 1.5rem;
+}
+
+/* Styles pour le progrès du mot de passe */
+.progress {
+    height: 6px;
+    border-radius: 3px;
+    background-color: rgba(0, 0, 0, 0.05);
+    overflow: hidden;
+}
+
+.progress-bar {
+    transition: width 0.5s ease;
+    background: linear-gradient(to right, #E17921, #9C4506);
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.card {
+    animation: fadeIn 0.5s ease-out forwards;
+}
+
+/* Styles responsives */
+@media (max-width: 768px) {
+    .avatar-container {
+        margin-bottom: 2rem;
+    }
+    
+    .card {
+        margin-bottom: 1.5rem;
+    }
+    
+    .modal-body {
+        padding: 1.5rem;
+    }
+    
+    .btn {
+        padding: 0.5rem 1rem;
+    }
+    
+    .form-control, .form-select {
+        font-size: 0.9rem;
+    }
+}
+
+/* Styles pour les labels */
+.form-label {
+    color: #2c3e50;
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+}
+
+/* Styles pour les textes d'aide */
+.form-text {
+    color: #6c757d;
+    font-size: 0.85rem;
+    margin-top: 0.5rem;
+}
+
+/* Styles pour les messages d'erreur */
+.invalid-feedback {
+    color: #dc3545;
+    font-size: 0.85rem;
+    margin-top: 0.25rem;
+}
+
+/* Styles pour les groupes de formulaire */
+.input-group {
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.input-group-text {
+    background: #f8f9fa;
+    border: 2px solid rgba(0, 0, 0, 0.1);
+    color: #6c757d;
+    font-weight: 500;
+}

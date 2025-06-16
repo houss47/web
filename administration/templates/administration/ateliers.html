@@ -1,0 +1,469 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Gestion des ateliers de couture africaine Couture Hub">
+  <title>Gestion des Ateliers | Couture Hub</title>
+  
+  <!-- Google Fonts avec preload pour améliorer les performances -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Meta pour les réseaux sociaux -->
+  <meta property="og:title" content="Gestion des Ateliers | Couture Hub">
+  <meta property="og:description" content="Système de gestion des ateliers de couture africaine">
+  <meta property="og:image" content="{% static 'administration/images/og-ateliers.jpg' %}">
+  <meta property="og:url" content="https://couturehub.com/admin/ateliers">
+  
+  <!-- Favicon -->
+  <link rel="icon" href="{% static 'administration/images/favicon.ico' %}" type="image/x-icon">
+  <link rel="apple-touch-icon" href="{% static 'administration/images/apple-touch-icon.png' %}">
+  
+  <!-- CSS -->
+  <link rel="stylesheet" href="{% static 'administration/css/style.css' %}">
+  <link rel="stylesheet" href="{% static 'administration/css/sidebar.css' %}">
+  <link rel="stylesheet" href="{% static 'administration/css/responsive.css' %}">
+  <link rel="stylesheet" href="{% static 'administration/css/ateliers.css' %}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+</head>
+<body>
+  <div class="layout">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+     
+      <nav class="sidebar-nav">
+        <ul>
+          <li><a href="{% url 'administration:dashboard' %}"><i class="fas fa-home"></i> Tableau de bord</a></li>
+          <li><a href="{% url 'administration:orders' %}"><i class="fas fa-shopping-bag"></i> Commandes</a></li>
+
+          <li class="active"><a href="{% url 'administration:ateliers' %}"><i class="fas fa-cut"></i> Ateliers</a></li>
+          <li><a href="{% url 'administration:models' %}"><i class="fas fa-tshirt"></i> Modèles</a></li>
+          <li><a href="{% url 'administration:calendar' %}"><i class="fas fa-calendar-alt"></i> Rendez-vous</a></li>
+
+          <li><a href="{% url 'administration:settings' %}"><i class="fas fa-cog"></i> Paramètres</a></li>
+        </ul>
+      </nav>
+      <div class="sidebar-footer">
+        <p>© 2025 Couture Hub - Ateliers de couture africaine</p>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <!-- Header -->
+      <header class="header">
+        <div class="header-title">
+          <h1><i class="fas fa-cut"></i> Gestion des Ateliers <span class="accent-text">Couture Hub</span></h1>
+          <p class="header-subtitle">Gérez vos ateliers de couture africaine et leurs caractéristiques</p>
+        </div>
+        <div class="header-actions">
+          <div class="user-menu">
+            {% if utilisateur and utilisateur.photo %}
+            <img src="{{ utilisateur.photo.url }}" alt="Avatar de {{ utilisateur.prenom }} {{ utilisateur.nom }}" class="avatar">
+          {% else %}
+            <img src="{% static 'administration/images/default-avatar.png' %}" alt="Avatar par défaut" class="avatar">
+          {% endif %}
+              <span>
+                {% if utilisateur %}
+                {{ utilisateur.prenom }} {{ utilisateur.nom }} 
+              {% else %}
+                Admin Couture Hub
+              {% endif %}
+            </span>
+           
+            <a href="{% url 'administration:logout' %}" class="btn danger-btn btn-logout" title="Se déconnecter">
+              <i class="fas fa-sign-out-alt"></i>
+            </a>
+          </div>
+        </div>
+      </header>
+
+      <!-- Messages -->
+      <div class="messages">
+        {% if messages %}
+          {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">
+              {{ message }}
+            </div>
+          {% endfor %}
+        {% endif %}
+      </div>
+
+      <!-- Galerie Photos -->
+      <div class="section-container">
+        <div class="section-header">
+          <h2>Galerie Photos</h2>
+          <button class="btn primary-btn" id="addPhotoBtn">
+            <i class="fas fa-plus"></i> Ajouter une photo
+          </button>
+        </div>
+        
+        <div class="photo-gallery">
+          {% for photo in photos %}
+          <div class="photo-card" data-photo-id="{{ photo.id }}">
+            {% if photo.image %}
+              <img src="{{ photo.image.url }}" alt="{{ photo.titre }}" class="photo-image">
+            {% else %}
+              <div class="photo-placeholder">
+                <i class="fas fa-image"></i>
+                <p>Image non disponible</p>
+              </div>
+            {% endif %}
+            <div class="photo-overlay">
+              <p class="photo-description">{{ photo.titre }}</p>
+              <button class="btn danger-btn btn-sm delete-photo" data-photo-id="{{ photo.id }}">
+                <i class="fas fa-trash"></i>
+              </button>
+            </div>
+          </div>
+          {% empty %}
+          <div class="empty-state">
+            <i class="fas fa-images"></i>
+            <p>Aucune photo dans la galerie</p>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+
+      <!-- Services -->
+      <div class="section-container">
+        <div class="section-header">
+          <h2>Nos Services</h2>
+          <button class="btn primary-btn" id="addServiceBtn">
+            <i class="fas fa-plus"></i> Ajouter un service
+          </button>
+        </div>
+        
+        <div class="services-grid">
+          {% for service in services %}
+          <div class="service-card" data-service-id="{{ service.id }}">
+            <div class="service-header">
+              <h3>{{ service.nom }}</h3>
+              <button class="btn danger-btn btn-sm delete-service" data-service-id="{{ service.id }}">
+                <i class="fas fa-trash"></i>
+              </button>
+            </div>
+            <p class="service-description">{{ service.description }}</p>
+            <p class="service-price">{{ service.prix_minimum|floatformat:0 }} CFA</p>
+          </div>
+          {% empty %}
+          <div class="empty-state">
+            <i class="fas fa-concierge-bell"></i>
+            <p>Aucun service disponible</p>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Modals -->
+  <!-- Modal Ajout Photo -->
+  <div class="modal" id="addPhotoModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Ajouter une photo</h3>
+        <button class="close-modal">&times;</button>
+      </div>
+      <form id="addPhotoForm" enctype="multipart/form-data">
+        {% csrf_token %}
+        <input type="hidden" name="action" value="add_photo">
+        <div class="form-group">
+          <label for="photo">Photo *</label>
+          <input type="file" id="photo" name="photo" accept="image/*" required>
+        </div>
+        <div class="form-group">
+          <label for="photoDescription">Titre/Description</label>
+          <textarea id="photoDescription" name="description" rows="3" placeholder="Titre ou description de la photo..."></textarea>
+        </div>
+        <div class="form-actions">
+          <button type="button" class="btn outline-btn close-modal">
+            <i class="fas fa-times"></i>
+            Annuler
+          </button>
+          <button type="submit" class="btn primary-btn">
+            <i class="fas fa-plus"></i>
+            Ajouter
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal Ajout Service -->
+  <div class="modal" id="addServiceModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Ajouter un service</h3>
+        <button class="close-modal">&times;</button>
+      </div>
+      <form id="addServiceForm">
+        {% csrf_token %}
+        <input type="hidden" name="action" value="add_service">
+        <div class="form-group">
+          <label for="serviceName">Nom du service *</label>
+          <input type="text" id="serviceName" name="nom" required placeholder="Nom du service">
+        </div>
+        <div class="form-group">
+          <label for="serviceDescription">Description</label>
+          <textarea id="serviceDescription" name="description" rows="3" placeholder="Description du service..."></textarea>
+        </div>
+        <div class="form-group">
+          <label for="servicePrice">Prix minimum *</label>
+          <input type="number" id="servicePrice" name="prix" step="0.01" min="0" required placeholder="0.00">
+        </div>
+        <div class="form-actions">
+          <button type="button" class="btn outline-btn close-modal">
+            <i class="fas fa-times"></i>
+            Annuler
+          </button>
+          <button type="submit" class="btn primary-btn">
+            <i class="fas fa-plus"></i>
+            Ajouter
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Delete Confirmation Modal (Custom) -->
+  <div class="modal" id="confirmationModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Confirmer l'action</h3>
+        <button class="close-modal-confirm">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p id="confirmationMessage">Êtes-vous sûr de vouloir effectuer cette action ?</p>
+      </div>
+      <div class="modal-footer form-actions">
+        <button type="button" class="btn outline-btn" id="cancelConfirmBtn">
+          <i class="fas fa-times"></i>
+          Annuler
+        </button>
+        <button type="button" class="btn danger-btn" id="confirmActionBtn">
+          <i class="fas fa-check"></i>
+          Confirmer
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mobile Sidebar Toggle -->
+  <button class="sidebar-toggle" id="sidebarToggle">
+    <i class="fas fa-bars"></i>
+  </button>
+
+  <!-- Scripts -->
+  <script src="{% static 'administration/js/theme.js' %}"></script>
+  <script src="{% static 'administration/js/ateliers.js' %}"></script>
+  <script src="{% static 'administration/js/sidebar.js' %}"></script>
+  
+  <!-- Script pour la gestion des photos et services -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Cache des éléments DOM pour éviter les requêtes répétées
+      const elements = {
+        modals: document.querySelectorAll('.modal'),
+        addPhotoBtn: document.getElementById('addPhotoBtn'),
+        addServiceBtn: document.getElementById('addServiceBtn'),
+        closeButtons: document.querySelectorAll('.close-modal'),
+        addPhotoForm: document.getElementById('addPhotoForm'),
+        addServiceForm: document.getElementById('addServiceForm'),
+        messagesDiv: document.querySelector('.messages'),
+        csrfToken: document.querySelector('[name=csrfmiddlewaretoken]').value,
+        // Nouveaux éléments pour la modale de confirmation
+        confirmationModal: document.getElementById('confirmationModal'),
+        confirmationMessage: document.getElementById('confirmationMessage'),
+        cancelConfirmBtn: document.getElementById('cancelConfirmBtn'),
+        confirmActionBtn: document.getElementById('confirmActionBtn')
+      };
+
+      // Fonction pour afficher les messages (optimisée)
+      function showMessage(message, type = 'success') {
+        const alertDiv = document.createElement('div');
+        alertDiv.className = `alert alert-${type}`;
+        alertDiv.textContent = message;
+        elements.messagesDiv.appendChild(alertDiv);
+        
+        // Auto-suppression après 5 secondes
+        setTimeout(() => {
+          alertDiv.style.opacity = '0';
+          setTimeout(() => alertDiv.remove(), 500);
+        }, 5000);
+      }
+
+      // Fonction pour gérer l'état de chargement des boutons (optimisée)
+      function setLoading(button, isLoading) {
+        if (isLoading) {
+          button.classList.add('loading');
+          button.disabled = true;
+          const icon = button.querySelector('i');
+          if (icon) {
+            button.dataset.originalIcon = icon.className;
+            icon.className = 'fas fa-spinner fa-spin';
+          }
+        } else {
+          button.classList.remove('loading');
+          button.disabled = false;
+          const icon = button.querySelector('i');
+          if (icon && button.dataset.originalIcon) {
+            icon.className = button.dataset.originalIcon;
+          }
+        }
+      }
+
+      // Fonctions pour les modals (optimisées)
+      function openModal(modalId) {
+        const modal = document.getElementById(modalId);
+        if (modal) {
+          modal.style.display = 'flex';
+          setTimeout(() => modal.classList.add('active'), 10);
+        }
+      }
+
+      function closeModal(modal) {
+        if (!modal) return;
+        
+        modal.classList.add('closing');
+        modal.classList.remove('active');
+        setTimeout(() => {
+          modal.style.display = 'none';
+          modal.classList.remove('closing');
+          // Réinitialiser les formulaires
+          const form = modal.querySelector('form');
+          if (form) form.reset();
+        }, 300);
+      }
+
+      elements.addPhotoBtn?.addEventListener('click', () => openModal('addPhotoModal'));
+      elements.addServiceBtn?.addEventListener('click', () => openModal('addServiceModal'));
+      
+      elements.closeButtons.forEach(button => {
+        button.addEventListener('click', () => {
+          const modal = button.closest('.modal');
+          closeModal(modal);
+        });
+      });
+
+      // Nouveau gestionnaire pour les boutons de fermeture de la modale de confirmation
+      elements.confirmationModal.querySelector('.close-modal-confirm').addEventListener('click', () => closeModal(elements.confirmationModal));
+      elements.cancelConfirmBtn.addEventListener('click', () => closeModal(elements.confirmationModal));
+
+      // Fermer les modals en cliquant en dehors
+      window.addEventListener('click', function(event) {
+        elements.modals.forEach(modal => {
+          if (event.target === modal) {
+            closeModal(modal);
+          }
+        });
+      });
+
+      // Fonction générique pour les requêtes AJAX
+      async function makeAjaxRequest(formData, successMessage) {
+        try {
+          const response = await fetch('', {
+            method: 'POST',
+            body: formData,
+            headers: {
+              'X-Requested-With': 'XMLHttpRequest'
+            }
+          });
+          
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+          
+          const data = await response.json();
+          
+          if (data.success) {
+            showMessage(data.message || successMessage, 'success');
+            closeModal(document.querySelector('.modal.active')); // Ferme la modale active
+            setTimeout(() => location.reload(), 1000);
+          } else {
+            showMessage(data.message || 'Une erreur est survenue', 'error');
+          }
+        } catch (error) {
+          console.error('Erreur:', error);
+          showMessage('Une erreur est survenue lors de l\'opération', 'error');
+        }
+      }
+
+      // Gestion des formulaires (optimisée)
+      elements.addPhotoForm?.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const submitBtn = this.querySelector('button[type="submit"]');
+        setLoading(submitBtn, true);
+        
+        try {
+          const formData = new FormData(this);
+          await makeAjaxRequest(formData, 'Photo ajoutée avec succès');
+        } finally {
+          setLoading(submitBtn, false);
+        }
+      });
+
+      elements.addServiceForm?.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const submitBtn = this.querySelector('button[type="submit"]');
+        setLoading(submitBtn, true);
+        
+        try {
+          const formData = new FormData(this);
+          await makeAjaxRequest(formData, 'Service ajouté avec succès');
+        } finally {
+          setLoading(submitBtn, false);
+        }
+      });
+
+      // Fonction pour gérer la confirmation d'action
+      function showConfirmation(message, callback) {
+        elements.confirmationMessage.textContent = message;
+        openModal('confirmationModal');
+        
+        elements.confirmActionBtn.onclick = async () => {
+          setLoading(elements.confirmActionBtn, true);
+          try {
+            await callback();
+          } finally {
+            setLoading(elements.confirmActionBtn, false);
+            closeModal(elements.confirmationModal);
+          }
+        };
+      }
+
+      // Fonction générique pour la suppression
+      async function deleteItem(itemType, itemId, confirmMessage) {
+        // La confirmation est maintenant gérée par showConfirmation
+        showConfirmation(confirmMessage, async () => {
+            const formData = new FormData();
+            formData.append('action', `delete_${itemType}`);
+            formData.append(`${itemType}_id`, itemId);
+            formData.append('csrfmiddlewaretoken', elements.csrfToken);
+            
+            await makeAjaxRequest(formData, `${itemType.charAt(0).toUpperCase() + itemType.slice(1)} supprimé avec succès`);
+        });
+      }
+
+      // Gestion de la suppression (optimisée avec délégation d'événements)
+      document.addEventListener('click', function(e) {
+        if (e.target.closest('.delete-photo')) {
+          const button = e.target.closest('.delete-photo');
+          const photoId = button.dataset.photoId;
+          deleteItem('photo', photoId, 'Êtes-vous sûr de vouloir supprimer cette photo ?');
+        }
+        
+        if (e.target.closest('.delete-service')) {
+          const button = e.target.closest('.delete-service');
+          const serviceId = button.dataset.serviceId;
+          deleteItem('service', serviceId, 'Êtes-vous sûr de vouloir supprimer ce service ?');
+        }
+      });
+    });
+  </script>
+</body>
+</html>

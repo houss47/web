@@ -1,0 +1,162 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Commander un vêtement sur mesure chez Couture Hub">
+    <title>Commander sur-mesure | Couture Hub</title>
+    
+    <!-- Google Fonts avec preload pour améliorer les performances -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Meta pour les réseaux sociaux -->
+    <meta property="og:title" content="Commander sur-mesure | Couture Hub">
+    <meta property="og:description" content="Commandez votre vêtement sur-mesure personnalisé">
+    <meta property="og:image" content="image/og-commander.jpg">
+    <meta property="og:url" content="https://couturehub.com/commander.html">
+    
+    <!-- Favicon -->
+    <link rel="icon" href="image/favicon.ico" type="image/x-icon">
+    <link rel="apple-touch-icon" href="image/apple-touch-icon.png">
+    
+    <!-- CSS Principal et composants -->
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    
+    <link rel="stylesheet" href="{% static 'commande/css/commande.css' %}">
+</head>
+<body>
+    <!-- ========================= HEADER ========================= -->
+    {% include 'acceil/section/header.html' %}
+    
+    <!-- ========================= CONTENU PRINCIPAL ========================= -->
+    
+        <div class="container">
+            <div class="commande-layout">                
+                <!-- Sidebar with help and information -->
+                <div class="sidebar">
+                    
+                    
+                    <div class="sidebar-section">
+                        <h3>Besoin d'aide?</h3>
+                        <p>Nos conseillers sont disponibles pour vous guider dans votre commande sur-mesure.</p>
+                        <div class="sidebar-contact">
+                            <div class="contact-item">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+                                </svg>
+                                <span>{% if atelier_gerant %}{{ atelier_gerant.telephone }}{% else %}+33 1 23 45 67 89{% endif %}</span>
+                            </div>
+                            <div class="contact-item">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                                    <polyline points="22,6 12,13 2,6"></polyline>
+                                </svg>
+                                <span>{% if atelier_gerant %}{{ atelier_gerant.email }}{% else %}contact@couturehub.com{% endif %}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Main content area -->
+                <div class="main-content">
+                    <div class="form-container">
+                        <!-- Step 4: Validation -->
+                        <div class="step-content active" id="step-4">
+                            <div class="step-header">
+                                <h2>Validation de votre commande</h2>
+                                <p>Vérifiez les informations avant de finaliser</p>
+                            </div>
+
+                            <div class="validation-sections">
+                                <div class="validation-card">
+                                    <h3>Informations personnelles</h3>
+                                    <div class="validation-grid">
+                                        <div><span class="label">Nom :</span> <span id="val-nom">{{ user.nom }} {{ user.prenom }}</span></div>
+                                        <div><span class="label">Email :</span> <span id="val-email">{{ user.email }}</span></div>
+                                        <div><span class="label">Téléphone :</span> <span id="val-telephone">{{ user.telephone }}</span></div>
+                                    </div>
+                                </div>
+
+                                <div class="validation-card">
+                                    <h3>Détails commande et produit</h3>
+                                    <div class="validation-details">
+                                        <div><span class="label">Référence :</span> <span id="val-reference">{{ commande.reference }}</span></div>
+                                        <div><span class="label">Atelier :</span> <span id="val-atelier">{{ commande.atelier.nom_atelier }}</span></div>
+                                        <div><span class="label">Produit :</span> <span id="val-produit-nom">{{ commande.produit.nom }}</span></div>
+                                        <div><span class="label">Description Produit :</span> <span id="val-description">{{ commande.produit.description }}</span></div>
+                                        <div><span class="label">Catégorie Produit :</span> <span id="val-category">{{ commande.produit.get_categorie_display }}</span></div>
+                                        <div><span class="label">Prix :</span> <span id="val-prix">{{ commande.produit.prix }} FCFA</span></div>
+                                        <div><span class="label">Date d'échéance :</span> 
+                                            <span id="val-echeance">
+                                                {% if commande.date_echeance %}
+                                                    {{ commande.date_echeance|date:"d/m/Y" }}
+                                                {% else %}
+                                                    <em>À définir par le gérant</em>
+                                                {% endif %}
+                                            </span>
+                                        </div>
+                                        {% if commande.date_echeance and jours_restants is not None %}
+                                        <div><span class="label">Délai :</span> 
+                                            <span id="val-delai" class="{% if jours_restants < 0 %}text-danger{% elif jours_restants <= 7 %}text-warning{% else %}text-success{% endif %}">
+                                                {% if jours_restants < 0 %}
+                                                    En retard ({{ jours_restants_abs }} jours)
+                                                {% elif jours_restants == 0 %}
+                                                    Échéance aujourd'hui
+                                                {% else %}
+                                                    {{ jours_restants }} jours restants
+                                                {% endif %}
+                                            </span>
+                                        </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+
+                                <div class="validation-card">
+                                    <h3>Mesures</h3>
+                                    <div class="validation-grid">
+                                        <div><span class="label">Tour de poitrine :</span> <span id="val-tour-poitrine">{% if mesures %}{{ mesures.tour_poitrine }}{% else %}-{% endif %}</span> cm</div>
+                                        <div><span class="label">Tour de taille :</span> <span id="val-tour-taille">{% if mesures %}{{ mesures.tour_taille }}{% else %}-{% endif %}</span> cm</div>
+                                        <div><span class="label">Tour de hanches :</span> <span id="val-tour-hanches">{% if mesures %}{{ mesures.tour_hanches }}{% else %}-{% endif %}</span> cm</div>
+                                        <div><span class="label">Largeur d'épaules :</span> <span id="val-largeur-epaules">{% if mesures %}{{ mesures.largeur_epaules }}{% else %}-{% endif %}</span> cm</div>
+                                        <div><span class="label">Longueur de manches :</span> <span id="val-longueur-manches">{% if mesures %}{{ mesures.longueur_bras }}{% else %}-{% endif %}</span> cm</div>
+                                        <div><span class="label">Taille :</span> <span id="val-taille">{% if mesures %}{{ mesures.longueur_jambe }}{% else %}-{% endif %}</span> cm</div>
+                                    </div>
+                                </div>
+
+                                <div class="validation-card price-card">
+                                    <h3>Prix</h3>
+                                    <p>Le prix estimé est de :</p>
+                                    <div class="price-estimate">{% if commande.produit.prix %}{{ commande.produit.prix }} FCFA{% else %}N/A{% endif %}</div>
+                                </div>
+                            </div>
+
+                            <div class="final-actions">
+                               
+                                <form method="post" action="{% url 'commande:validate_commande' %}">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="commande_id" value="{{ commande.id }}">
+                                    <button type="submit" id="confirm-order" class="btn-primary-large">Confirmer la commande</button>
+                                </form>
+                                
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="{% static 'commande/js/commande.js' %}"></script>
+    <script>
+        // Display notification if command is validated
+        {% if messages %}
+            {% for message in messages %}
+                showNotification("{{ message }}", 'success');
+            {% endfor %}
+        {% endif %}
+    </script>
+</body>
+</html>

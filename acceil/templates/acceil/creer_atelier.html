@@ -1,0 +1,252 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Créer mon atelier - CouturePro</title>
+    <link rel="stylesheet" href="{% static 'acceil/css/creer_atelier.css' %}">
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <style>
+        .loader {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.8);
+            z-index: 1000;
+        }
+        .loader-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+        }
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #3498db;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .error-message {
+            color: #dc3545;
+            font-size: 0.875rem;
+            margin-top: 0.25rem;
+        }
+        .file-input-wrapper {
+            position: relative;
+            margin-bottom: 1rem;
+        }
+        .file-input-wrapper input[type="file"] {
+            width: 100%;
+            padding: 0.5rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .file-input-wrapper .file-name {
+            margin-top: 0.5rem;
+            font-size: 0.875rem;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <!-- Loader -->
+    <div class="loader" id="loader">
+        <div class="loader-content">
+            <div class="spinner"></div>
+            <p>Création de votre atelier en cours...</p>
+        </div>
+    </div>
+
+    {% include 'acceil/section/header.html' %}
+
+    <!-- Main Content -->
+    <main class="main">
+        {% if messages %}
+        <div class="messages-container">
+            {% for message in messages %}
+            <div class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %}">
+                {{ message }}
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <!-- Hero Section -->
+        <section class="hero">
+            <div class="hero-container">
+                <h1>Rejoignez notre communauté</h1>
+                <p>Créez votre profil d'atelier et commencez à recevoir des commandes de clients passionnés par la couture de qualité.</p>
+            </div>
+        </section>
+
+        <!-- Form Container -->
+        <div class="form-container">
+            <div class="card fade-in">
+                <div class="card-header">
+                    <h2 class="card-title">Créer mon atelier de couture</h2>
+                    <p class="card-subtitle">Remplissez ce formulaire pour rejoindre notre plateforme</p>
+                </div>
+                
+                <div class="card-content">
+                    <form id="atelierForm" method="POST" action="{% url 'acceil:creer_atelier' %}" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        
+                        <!-- Informations personnelles -->
+                        <div class="form-section">
+                            <h3 class="section-title">Informations personnelles</h3>
+                            
+                            <div class="form-grid form-grid-2">
+                                <div class="form-field">
+                                    {{ form.prenom.label_tag }}
+                                    {{ form.prenom }}
+                                    {% if form.prenom.errors %}
+                                    <div class="error-message">{{ form.prenom.errors.0 }}</div>
+                                    {% endif %}
+                                </div>
+                                
+                                <div class="form-field">
+                                    {{ form.nom.label_tag }}
+                                    {{ form.nom }}
+                                    {% if form.nom.errors %}
+                                    <div class="error-message">{{ form.nom.errors.0 }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            
+                            <div class="form-grid form-grid-2">
+                                <div class="form-field">
+                                    {{ form.email.label_tag }}
+                                    {{ form.email }}
+                                    {% if form.email.errors %}
+                                    <div class="error-message">{{ form.email.errors.0 }}</div>
+                                    {% endif %}
+                                </div>
+                                
+                                <div class="form-field">
+                                    {{ form.telephone.label_tag }}
+                                    {{ form.telephone }}
+                                    {% if form.telephone.errors %}
+                                    <div class="error-message">{{ form.telephone.errors.0 }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            
+                            <div class="form-field">
+                                <div class="file-input-wrapper">
+                                    {{ form.photo_utilisateur.label_tag }}
+                                    {{ form.photo_utilisateur }}
+                                    <div class="file-name"></div>
+                                    {% if form.photo_utilisateur.errors %}
+                                    <div class="error-message">{{ form.photo_utilisateur.errors.0 }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Informations de l'atelier -->
+                        <div class="form-section">
+                            <h3 class="section-title">Informations de l'atelier</h3>
+                            
+                            <div class="form-field">
+                                {{ form.nom_atelier.label_tag }}
+                                {{ form.nom_atelier }}
+                                {% if form.nom_atelier.errors %}
+                                <div class="error-message">{{ form.nom_atelier.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="form-grid form-grid-2">
+                                <div class="form-field">
+                                    {{ form.adresse.label_tag }}
+                                    {{ form.adresse }}
+                                    {% if form.adresse.errors %}
+                                    <div class="error-message">{{ form.adresse.errors.0 }}</div>
+                                    {% endif %}
+                                </div>
+                                
+                                <div class="form-field">
+                                    {{ form.ville.label_tag }}
+                                    {{ form.ville }}
+                                    {% if form.ville.errors %}
+                                    <div class="error-message">{{ form.ville.errors.0 }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <div class="form-field">
+                                {{ form.description.label_tag }}
+                                {{ form.description }}
+                                {% if form.description.errors %}
+                                <div class="error-message">{{ form.description.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+
+                            <div class="form-field">
+                                <div class="file-input-wrapper">
+                                    {{ form.photo_atelier.label_tag }}
+                                    {{ form.photo_atelier }}
+                                    <div class="file-name"></div>
+                                    {% if form.photo_atelier.errors %}
+                                    <div class="error-message">{{ form.photo_atelier.errors.0 }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Mot de passe -->
+                        <div class="form-section">
+                            <h3 class="section-title">Mot de passe</h3>
+                            
+                            <div class="form-field">
+                                {{ form.mot_de_passe.label_tag }}
+                                {{ form.mot_de_passe }}
+                                {% if form.mot_de_passe.errors %}
+                                <div class="error-message">{{ form.mot_de_passe.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+
+                            <div class="form-field">
+                                {{ form.confirmation_mot_de_passe.label_tag }}
+                                {{ form.confirmation_mot_de_passe }}
+                                {% if form.confirmation_mot_de_passe.errors %}
+                                <div class="error-message">{{ form.confirmation_mot_de_passe.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <button type="submit" class="submit-button">Créer mon atelier</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    {% include 'acceil/section/footer.html' %}
+    
+    <script>
+        document.getElementById('atelierForm').addEventListener('submit', function() {
+            document.getElementById('loader').style.display = 'block';
+        });
+
+        // Afficher le nom du fichier sélectionné
+        document.querySelectorAll('input[type="file"]').forEach(function(input) {
+            input.addEventListener('change', function() {
+                const fileName = this.files[0] ? this.files[0].name : 'Aucun fichier sélectionné';
+                this.parentElement.querySelector('.file-name').textContent = fileName;
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,1099 @@
+/* Variables de couleur */
+:root {
+  --primary-color: #F2A121;
+  --primary-light: #ffb74d;
+  --primary-dark: #d88a0a;
+  --primary-rgb: 242, 161, 33;
+  --text-primary: #1f2937;
+  --text-secondary: #6b7280;
+  --bg-primary: #ffffff;
+  --bg-secondary: #f8f9fa;
+  --border-color: rgba(242, 161, 33, 0.1);
+  --shadow-color: rgba(242, 161, 33, 0.15);
+}
+
+/* Animations de base */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideInFromRight {
+  from { opacity: 0; transform: translateX(30px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes slideInFromLeft {
+  from { opacity: 0; transform: translateX(-30px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.9); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes pulseGlow {
+  0% { box-shadow: 0 4px 15px rgba(var(--primary-rgb), 0.1); }
+  50% { box-shadow: 0 4px 25px rgba(var(--primary-rgb), 0.2); }
+  100% { box-shadow: 0 4px 15px rgba(var(--primary-rgb), 0.1); }
+}
+
+/* Section principale */
+.ateliers-list-section {
+  padding: 60px 40px;
+  max-width: 1400px;
+  margin: 0 auto;
+  position: relative;
+  overflow: hidden;
+  animation: fadeIn 0.8s ease-out;
+  background: linear-gradient(to bottom, var(--bg-primary), var(--bg-secondary));
+}
+
+/* En-tête de section */
+.section-header {
+  margin-bottom: 40px;
+  text-align: center;
+  position: relative;
+  animation: fadeIn 0.8s ease-out 0.2s both;
+}
+
+.section-title {
+  font-size: 2.2rem;
+  color: var(--text-primary);
+  margin-bottom: 15px;
+  font-weight: 700;
+  position: relative;
+  display: inline-block;
+}
+
+.section-title::before {
+  content: '';
+  position: absolute;
+  bottom: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60px;
+  height: 5px;
+  background: linear-gradient(to right, var(--primary-color), var(--primary-light));
+  border-radius: 10px;
+  animation: scaleIn 0.6s ease-out 0.8s both;
+}
+
+.section-subtitle {
+    font-size: 1.2rem;
+    color: #6b7280;
+    max-width: 700px;
+    margin: 20px auto 0;
+    line-height: 1.6;
+    animation: fadeIn 0.8s ease-out 0.4s both;
+}
+
+/* Grille d'ateliers */
+.ateliers-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  gap: 30px;
+  padding: 20px 0;
+  animation: pageChange 0.5s ease-out;
+}
+
+/* Cartes d'ateliers */
+.atelier-card {
+  background-color: var(--bg-primary);
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+  border: 1px solid var(--border-color);
+  position: relative;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+  animation: fadeIn 0.5s ease-out backwards;
+}
+
+.atelier-card:hover {
+  transform: translateY(-8px) scale(1.01);
+  border-color: rgba(var(--primary-rgb), 0.3);
+  box-shadow: 0 20px 40px rgba(var(--primary-rgb), 0.15);
+}
+
+.atelier-card-img {
+  width: 100%;
+  height: 250px;
+  object-fit: cover;
+  transition: transform 0.6s cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+
+.atelier-card:hover .atelier-card-img {
+  transform: scale(1.08);
+}
+
+/* Contenu des cartes */
+.atelier-card-content {
+  padding: 30px;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  background: linear-gradient(to bottom, var(--bg-primary), var(--bg-secondary));
+  position: relative;
+  z-index: 2;
+}
+
+.atelier-card-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 15px;
+  transition: all 0.3s ease;
+  position: relative;
+  display: inline-block;
+  padding-bottom: 8px;
+}
+
+.atelier-card-title::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-light) 100%);
+  transition: width 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+
+.atelier-card:hover .atelier-card-title {
+  color: var(--primary-color);
+}
+
+.atelier-card:hover .atelier-card-title::after {
+  width: 100%;
+}
+
+.atelier-card-description {
+    font-size: 1rem;
+    color: #6b7280;
+    margin-bottom: 20px;
+    line-height: 1.7;
+    flex-grow: 1;
+    position: relative;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+}
+
+.atelier-card-location {
+    font-size: 0.95rem;
+    color: #6b7280;
+    margin-bottom: 25px;
+    display: flex;
+    align-items: center;
+    font-weight: 500;
+    padding: 8px 0;
+    border-top: 1px dashed rgba(242, 161, 33, 0.2);
+}
+
+.atelier-card-location svg {
+    margin-right: 8px;
+    color: #F2A121;
+    transition: transform 0.3s ease;
+}
+
+.atelier-card:hover .atelier-card-location svg {
+    transform: translateY(-2px);
+}
+
+.btn-secondary {
+    background: linear-gradient(135deg, #F2A121 0%, #FFB84D 100%);
+    color: white;
+    border: none;
+    padding: 12px 28px;
+    border-radius: 12px;
+    font-weight: 600;
+    text-align: center;
+    display: inline-block;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    box-shadow: 0 4px 15px rgba(242, 161, 33, 0.2);
+    position: relative;
+    overflow: hidden;
+    z-index: 1;
+}
+
+.btn-secondary::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #FFB84D 0%, #F2A121 100%);
+    opacity: 0;
+    z-index: -1;
+    transition: opacity 0.4s ease;
+}
+
+.btn-secondary:hover {
+    transform: translateY(-3px) scale(1.02);
+    box-shadow: 0 8px 25px rgba(242, 161, 33, 0.4);
+    letter-spacing: 0.5px;
+}
+
+.btn-secondary:hover::before {
+    opacity: 1;
+}
+
+.btn-secondary:active {
+    transform: translateY(1px);
+    box-shadow: 0 2px 8px rgba(242, 161, 33, 0.3);
+}
+
+.btn-secondary:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(242, 161, 33, 0.3), 0 4px 15px rgba(242, 161, 33, 0.2);
+}
+
+.btn-secondary.btn-sm {
+    padding: 10px 20px;
+    font-size: 0.9rem;
+    border-radius: 10px;
+}
+
+.ateliers-search-filter-section {
+    margin-bottom: 50px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    align-items: center;
+    padding: 30px;
+    background-color: #ffffff;
+    border-radius: 20px;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.06);
+    position: relative;
+    overflow: hidden;
+    border: 1px solid rgba(242, 161, 33, 0.1);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    z-index: 10;
+    animation: slideInFromLeft 0.7s ease-out 0.5s both;
+}
+
+.ateliers-search-filter-section:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.08);
+}
+
+.ateliers-search-filter-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background: linear-gradient(to right, #F2A121, #FFB84D);
+    animation: slideInFromRight 0.8s ease-out 0.7s both;
+}
+
+.ateliers-search-filter-section::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 150px;
+    height: 150px;
+    background: radial-gradient(circle, rgba(242, 161, 33, 0.1) 0%, rgba(242, 161, 33, 0) 70%);
+    border-radius: 50%;
+    z-index: -1;
+    pointer-events: none;
+    animation: fadeIn 1.2s ease-out 0.9s both;
+}
+
+.search-bar-ateliers {
+    flex-grow: 1;
+    display: flex;
+    background-color: var(--bg-primary);
+    border-radius: 16px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    overflow: hidden;
+    min-width: 300px;
+    border: 1px solid var(--border-color);
+    transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+    position: relative;
+}
+
+.search-bar-ateliers::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 16px;
+    padding: 2px;
+    background: linear-gradient(135deg, #F2A121 0%, #FFB84D 100%);
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    opacity: 0;
+    transition: opacity 0.4s ease;
+}
+
+.search-bar-ateliers:focus-within {
+    box-shadow: 0 8px 20px rgba(var(--primary-rgb), 0.15);
+    transform: translateY(-2px);
+    border-color: var(--primary-color);
+}
+
+.search-bar-ateliers:focus-within::before {
+    opacity: 1;
+}
+
+.search-input-ateliers {
+    flex-grow: 1;
+    padding: 16px 24px;
+    border: none;
+    font-size: 1.05rem;
+    background-color: transparent;
+    color: var(--text-primary);
+    outline: none;
+    transition: all 0.3s ease;
+}
+
+.search-input-ateliers::placeholder {
+    color: var(--text-secondary);
+    transition: color 0.3s ease, transform 0.3s ease;
+}
+
+.search-input-ateliers:focus::placeholder {
+    color: var(--primary-color);
+    transform: translateX(5px);
+}
+
+.search-btn-ateliers {
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-light) 100%);
+    color: white;
+    border: none;
+    padding: 0 28px;
+    cursor: pointer;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.search-btn-ateliers:hover {
+    background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary-color) 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(var(--primary-rgb), 0.3);
+}
+
+.search-btn-ateliers svg {
+    width: 20px;
+    height: 20px;
+    transition: transform 0.3s ease;
+}
+
+.search-btn-ateliers:hover svg {
+    transform: scale(1.1);
+}
+
+.filter-controls-ateliers {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+    flex-wrap: wrap; /* Permet aux contrôles de passer à la ligne sur petits écrans */
+    width: 100%;
+}
+
+.sort-select-ateliers {
+    padding: 16px 24px;
+    border-radius: 16px;
+    border: 1px solid rgba(242, 161, 33, 0.1);
+    background-color: #ffffff;
+    color: #1f2937;
+    font-size: 1.05rem;
+    font-weight: 500;
+    cursor: pointer;
+    outline: none;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+    min-width: 220px;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23F2A121' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 15px center;
+    background-size: 16px;
+    position: relative;
+}
+
+.sort-select-ateliers::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 16px;
+    padding: 2px;
+    background: linear-gradient(135deg, #F2A121 0%, #FFB84D 100%);
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    opacity: 0;
+    transition: opacity 0.4s ease;
+    pointer-events: none;
+}
+
+.sort-select-ateliers:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+}
+
+.sort-select-ateliers:focus {
+    box-shadow: 0 8px 20px rgba(242, 161, 33, 0.15);
+}
+
+.sort-select-ateliers:focus::before {
+    opacity: 1;
+}
+
+.sort-select-ateliers option {
+    font-size: 1rem;
+    padding: 10px;
+}
+
+.results-counter {
+    font-size: 1rem;
+    color: #4b5563;
+    padding: 16px 24px;
+    background-color: #f9fafb;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
+    border: 1px solid rgba(242, 161, 33, 0.05);
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.results-counter::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    width: 4px;
+    background: linear-gradient(to bottom, #F2A121, #FFB84D);
+    opacity: 0.8;
+}
+
+.results-counter strong {
+    color: #F2A121;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.results-counter:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+}
+
+.results-counter:hover strong {
+    color: #E09000;
+}
+
+/* Responsive adjustments */
+@media (max-width: 1200px) {
+    .ateliers-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 25px;
+    }
+}
+
+@media (max-width: 992px) {
+    .ateliers-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 25px;
+    }
+    
+    .section-title {
+        font-size: 1.8rem;
+    }
+    
+    .section-subtitle {
+        font-size: 1.1rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .ateliers-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+
+    .atelier-card-title {
+        font-size: 1.1rem;
+    }
+
+    .ateliers-search-filter-section {
+        flex-direction: column;
+        align-items: stretch;
+        padding: 25px 20px;
+    }
+
+    .search-bar-ateliers {
+        width: 100%;
+    }
+
+    .sort-select-ateliers {
+        width: 100%;
+    }
+    
+    .section-header {
+        margin-bottom: 30px;
+        padding: 0 15px;
+    }
+    
+    .section-title {
+        font-size: 1.6rem;
+    }
+    
+    .section-title::before {
+        width: 40px;
+        height: 4px;
+    }
+}
+
+@media (max-width: 576px) {
+    .ateliers-grid {
+        grid-template-columns: 1fr;
+        gap: 25px;
+    }
+    
+    .atelier-card-title {
+        font-size: 1.2rem;
+    }
+    
+    .atelier-card-description {
+        font-size: 0.95rem;
+    }
+    
+    .search-input-ateliers {
+        padding: 14px 20px;
+        font-size: 1rem;
+    }
+    
+    .search-btn-ateliers {
+        padding: 0 20px;
+    }
+    
+    .sort-select-ateliers {
+        padding: 14px 20px;
+        font-size: 1rem;
+    }
+    
+    .results-counter {
+        padding: 12px 20px;
+        font-size: 0.9rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .ateliers-list-section {
+        padding: 30px 15px;
+    }
+    
+    .section-title {
+        font-size: 1.4rem;
+    }
+    
+    .section-subtitle {
+        font-size: 1rem;
+    }
+    
+    .ateliers-search-filter-section {
+        padding: 20px 15px;
+        margin-bottom: 30px;
+    }
+    
+    .atelier-card-img-container {
+        height: 180px;
+    }
+}
+
+/* Styles pour les nouveaux éléments de filtre et méta-données */
+/* Les styles des boutons de filtre ont été supprimés */
+
+.atelier-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.9rem;
+  color: var(--muted);
+  margin: 12px 0;
+  padding: 8px 0;
+  border-top: 1px solid var(--muted-light);
+  border-bottom: 1px solid var(--muted-light);
+}
+
+.atelier-rating,
+.atelier-products {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-weight: 500;
+}
+
+.atelier-rating {
+  color: var(--warning);
+}
+
+.atelier-rating small {
+  color: var(--muted);
+  font-weight: normal;
+}
+
+.atelier-products {
+  color: var(--secondary);
+  background-color: rgba(var(--secondary-rgb), 0.1);
+  padding: 4px 8px;
+  border-radius: var(--radius-sm);
+}
+
+/* Ajustements responsives pour les nouveaux éléments */
+@media (max-width: 768px) {
+  .filter-controls-ateliers {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .filter-buttons {
+    justify-content: center; /* Centrer les boutons sur mobile */
+  }
+
+  .sort-select-ateliers {
+    width: 100%; /* Pleine largeur pour le select sur mobile */
+    margin-bottom: 10px;
+  }
+}
+
+/* Styles pour les boutons de filtre */
+.filter-buttons {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 15px;
+}
+
+.filter-btn {
+    padding: 10px 20px;
+    border-radius: 12px;
+    border: 1px solid rgba(242, 161, 33, 0.2);
+    background-color: #ffffff;
+    color: #4b5563;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.filter-btn::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, #F2A121 0%, #FFB84D 100%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    z-index: 0;
+}
+
+.filter-btn span {
+    position: relative;
+    z-index: 1;
+}
+
+.filter-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(242, 161, 33, 0.15);
+    color: #1f2937;
+}
+
+.filter-btn.active {
+    background: linear-gradient(135deg, #F2A121 0%, #FFB84D 100%);
+    color: white;
+    border-color: transparent;
+    box-shadow: 0 4px 15px rgba(242, 161, 33, 0.2);
+}
+
+.filter-btn.active:hover {
+    box-shadow: 0 6px 20px rgba(242, 161, 33, 0.3);
+}
+
+.filter-count {
+    background-color: rgba(255, 255, 255, 0.2);
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 0.85rem;
+    margin-left: 5px;
+}
+
+/* Styles pour les métadonnées des ateliers */
+.atelier-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 15px 0;
+    padding: 10px 0;
+    border-top: 1px solid rgba(242, 161, 33, 0.1);
+    border-bottom: 1px solid rgba(242, 161, 33, 0.1);
+}
+
+.atelier-rating,
+.atelier-products {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 0.9rem;
+    color: #4b5563;
+}
+
+.atelier-rating {
+    color: #F2A121;
+}
+
+.atelier-rating .star-icon {
+    width: 18px;
+    height: 18px;
+}
+
+.atelier-products {
+    background-color: rgba(242, 161, 33, 0.1);
+    padding: 4px 10px;
+    border-radius: 8px;
+}
+
+.atelier-products .product-icon {
+    width: 16px;
+    height: 16px;
+    stroke: #F2A121;
+}
+
+/* Animation pour les cartes filtrées */
+.atelier-card.filtered-out {
+    animation: fadeOut 0.3s ease-out forwards;
+}
+
+.atelier-card.filtered-in {
+    animation: fadeIn 0.5s ease-out forwards;
+}
+
+@keyframes fadeOut {
+    from { opacity: 1; transform: scale(1); }
+    to { opacity: 0; transform: scale(0.95); }
+}
+
+/* Responsive adjustments pour les filtres */
+@media (max-width: 768px) {
+    .filter-buttons {
+        justify-content: center;
+    }
+    
+    .filter-btn {
+        padding: 8px 16px;
+        font-size: 0.9rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .filter-buttons {
+        gap: 8px;
+    }
+    
+    .filter-btn {
+        padding: 6px 12px;
+        font-size: 0.85rem;
+    }
+    
+    .atelier-meta {
+        flex-direction: column;
+        gap: 10px;
+        align-items: flex-start;
+    }
+}
+
+/* Styles pour les résultats */
+.results-info {
+    margin: 20px 0;
+    text-align: center;
+}
+
+.results-counter {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: var(--bg-primary);
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    color: var(--text-secondary);
+    font-size: 1rem;
+    border: 1px solid var(--border-color);
+    transition: all 0.3s ease;
+}
+
+.results-counter span {
+    color: var(--primary-color);
+    font-weight: 600;
+    margin-right: 5px;
+}
+
+/* Styles améliorés pour la pagination */
+.pagination-container {
+    margin-top: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+}
+
+.pagination {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    background: linear-gradient(to right, var(--bg-primary), var(--bg-secondary));
+    padding: 15px 25px;
+    border-radius: 20px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+    border: 1px solid var(--border-color);
+    position: relative;
+    overflow: hidden;
+}
+
+.pagination::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, rgba(var(--primary-rgb), 0.1) 0%, rgba(var(--primary-rgb), 0) 100%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.pagination:hover::before {
+    opacity: 1;
+}
+
+.pagination-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 45px;
+    height: 45px;
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+    background-color: var(--bg-primary);
+    color: var(--text-secondary);
+    font-weight: 500;
+    text-decoration: none;
+    transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+}
+
+.pagination-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-light) 100%);
+    opacity: 0;
+    transition: opacity 0.4s ease;
+    z-index: 0;
+}
+
+.pagination-btn:hover {
+    transform: translateY(-3px);
+    border-color: var(--primary-color);
+    box-shadow: 0 8px 20px rgba(var(--primary-rgb), 0.2);
+}
+
+.pagination-btn:hover::before {
+    opacity: 1;
+}
+
+.pagination-btn span,
+.pagination-btn svg {
+    position: relative;
+    z-index: 1;
+    transition: all 0.3s ease;
+}
+
+.pagination-btn:hover span,
+.pagination-btn:hover svg {
+    color: white;
+    transform: scale(1.1);
+}
+
+.pagination-btn.active {
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-light) 100%);
+    color: white;
+    border-color: transparent;
+    box-shadow: 0 8px 20px rgba(var(--primary-rgb), 0.3);
+    transform: translateY(-2px);
+}
+
+.pagination-btn.active:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 25px rgba(var(--primary-rgb), 0.4);
+}
+
+.pagination-btn svg {
+    width: 20px;
+    height: 20px;
+    transition: all 0.3s ease;
+}
+
+/* Animation pour le changement de page */
+@keyframes pageChange {
+    0% { opacity: 0; transform: translateY(10px); }
+    100% { opacity: 1; transform: translateY(0); }
+}
+
+.ateliers-grid {
+    animation: pageChange 0.5s ease-out;
+}
+
+/* Styles pour les boutons de navigation */
+.pagination-btn.nav-btn {
+    background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+    border: 1px solid var(--border-color);
+}
+
+.pagination-btn.nav-btn:hover {
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-light) 100%);
+}
+
+/* Responsive amélioré pour la pagination */
+@media (max-width: 768px) {
+    .pagination {
+        padding: 12px 20px;
+        gap: 8px;
+    }
+
+    .pagination-btn {
+        min-width: 40px;
+        height: 40px;
+        font-size: 0.95rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .pagination {
+        padding: 10px 15px;
+        gap: 5px;
+    }
+
+    .pagination-btn {
+        min-width: 35px;
+        height: 35px;
+        font-size: 0.9rem;
+    }
+
+    .pagination-btn svg {
+        width: 18px;
+        height: 18px;
+    }
+}
+
+/* Search Form Styles */
+.search-form {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    width: 100%;
+    max-width: 800px;
+    position: relative;
+    z-index: 1;
+}
+
+.search-input {
+    flex: 1;
+    padding: 1rem 1.5rem;
+    border: 2px solid var(--primary-color);
+    border-radius: 50px;
+    font-size: 1rem;
+    background: white;
+    color: var(--text-color);
+    transition: all 0.3s ease;
+    outline: none;
+    box-shadow: 0 2px 10px rgba(242, 161, 33, 0.1);
+}
+
+.search-input:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 4px 15px rgba(242, 161, 33, 0.2);
+    transform: translateY(-2px);
+}
+
+.search-input::placeholder {
+    color: #999;
+}
+
+.search-btn {
+    padding: 1rem 2rem;
+    background: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 50px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    box-shadow: 0 4px 15px rgba(242, 161, 33, 0.2);
+}
+
+.search-btn:hover {
+    background: var(--primary-dark);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(242, 161, 33, 0.3);
+}
+
+.search-btn i {
+    font-size: 1.2rem;
+    transition: transform 0.3s ease;
+}
+
+.search-btn:hover i {
+    transform: translateX(3px);
+}
+
+/* Responsive adjustments for search form */
+@media (max-width: 768px) {
+    .search-form {
+        flex-direction: column;
+        gap: 1rem;
+        padding: 0 1rem;
+    }
+
+    .search-input {
+        width: 100%;
+        padding: 0.8rem 1.2rem;
+    }
+
+    .search-btn {
+        width: 100%;
+        justify-content: center;
+        padding: 0.8rem;
+    }
+}

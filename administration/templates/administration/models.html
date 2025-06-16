@@ -1,0 +1,781 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Gestion des modèles et catalogues de l'atelier de couture africaine Couture Hub">
+  <title>Gestion des Modèles | Couture Hub</title>
+  
+  <!-- Google Fonts avec preload pour améliorer les performances -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Meta pour les réseaux sociaux -->
+  <meta property="og:title" content="Gestion des Modèles | Couture Hub">
+  <meta property="og:description" content="Système de gestion des modèles et catalogues pour ateliers de couture africaine">
+  <meta property="og:image" content="images/og-modeles.jpg">
+  <meta property="og:url" content="https://couturehub.com/admin/modeles">
+  
+  <!-- Favicon -->
+  <link rel="icon" href="{% static 'administration/images/favicon.ico' %}" type="image/x-icon">
+  <link rel="apple-touch-icon" href="{% static 'administration/images/apple-touch-icon.png' %}">
+  
+  <!-- CSS -->
+  <link rel="stylesheet" href="{% static 'administration/css/style.css' %}">
+  <link rel="stylesheet" href="{% static 'administration/css/models.css' %}">
+  <link rel="stylesheet" href="{% static 'administration/css/sidebar.css' %}">
+  <link rel="stylesheet" href="{% static 'administration/css/african-animations.css' %}">
+  <link rel="stylesheet" href="{% static 'administration/css/responsive.css' %}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+  <div class="layout">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      
+      <nav class="sidebar-nav">
+        <ul>
+          <li><a href="{% url 'administration:dashboard' %}"><i class="fas fa-home"></i> Tableau de bord</a></li>
+          <li><a href="{% url 'administration:orders' %}"><i class="fas fa-shopping-bag"></i> Commandes</a></li>
+
+          <li><a href="{% url 'administration:ateliers' %}"><i class="fas fa-cut"></i> Ateliers</a></li>
+          <li class="active"><a href="{% url 'administration:models' %}"><i class="fas fa-tshirt"></i> Modèles</a></li>
+          <li><a href="{% url 'administration:calendar' %}"><i class="fas fa-calendar-alt"></i> Rendez-vous</a></li>
+          
+          <li><a href="{% url 'administration:settings' %}"><i class="fas fa-cog"></i> Paramètres</a></li>
+        </ul>
+      </nav>
+      <div class="sidebar-footer">
+        <p>© 2025 Couture Hub - Ateliers de couture africaine</p>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <!-- Header -->
+      <header class="header">
+        <div class="header-title">
+          <h1><i class="fas fa-tshirt"></i> Gestion des Modèles <span class="accent-text">Couture Hub</span></h1>
+          <p class="header-subtitle">Gérez votre catalogue de modèles et créations de vêtements africains</p>
+        </div>
+        <div class="header-actions">
+          <div class="user-menu">
+            {% if utilisateur and utilisateur.photo %}
+            <img src="{{ utilisateur.photo.url }}" alt="Avatar de {{ utilisateur.prenom }} {{ utilisateur.nom }}" class="avatar">
+          {% else %}
+            <img src="{% static 'administration/images/default-avatar.png' %}" alt="Avatar par défaut" class="avatar">
+          {% endif %}
+              <span>
+                {% if utilisateur %}
+                {{ utilisateur.prenom }} {{ utilisateur.nom }} 
+              {% else %}
+                Admin Couture Hub
+              {% endif %}
+            </span>
+           
+            <a href="{% url 'administration:logout' %}" class="btn danger-btn btn-logout" title="Se déconnecter">
+              <i class="fas fa-sign-out-alt"></i>
+            </a>
+          </div>
+        </div>
+      </header>
+
+      <!-- Messages -->
+      <div class="messages">
+        {% if messages %}
+          {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">
+              {{ message }}
+            </div>
+          {% endfor %}
+        {% endif %}
+      </div>
+
+      <!-- Models Content -->
+      <div class="models-content">
+        <!-- Dashboard Stats -->
+        <div class="dashboard-stats">
+          <div class="stat-card total">
+            <div class="stat-icon">
+              <i class="fas fa-tshirt"></i>
+            </div>
+            <div class="stat-content">
+              <h3>{{ stats.total }}</h3>
+              <p style=>Total des modèles</p>
+            </div>
+          </div>
+          
+          <div class="stat-card femmes">
+            <div class="stat-icon">
+              <i class="fas fa-female"></i>
+            </div>
+            <div class="stat-content">
+              <h3>{{ stats.par_categorie.femmes }}</h3>
+              <p>Modèles femmes</p>
+            </div>
+          </div>
+          
+          <div class="stat-card hommes">
+            <div class="stat-icon">
+              <i class="fas fa-male"></i>
+            </div>
+            <div class="stat-content">
+              <h3>{{ stats.par_categorie.hommes }}</h3>
+              <p>Modèles hommes</p>
+            </div>
+          </div>
+          
+          <div class="stat-card enfants">
+            <div class="stat-icon">
+              <i class="fas fa-child"></i>
+            </div>
+            <div class="stat-content">
+              <h3>{{ stats.par_categorie.enfants }}</h3>
+              <p>Modèles enfants</p>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Actions Bar avec statistiques et fonctionnalités avancées -->
+        <div class="actions-bar">
+          <div class="left-actions">
+            <button class="btn primary-btn" id="newModelBtn">
+              <i class="fas fa-plus"></i> Nouveau modèle
+            </button>
+            <button class="btn outline-btn" id="exportCatalogBtn">
+              <i class="fas fa-file-export"></i> Exporter catalogue
+            </button>
+          </div>
+        </div>
+
+        <!-- Filtres -->
+        <div class="quick-filters-bar">
+          <div class="search-container">
+            <i class="fas fa-search search-icon"></i>
+            <input type="text" id="searchModels" placeholder="Rechercher un modèle..." value="{{ current_search }}">
+            <button class="search-clear" id="clearSearch" title="Effacer la recherche"><i class="fas fa-times"></i></button>
+          </div>
+          
+          <div class="filter-chips">
+            <div class="filter-chip-label"><i class="fas fa-filter"></i> Filtres:</div>
+            <button class="filter-chip {% if not current_categorie %}active{% endif %}" data-filter="all">Tous</button>
+            <button class="filter-chip {% if current_categorie == 'femmes' %}active{% endif %}" data-filter="femmes">Femmes</button>
+            <button class="filter-chip {% if current_categorie == 'hommes' %}active{% endif %}" data-filter="hommes">Hommes</button>
+            <button class="filter-chip {% if current_categorie == 'enfants' %}active{% endif %}" data-filter="enfants">Enfants</button>
+          </div>
+        </div>
+
+        <!-- Models Grid View -->
+        <div class="models-grid-container">
+          <div class="grid-header">
+            <h3><i class="fas fa-th-large"></i> Catalogue de modèles</h3>
+            <div class="grid-actions">
+              <button class="btn text-btn" id="refresh-grid"><i class="fas fa-sync-alt"></i> Actualiser</button>
+              <div class="grid-view-options">
+                <button class="btn icon-btn" title="Vue liste"><i class="fas fa-list"></i></button>
+                <button class="btn icon-btn active" title="Vue grille"><i class="fas fa-th-large"></i></button>
+              </div>
+            </div>
+          </div>
+          
+          <div class="models-grid">
+            {% for produit in produits %}
+            <div class="model-card" data-category="{{ produit.categorie }}">
+              <div class="model-image-container">
+                {% if produit.photo %}
+                  <img src="{{ produit.photo.url }}" alt="{{ produit.nom }}" class="model-image">
+                {% else %}
+                  <img src="{% static 'administration/images/no-image.jpg' %}" alt="Pas d'image" class="model-image">
+                {% endif %}
+                
+                <div class="model-actions">
+                  <button class="icon-btn edit-btn" data-id="{{ produit.id }}" title="Modifier"><i class="fas fa-edit"></i></button>
+                  <button class="icon-btn view-btn" data-id="{{ produit.id }}" title="Voir les détails"><i class="fas fa-eye"></i></button>
+                  <button class="icon-btn delete-btn" data-id="{{ produit.id }}" title="Supprimer"><i class="fas fa-trash"></i></button>
+                </div>
+              </div>
+              <div class="model-info">
+                <h4 class="model-name">{{ produit.nom }}</h4>
+                <p class="model-category">{{ produit.categorie }}</p>
+                <div class="model-meta">
+                  <span class="model-price">{{ produit.prix }} €</span>
+                </div>
+              </div>
+            </div>
+            {% empty %}
+            <div class="no-products">
+              <i class="fas fa-tshirt"></i>
+              <p>Aucun modèles disponible</p>
+              
+            </div>
+            {% endfor %}
+          </div>
+          <!-- Pagination avec design amélioré -->
+          <div class="pagination-container">
+            <div class="pagination-info">
+              Page {{ pagination.current_page }} sur {{ pagination.total_pages }} ({{ pagination.total_items }} modèles)
+            </div>
+            <div class="pagination-controls">
+              <button class="pagination-btn prev-btn" {% if not pagination.has_previous %}disabled{% endif %}>
+                <i class="fas fa-chevron-left"></i> Précédent
+              </button>
+              
+              <div class="page-numbers">
+                {% if pagination.total_pages > 0 %}
+                  {% for page_num in pagination.page_range %}
+                    {% if page_num == pagination.current_page %}
+                      <button class="page-number active" aria-current="page">{{ page_num }}</button>
+                    {% else %}
+                      <button class="page-number" data-page="{{ page_num }}">{{ page_num }}</button>
+                    {% endif %}
+                  {% endfor %}
+                {% endif %}
+              </div>
+              
+              <button class="pagination-btn next-btn" {% if not pagination.has_next %}disabled{% endif %}>
+                Suivant <i class="fas fa-chevron-right"></i>
+              </button>
+              
+              <div class="rows-selector">
+                <label for="rowsPerPage" class="rows-label">Afficher:</label>
+                <select id="rowsPerPage" class="rows-per-page" aria-label="Nombre d'éléments par page">
+                  <option value="6" {% if pagination.rows_per_page == 6 %}selected{% endif %}>6</option>
+                  <option value="12" {% if pagination.rows_per_page == 12 %}selected{% endif %}>12</option>
+                  <option value="24" {% if pagination.rows_per_page == 24 %}selected{% endif %}>24</option>
+                  <option value="48" {% if pagination.rows_per_page == 48 %}selected{% endif %}>48</option>
+                </select>
+                <span class="rows-suffix">par page</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Modals -->
+  <!-- New Model Modal -->
+  <div class="modal" id="newModelModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Nouveau modèle</h2>
+        <button class="close-btn">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form id="newModelForm" method="POST" enctype="multipart/form-data">
+          {% csrf_token %}
+          <input type="hidden" name="action" value="add">
+          
+          <div class="form-group">
+            <label for="modelName">Nom du modèle*</label>
+            <input type="text" id="modelName" name="nom" required>
+          </div>
+          <div class="form-group">
+            <label for="modelCategory">Catégorie*</label>
+            <select id="modelCategory" name="categorie" required>
+              <option value="">Sélectionner une catégorie</option>
+              <option value="femmes">Femmes</option>
+              <option value="hommes">Hommes</option>
+              <option value="enfants">Enfants</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="modelPrice">Prix *</label>
+            <input type="number" id="modelPrice" name="prix" min="0" step="0.01" required>
+          </div>
+          
+          <div class="form-group full-width">
+            <label for="modelImage">Image du modèle*</label>
+            <div class="file-upload-container">
+              <input type="file" id="modelImage" name="photo" accept="image/*" required>
+              <div class="file-upload-preview">
+                <img id="imagePreview" src="#" alt="Aperçu de l'image" style="display: none;">
+              </div>
+            </div>
+          </div>
+          <div class="form-group full-width">
+            <label for="modelDescription">Description</label>
+            <textarea id="modelDescription" name="description" rows="3"></textarea>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button class="btn outline-btn" id="cancelModelBtn">Annuler</button>
+        <button class="btn primary-btn" id="saveModelBtn">Ajouter le modèle</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- View Model Modal -->
+  <div class="modal" id="viewModelModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Détails du modèle</h2>
+        <button class="close-btn">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="model-details-container">
+          <div class="model-details-image-container">
+            <img id="detailModelImage" src="" alt="Image du modèle">
+          </div>
+          <div class="model-details-content">
+            <h3 class="model-name"></h3>
+            <p class="model-category"></p>
+            <p class="model-price"></p>
+            <p class="model-description"></p>
+           
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn outline-btn" id="closeViewBtn">Fermer</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Edit Model Modal -->
+  <div class="modal" id="editModelModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Modifier le modèle</h2>
+        <button class="close-btn">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form id="editModelForm" method="POST" enctype="multipart/form-data">
+          {% csrf_token %}
+          <input type="hidden" name="action" value="edit">
+          <input type="hidden" name="produit_id" id="editProduitId">
+          
+          <div class="form-group">
+            <label for="editModelName">Nom du modèle*</label>
+            <input type="text" id="editModelName" name="nom" required>
+          </div>
+          <div class="form-group">
+            <label for="editModelCategory">Catégorie*</label>
+            <select id="editModelCategory" name="categorie" required>
+              <option value="">Sélectionner une catégorie</option>
+              <option value="femmes">Femmes</option>
+              <option value="hommes">Hommes</option>
+              <option value="enfants">Enfants</option>
+            </select>
+            </div>
+          <div class="form-group">
+            <label for="editModelPrice">Prix *</label>
+            <input type="number" id="editModelPrice" name="prix" min="0" step="0.01" required>
+          </div>
+          
+          <div class="form-group full-width">
+            <label for="editModelImage">Image du modèle</label>
+            <div class="file-upload-container">
+              <input type="file" id="editModelImage" name="photo" accept="image/*">
+              <div class="file-upload-preview">
+                <img id="editImagePreview" src="#" alt="Aperçu de l'image" style="display: none;">
+            </div>
+            </div>
+          </div>
+          <div class="form-group full-width">
+            <label for="editModelDescription">Description</label>
+            <textarea id="editModelDescription" name="description" rows="3"></textarea>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button class="btn outline-btn" id="cancelEditBtn">Annuler</button>
+        <button class="btn primary-btn" id="saveEditBtn">Enregistrer les modifications</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Delete Model Modal -->
+  <div class="modal" id="deleteModelModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Supprimer le modèle</h2>
+        <button class="close-btn">&times;</button>
+        </div>
+      <div class="modal-body">
+        <p>Êtes-vous sûr de vouloir supprimer ce modèle ?</p>
+        <p>Cette action est irréversible.</p>
+        <form id="deleteModelForm" method="POST">
+          {% csrf_token %}
+          <input type="hidden" name="action" value="delete">
+          <input type="hidden" name="produit_id" id="deleteProduitId">
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button class="btn outline-btn" id="cancelDeleteBtn">Annuler</button>
+        <button class="btn danger-btn" id="confirmDeleteBtn">Supprimer</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mobile Sidebar Toggle -->
+  <button class="sidebar-toggle" id="sidebarToggle">
+    <i class="fas fa-bars"></i>
+  </button>
+
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+  <script src="{% static 'administration/js/models.js' %}"></script>
+  
+  <script src="{% static 'administration/js/sidebar.js' %}"></script>
+     
+  <script>
+     // Basic functionality for demonstration
+    document.addEventListener('DOMContentLoaded', function() {
+      // Gestion des filtres
+      const searchInput = document.getElementById('searchModels');
+      const filterChips = document.querySelectorAll('.filter-chip');
+      const clearSearchBtn = document.getElementById('clearSearch');
+      
+      // Fonction pour mettre à jour l'URL avec les filtres
+      function updateFilters() {
+        const searchValue = searchInput.value;
+        const activeFilter = document.querySelector('.filter-chip.active').getAttribute('data-filter');
+        
+        let url = new URL(window.location.href);
+        url.searchParams.set('search', searchValue);
+        url.searchParams.set('categorie', activeFilter);
+        
+        window.location.href = url.toString();
+      }
+      
+      // Gestion de la recherche
+      let searchTimeout;
+      searchInput.addEventListener('input', function() {
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(updateFilters, 500);
+      });
+      
+      // Effacer la recherche
+      clearSearchBtn.addEventListener('click', function() {
+        searchInput.value = '';
+        updateFilters();
+      });
+      
+      // Gestion des filtres par catégorie
+      filterChips.forEach(chip => {
+        chip.addEventListener('click', function() {
+          filterChips.forEach(c => c.classList.remove('active'));
+          this.classList.add('active');
+          updateFilters();
+        });
+      });
+      
+      // Gestion du modal d'ajout
+      const newModelBtn = document.getElementById('newModelBtn');
+      const newModelModal = document.getElementById('newModelModal');
+      const newModelForm = document.getElementById('newModelForm');
+      const saveModelBtn = document.getElementById('saveModelBtn');
+      const cancelModelBtn = document.getElementById('cancelModelBtn');
+      const closeBtn = newModelModal.querySelector('.close-btn');
+      
+      // Ouvrir le modal
+      newModelBtn.addEventListener('click', function() {
+        newModelModal.style.display = 'flex';
+        newModelForm.reset();
+        document.getElementById('imagePreview').style.display = 'none';
+      });
+      
+      // Fonction pour fermer un modal
+      function closeModal(modal) {
+        if (modal) {
+          modal.style.display = 'none';
+        }
+      }
+
+      // Fermer le modal d'ajout
+      closeBtn.addEventListener('click', () => closeModal(newModelModal));
+      cancelModelBtn.addEventListener('click', () => closeModal(newModelModal));
+
+      // Soumettre le formulaire
+      saveModelBtn.addEventListener('click', function() {
+        const formData = new FormData(newModelForm);
+        
+        fetch(window.location.href, {
+          method: 'POST',
+          body: formData,
+          headers: {
+            'X-Requested-With': 'XMLHttpRequest'
+          }
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            showMessage(data.message, 'success');
+            setTimeout(() => {
+              window.location.reload();
+            }, 1000);
+          } else {
+            showMessage(data.message, 'error');
+          }
+        })
+        .catch(error => {
+          console.error('Erreur:', error);
+          showMessage('Une erreur est survenue lors de l\'ajout du modèle', 'error');
+        });
+      });
+      
+      // Prévisualisation de l'image
+      const modelImage = document.getElementById('modelImage');
+      const imagePreview = document.getElementById('imagePreview');
+      
+        modelImage.addEventListener('change', function() {
+          const file = this.files[0];
+          if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+              imagePreview.src = e.target.result;
+              imagePreview.style.display = 'block';
+            }
+            reader.readAsDataURL(file);
+          }
+        });
+
+      // Fonction pour afficher les messages
+      function showMessage(message, type = 'success') {
+        const messagesDiv = document.querySelector('.messages');
+        const alertDiv = document.createElement('div');
+        alertDiv.className = `alert alert-${type}`;
+        alertDiv.textContent = message;
+        messagesDiv.appendChild(alertDiv);
+        
+        setTimeout(() => {
+          alertDiv.style.opacity = '0';
+          setTimeout(() => alertDiv.remove(), 500);
+        }, 5000);
+      }
+
+      // Gestion des modals
+      const modals = document.querySelectorAll('.modal');
+      const closeButtons = document.querySelectorAll('.close-btn');
+      
+      closeButtons.forEach(button => {
+        button.addEventListener('click', function() {
+          const modal = this.closest('.modal');
+          if (modal) {
+            closeModal(modal);
+          }
+        });
+      });
+      
+      // Fermer les modals en cliquant en dehors
+      window.addEventListener('click', function(event) {
+        modals.forEach(modal => {
+          if (event.target === modal) {
+            closeModal(modal);
+          }
+        });
+      });
+      
+      // Boutons d'annulation
+      document.getElementById('cancelEditBtn').addEventListener('click', function() {
+        closeModal(document.getElementById('editModelModal'));
+      });
+      
+      document.getElementById('cancelDeleteBtn').addEventListener('click', function() {
+        closeModal(document.getElementById('deleteModelModal'));
+      });
+      
+      document.getElementById('closeViewBtn').addEventListener('click', function() {
+        closeModal(document.getElementById('viewModelModal'));
+      });
+
+      // Gestion des boutons de suppression
+      document.querySelectorAll('.delete-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+          const modelId = this.getAttribute('data-id');
+          if (modelId) {
+            document.getElementById('deleteProduitId').value = modelId;
+            const deleteModal = document.getElementById('deleteModelModal');
+            if (deleteModal) {
+              deleteModal.style.display = 'flex';
+            }
+          }
+        });
+      });
+
+      // Gestionnaire de confirmation de suppression
+      document.getElementById('confirmDeleteBtn').addEventListener('click', function() {
+        const form = document.getElementById('deleteModelForm');
+        if (!form) return;
+
+        const formData = new FormData(form);
+        const deleteBtn = this;
+        
+        // Désactiver le bouton pendant l'envoi
+        deleteBtn.disabled = true;
+        deleteBtn.textContent = 'Suppression en cours...';
+        
+        fetch(window.location.href, {
+          method: 'POST',
+          body: formData,
+          headers: {
+            'X-Requested-With': 'XMLHttpRequest'
+          }
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            showMessage(data.message, 'success');
+            setTimeout(() => {
+              window.location.reload();
+            }, 1000);
+          } else {
+            showMessage(data.message || 'Une erreur est survenue', 'error');
+            // Réactiver le bouton en cas d'erreur
+            deleteBtn.disabled = false;
+            deleteBtn.textContent = 'Supprimer';
+          }
+        })
+        .catch(error => {
+          console.error('Erreur:', error);
+          showMessage('Une erreur est survenue lors de la suppression', 'error');
+          // Réactiver le bouton en cas d'erreur
+          deleteBtn.disabled = false;
+          deleteBtn.textContent = 'Supprimer';
+        });
+      });
+
+      // Fonction pour récupérer les détails du modèle
+      function fetchModelDetails(modelId) {
+        const formData = new FormData();
+        formData.append('action', 'get_details');
+        formData.append('produit_id', modelId);
+
+        fetch(window.location.href, {
+          method: 'POST',
+          body: formData,
+          headers: {
+            'X-Requested-With': 'XMLHttpRequest'
+          }
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            populateEditForm(data.produit);
+          } else {
+            showMessage(data.message, 'error');
+          }
+        })
+        .catch(error => {
+          console.error('Erreur:', error);
+          showMessage('Une erreur est survenue', 'error');
+        });
+      }
+
+      // Fonction pour remplir le formulaire d'édition
+      function populateEditForm(produit) {
+        const form = document.getElementById('editModelForm');
+        form.querySelector('#editProduitId').value = produit.id;
+        form.querySelector('#editModelName').value = produit.nom;
+        form.querySelector('#editModelCategory').value = produit.categorie;
+        form.querySelector('#editModelPrice').value = produit.prix;
+        form.querySelector('#editModelDescription').value = produit.description || '';
+        
+        const imagePreview = form.querySelector('#editImagePreview');
+        if (produit.photo_url) {
+          imagePreview.src = produit.photo_url;
+          imagePreview.style.display = 'block';
+        } else {
+          imagePreview.style.display = 'none';
+        }
+        
+        document.getElementById('editModelModal').style.display = 'flex';
+      }
+
+      // Gestionnaire de soumission du formulaire d'édition
+      document.getElementById('saveEditBtn').addEventListener('click', function() {
+        const form = document.getElementById('editModelForm');
+        const formData = new FormData(form);
+        
+        // Désactiver le bouton pendant l'envoi
+        this.disabled = true;
+        this.textContent = 'Enregistrement en cours...';
+        
+        fetch(window.location.href, {
+          method: 'POST',
+          body: formData,
+          headers: {
+            'X-Requested-With': 'XMLHttpRequest'
+          }
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            showMessage(data.message, 'success');
+            setTimeout(() => {
+              window.location.reload();
+            }, 1000);
+          } else {
+            showMessage(data.message, 'error');
+            // Réactiver le bouton en cas d'erreur
+            this.disabled = false;
+            this.textContent = 'Enregistrer les modifications';
+          }
+        })
+        .catch(error => {
+          console.error('Erreur:', error);
+          showMessage('Une erreur est survenue', 'error');
+          // Réactiver le bouton en cas d'erreur
+          this.disabled = false;
+          this.textContent = 'Enregistrer les modifications';
+        });
+      });
+
+      // Fonction pour construire l'URL avec les paramètres
+      function buildUrl(page, rowsPerPage) {
+        const url = new URL(window.location.href);
+        url.searchParams.set('page', page);
+        url.searchParams.set('rows_per_page', rowsPerPage);
+        
+        // Conserver les autres paramètres existants
+        const currentParams = new URLSearchParams(window.location.search);
+        ['categorie', 'search', 'sort'].forEach(param => {
+          if (currentParams.has(param)) {
+            url.searchParams.set(param, currentParams.get(param));
+          }
+        });
+        
+        return url.toString();
+      }
+
+      // Gestion des boutons de pagination
+      document.querySelectorAll('.page-number').forEach(button => {
+        button.addEventListener('click', function() {
+          const page = this.dataset.page;
+          const rowsPerPage = document.getElementById('rowsPerPage').value;
+          window.location.href = buildUrl(page, rowsPerPage);
+        });
+      });
+
+      // Gestion du bouton précédent
+      document.querySelector('.prev-btn').addEventListener('click', function() {
+        if (!this.disabled) {
+          const currentPage = {{ pagination.current_page }};
+          const rowsPerPage = document.getElementById('rowsPerPage').value;
+          window.location.href = buildUrl(currentPage - 1, rowsPerPage);
+        }
+      });
+
+      // Gestion du bouton suivant
+      document.querySelector('.next-btn').addEventListener('click', function() {
+        if (!this.disabled) {
+          const currentPage = {{ pagination.current_page }};
+          const rowsPerPage = document.getElementById('rowsPerPage').value;
+          window.location.href = buildUrl(currentPage + 1, rowsPerPage);
+        }
+      });
+
+      // Gestion du sélecteur de lignes par page
+      document.getElementById('rowsPerPage').addEventListener('change', function() {
+        const rowsPerPage = this.value;
+        window.location.href = buildUrl(1, rowsPerPage); // Retour à la première page
+      });
+    });
+  </script>
+</body>
+</html>
+

@@ -1,0 +1,133 @@
+/**
+ * CSS pour les composants supplémentaires
+ * Inclut : système de notification, boutons de favoris, animations améliorées
+ */
+
+/* Système de notification */
+.notification {
+    position: fixed;
+    bottom: 30px;
+    left: 30px;
+    padding: 15px 20px;
+    border-radius: 8px;
+    color: white;
+    background-color: var(--primary);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    z-index: 1100;
+    transform: translateY(100px);
+    opacity: 0;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+    font-size: 0.95rem;
+    max-width: 320px;
+}
+
+.notification.show {
+    transform: translateY(0);
+    opacity: 1;
+}
+
+.notification.success {
+    background-color: #4CAF50;
+}
+
+.notification.error {
+    background-color: #F44336;
+}
+
+.notification.info {
+    background-color: var(--primary);
+}
+
+/* Bouton de favoris */
+.fav-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-secondary);
+    transition: transform 0.2s ease, color 0.2s ease;
+    margin-left: auto;
+}
+
+.fav-button:hover {
+    transform: scale(1.2);
+    color: #E74C3C;
+}
+
+.fav-button svg {
+    transition: fill 0.2s ease;
+}
+
+.fav-button svg[fill="currentColor"] {
+    color: #E74C3C;
+}
+
+/* Animation pour le compteur de résultats */
+.results-counter.updated {
+    animation: pulse 0.6s ease;
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+        color: var(--primary);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+/* Amélioration du style pour le lazy loading */
+.atelier-img {
+    position: relative;
+}
+
+.atelier-img::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(45deg, var(--card-background), var(--background));
+    opacity: 0.7;
+    z-index: 1;
+    transition: opacity 0.5s ease;
+}
+
+.atelier-img.loaded::before {
+    opacity: 0;
+}
+
+/* Styles d'impression supplémentaires */
+@media print {
+    .notification, .fav-button {
+        display: none !important;
+    }
+}
+
+/* Styles pour les écrans très petits */
+@media (max-width: 380px) {
+    .notification {
+        left: 10px;
+        right: 10px;
+        bottom: 10px;
+        max-width: calc(100% - 20px);
+    }
+}
+
+/* Style pour le placeholder des images */
+.atelier-img img[data-src] {
+    filter: blur(5px);
+    transition: filter 0.5s ease;
+}
+
+.atelier-img img:not([data-src]) {
+    filter: blur(0);
+}

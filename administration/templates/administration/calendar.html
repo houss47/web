@@ -1,0 +1,510 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Gestion des rendez-vous clients de l'atelier de couture africaine Couture Hub">
+  <title>Gestion des Rendez-vous | Couture Hub</title>
+  
+  <!-- Google Fonts avec preload pour améliorer les performances -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Meta pour les réseaux sociaux -->
+  <meta property="og:title" content="Gestion des Rendez-vous | Couture Hub">
+  <meta property="og:description" content="Système de gestion des rendez-vous pour ateliers de couture africaine">
+  <meta property="og:image" content="{% static 'administration/images/og-calendar.jpg' %}">
+  <meta property="og:url" content="https://couturehub.com/admin/calendar">
+  
+  <!-- Favicon -->
+  <link rel="icon" href="{% static 'administration/images/favicon.ico' %}" type="image/x-icon">
+  <link rel="apple-touch-icon" href="{% static 'administration/images/apple-touch-icon.png' %}">
+  
+  <!-- CSS -->
+  <link rel="stylesheet" href="{% static 'administration/css/style.css' %}">
+  <link rel="stylesheet" href="{% static 'administration/css/calendar.css' %}">
+  <link rel="stylesheet" href="{% static 'administration/css/sidebar.css' %}">
+  <link rel="stylesheet" href="{% static 'administration/css/african-animations.css' %}">
+  <link rel="stylesheet" href="{% static 'administration/css/responsive.css' %}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+  <div class="layout">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+     
+      <nav class="sidebar-nav">
+        <ul>
+          <li><a href="{% url 'administration:dashboard' %}"><i class="fas fa-home"></i> Tableau de bord</a></li>
+          <li><a href="{% url 'administration:orders' %}"><i class="fas fa-shopping-bag"></i> Commandes></a></li>
+          
+          <li><a href="{% url 'administration:ateliers' %}"><i class="fas fa-cut"></i> Ateliers</a></li>
+          <li><a href="{% url 'administration:models' %}"><i class="fas fa-tshirt"></i> Modèles</a></li>
+          <li class="active"><a href="{% url 'administration:calendar' %}"><i class="fas fa-calendar-alt"></i> Rendez-vous</a></li>
+        
+          <li><a href="{% url 'administration:settings' %}"><i class="fas fa-cog"></i> Paramètres</a></li>
+        </ul>
+      </nav>
+      <div class="sidebar-footer">
+        <p>© 2025 Couture Hub - Ateliers de couture africaine</p>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <!-- Header -->
+      <header class="header">
+        <div class="header-title">
+          <h1><i class="fas fa-calendar-alt"></i> Gestion des Rendez-vous <span class="accent-text">Couture Hub</span></h1>
+          <p class="header-subtitle">Gérez les rendez-vous clients et les disponibilités des ateliers</p>
+        </div>
+        <div class="header-actions">
+          <div class="user-menu">
+            {% if utilisateur and utilisateur.photo %}
+            <img src="{{ utilisateur.photo.url }}" alt="Avatar de {{ utilisateur.prenom }} {{ utilisateur.nom }}" class="avatar">
+          {% else %}
+            <img src="{% static 'administration/images/default-avatar.png' %}" alt="Avatar par défaut" class="avatar">
+          {% endif %}
+              <span>
+                {% if utilisateur %}
+                {{ utilisateur.prenom }} {{ utilisateur.nom }} 
+              {% else %}
+                Admin Couture Hub
+              {% endif %}
+            </span>
+           
+            <a href="{% url 'administration:logout' %}" class="btn danger-btn btn-logout" title="Se déconnecter">
+              <i class="fas fa-sign-out-alt"></i>
+            </a>
+          </div>
+        </div>
+      </header>
+
+      <!-- Calendar Content -->
+      <div class="calendar-content">
+        <!-- Dashboard Stats -->
+        <div class="dashboard-stats">
+          <div class="stat-card">
+            <div class="stat-icon"><i class="fas fa-calendar-check"></i></div>
+            <div class="stat-content">
+              <p>{{ stats.total }}</p>
+              <p>Rendez-vous</p>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon"><i class="fas fa-clock"></i></div>
+            <div class="stat-content">
+              <p>{{ stats.en_attente }}</p>
+              <p>En attente de confirmation</p>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon"><i class="fas fa-users"></i></div>
+            <div class="stat-content">
+              <p>{{ stats.aujourdhui }}</p>
+              <p>Rendez-vous aujourd'hui</p>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon"><i class="fas fa-check-circle"></i></div>
+            <div class="stat-content">
+              <p>{{ stats.confirme }}</p>
+              <p>Rendez-vous confirmés</p>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Actions Bar -->
+        
+        <!-- Quick Filters Bar -->
+        <div class="quick-filters-bar">
+          
+         
+          <div class="filter-chips">
+            <button class="filter-chip {% if not current_status %}active{% endif %}" data-filter="all">Tous</button>
+            <button class="filter-chip {% if current_status == 'confirme' %}active{% endif %}" data-filter="confirme">Confirmés</button>
+            <button class="filter-chip {% if current_status == 'en_attente' %}active{% endif %}" data-filter="en_attente">En attente</button>
+            <button class="filter-chip {% if current_status == 'annule' %}active{% endif %}" data-filter="annule">Annulés</button>
+          </div>
+        </div>
+
+       
+       
+        <!-- Liste des rendez-vous -->
+        <div class="upcoming-appointments">
+          <h3><i class="fas fa-clock"></i> Tous les rendez-vous</h3>
+          <div class="appointments-table-container">
+            <table class="appointments-table">
+              <thead>
+                <tr>
+                  <th style="color: black;">Date</th>
+                  <th style="color: black;">Heure</th>
+                  <th style="color: black;">Client</th>
+                  <th style="color: black;">Service</th>
+                  <th style="color: black;">Statut</th>
+                  <th style="color: black;">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for rdv in rendez_vous %}
+                <tr class="appointment-row" data-id="{{ rdv.id }}">
+                  <td class="appointment-date">{{ rdv.date|date:"d/m/Y" }}</td>
+                  <td class="appointment-time">
+                    <strong>{{ rdv.heure|time:"H:i" }}</strong>
+                  </td>
+                  <td class="appointment-client">{{ rdv.client.prenom }} {{ rdv.client.nom }}</td>
+                  <td class="appointment-type">{{ rdv.service.nom }}</td>
+                  <td class="appointment-status">
+                    <span class="status-badge {{ rdv.status }}">{{ rdv.get_status_display }}</span>
+                  </td>
+                  <td class="appointment-actions">
+                    <button class="btn icon-btn change-status-btn" title="Changer le statut" data-id="{{ rdv.id }}">
+                      <i class="fas fa-exchange-alt"></i>
+                    </button>
+                    <button class="btn icon-btn delete-appointment-btn" title="Supprimer" data-id="{{ rdv.id }}">
+                      <i class="fas fa-trash"></i>
+                    </button>
+                  </td>
+                </tr>
+                {% empty %}
+                <tr>
+                  <td colspan="6" class="no-appointments">
+                    <p>Aucun rendez-vous trouvé</p>
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+          
+          <!-- Pagination -->
+          {% if paginator.num_pages > 1 %}
+          <div class="pagination">
+            <div class="pagination-info">
+              Affichage de {{ page_obj.start_index }} à {{ page_obj.end_index }} sur {{ paginator.count }} rendez-vous
+            </div>
+            <div class="pagination-controls">
+              {% if page_obj.has_previous %}
+                <a href="?page=1{% if current_status %}&status={{ current_status }}{% endif %}{% if current_search %}&search={{ current_search }}{% endif %}" class="pagination-btn">
+                  <i class="fas fa-angle-double-left"></i>
+                </a>
+                <a href="?page={{ page_obj.previous_page_number }}{% if current_status %}&status={{ current_status }}{% endif %}{% if current_search %}&search={{ current_search }}{% endif %}" class="pagination-btn">
+                  <i class="fas fa-angle-left"></i>
+                </a>
+              {% endif %}
+              
+              <span class="pagination-current">
+                Page {{ page_obj.number }} sur {{ paginator.num_pages }}
+              </span>
+              
+              {% if page_obj.has_next %}
+                <a href="?page={{ page_obj.next_page_number }}{% if current_status %}&status={{ current_status }}{% endif %}{% if current_search %}&search={{ current_search }}{% endif %}" class="pagination-btn">
+                  <i class="fas fa-angle-right"></i>
+                </a>
+                <a href="?page={{ paginator.num_pages }}{% if current_status %}&status={{ current_status }}{% endif %}{% if current_search %}&search={{ current_search }}{% endif %}" class="pagination-btn">
+                  <i class="fas fa-angle-double-right"></i>
+                </a>
+              {% endif %}
+            </div>
+          </div>
+          {% endif %}
+        </div>
+
+        <!-- Modal pour changer le statut -->
+        <div class="modal" id="changeStatusModal">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h2>Changer le statut</h2>
+              <button class="close-btn">&times;</button>
+            </div>
+            <div class="modal-body">
+              <form id="changeStatusForm" method="POST">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="change_status">
+                <input type="hidden" id="rdvId" name="rdv_id">
+                <div class="form-group">
+                  <label for="status">Nouveau statut:</label>
+                  <select id="status" name="status" class="form-control" required>
+                    <option value="en_attente">En attente</option>
+                    <option value="confirme">Confirmé</option>
+                    <option value="annule">Annulé</option>
+                  </select>
+              </div>
+                <div class="form-actions">
+                  <button type="submit" class="btn primary-btn">Confirmer</button>
+                  <button type="button" class="btn outline-btn" id="cancelStatusBtn">Annuler</button>
+              </div>
+              </form>
+            </div>
+          </div>
+        </div>
+
+        <!-- Modal de confirmation de suppression -->
+        <div class="modal" id="deleteModal">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h2>Confirmer la suppression</h2>
+              <button class="close-btn">&times;</button>
+            </div>
+            <div class="modal-body">
+              <p>Êtes-vous sûr de vouloir supprimer ce rendez-vous ?</p>
+              <div class="appointment-details">
+                <p><strong>Client:</strong> <span id="deleteClientName"></span></p>
+                <p><strong>Service:</strong> <span id="deleteServiceName"></span></p>
+                <p><strong>Date:</strong> <span id="deleteDate"></span></p>
+                <p><strong>Heure:</strong> <span id="deleteTime"></span></p>
+              </div>
+              <div class="form-actions">
+                <button type="button" class="btn danger-btn" id="confirmDeleteBtn">Supprimer</button>
+                <button type="button" class="btn outline-btn" id="cancelDeleteBtn">Annuler</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <style>
+        .status-badge {
+          padding: 4px 8px;
+          border-radius: 4px;
+          font-size: 12px;
+          font-weight: 500;
+        }
+        
+        .status-badge.en_attente {
+          background-color: #fff3cd;
+          color: #856404;
+        }
+        
+        .status-badge.confirme {
+          background-color: #d4edda;
+          color: #155724;
+        }
+        
+        .status-badge.annule {
+          background-color: #f8d7da;
+          color: #721c24;
+        }
+        
+        .no-appointments {
+          text-align: center;
+          padding: 20px;
+          color: #666;
+        }
+        
+        .appointments-table {
+          width: 100%;
+          border-collapse: collapse;
+          margin-top: 20px;
+        }
+        
+        .appointments-table th,
+        .appointments-table td {
+          padding: 12px;
+          text-align: left;
+          border-bottom: 1px solid #ddd;
+        }
+        
+        .appointments-table th {
+          background-color: #f8f9fa;
+          font-weight: 600;
+        }
+        
+        .appointment-actions {
+          display: flex;
+          gap: 8px;
+        }
+        
+        .icon-btn {
+          padding: 6px;
+          border: none;
+          background: none;
+          cursor: pointer;
+          color: #666;
+        }
+        
+        .icon-btn:hover {
+          color: #333;
+        }
+        
+        .delete-appointment-btn:hover {
+          color: #dc3545;
+        }
+        </style>
+
+        <script>
+        document.addEventListener('DOMContentLoaded', function() {
+          // Gestion des filtres
+          const filterChips = document.querySelectorAll('.filter-chip');
+          filterChips.forEach(chip => {
+            chip.addEventListener('click', function() {
+              const filter = this.dataset.filter;
+              window.location.href = `?status=${filter}`;
+            });
+          });
+
+          // Gestion de la recherche avec délai et sans notification
+          const searchInput = document.getElementById('searchAppointment');
+          let searchTimeout;
+          if (searchInput) {
+            searchInput.addEventListener('input', function() {
+              clearTimeout(searchTimeout);
+              searchTimeout = setTimeout(() => {
+                const search = this.value.trim();
+                // Recherche seulement si 2 caractères ou plus, ou vide
+                if (search.length >= 2 || search.length === 0) {
+                  const currentUrl = new URL(window.location.href);
+                  if (search) {
+                    currentUrl.searchParams.set('search', search);
+                  } else {
+                    currentUrl.searchParams.delete('search');
+                  }
+                  window.location.href = currentUrl.toString();
+                }
+              }, 800); // Délai de 800ms
+            });
+          }
+
+          // Gestion du changement de statut
+          const changeStatusBtns = document.querySelectorAll('.change-status-btn');
+          const changeStatusModal = document.getElementById('changeStatusModal');
+          const changeStatusForm = document.getElementById('changeStatusForm');
+          const cancelStatusBtn = document.getElementById('cancelStatusBtn');
+          const closeBtns = document.querySelectorAll('.close-btn');
+
+          changeStatusBtns.forEach(btn => {
+            btn.addEventListener('click', function() {
+              const rdvId = this.dataset.id;
+              document.getElementById('rdvId').value = rdvId;
+              changeStatusModal.style.display = 'flex';
+            });
+          });
+
+          changeStatusForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const formData = new FormData(this);
+            formData.append('action', 'change_status');
+
+            fetch(window.location.href, {
+              method: 'POST',
+              body: formData,
+              headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+              }
+            })
+            .then(response => response.json())
+            .then(data => {
+              if (data.success) {
+                window.location.reload();
+              } else {
+                alert(data.message);
+              }
+            })
+            .catch(error => {
+              console.error('Error:', error);
+              alert('Une erreur est survenue');
+            });
+          });
+
+          // Fermeture des modals
+          cancelStatusBtn.addEventListener('click', function() {
+            changeStatusModal.style.display = 'none';
+          });
+
+          closeBtns.forEach(btn => {
+            btn.addEventListener('click', function() {
+              this.closest('.modal').style.display = 'none';
+            });
+          });
+
+          // Fonction pour afficher les notifications
+          function showToast(type, message) {
+            const toast = document.createElement('div');
+            toast.className = `toast toast-${type}`;
+            toast.innerHTML = `
+              <div class="toast-icon">
+                <i class="fas fa-${type === 'success' ? 'check' : 'exclamation'}-circle"></i>
+            </div>
+              <div class="toast-content">${message}</div>
+              <button class="toast-close">&times;</button>
+            `;
+            
+            document.querySelector('.toast-container').appendChild(toast);
+            
+            // Animation d'entrée
+            setTimeout(() => toast.classList.add('show'), 100);
+            
+            // Suppression automatique après 5 secondes
+            setTimeout(() => {
+              toast.classList.remove('show');
+              setTimeout(() => toast.remove(), 300);
+            }, 5000);
+            
+            // Gestion du bouton de fermeture
+            toast.querySelector('.toast-close').addEventListener('click', () => {
+              toast.classList.remove('show');
+              setTimeout(() => toast.remove(), 300);
+            });
+          }
+        });
+        </script>
+      </div>
+    </main>
+  </div>
+  
+  <!-- Mobile Sidebar Toggle -->
+  <button class="sidebar-toggle" id="sidebarToggle">
+    <i class="fas fa-bars"></i>
+  </button>
+
+  <!-- Scripts -->
+  <script src="{% static 'administration/js/calendar.js' %}"></script>
+  <script src="{% static 'administration/js/sidebar.js' %}"></script>
+  
+  <script>
+    
+    // Modal functionality
+    const newAppointmentBtn = document.getElementById('newAppointmentBtn');
+    const newAppointmentModal = document.getElementById('newAppointmentModal');
+    const cancelAppointmentBtn = document.getElementById('cancelAppointmentBtn');
+    const closeButtons = document.querySelectorAll('.close-btn');
+    
+    newAppointmentBtn.addEventListener('click', function() {
+      newAppointmentModal.style.display = 'flex';
+    });
+    
+    cancelAppointmentBtn.addEventListener('click', function() {
+      newAppointmentModal.style.display = 'none';
+    });
+    
+    closeButtons.forEach(button => {
+      button.addEventListener('click', function() {
+        this.closest('.modal').style.display = 'none';
+      });
+    });
+    
+    // Filter functionality
+    const filterChips = document.querySelectorAll('.filter-chip');
+    filterChips.forEach(chip => {
+      chip.addEventListener('click', function() {
+        // Remove active class from all chips
+        filterChips.forEach(c => c.classList.remove('active'));
+        // Add active class to clicked chip
+        this.classList.add('active');
+      });
+    });
+    
+    // View switcher functionality
+    const viewButtons = document.querySelectorAll('.view-switcher .btn');
+    viewButtons.forEach(button => {
+      button.addEventListener('click', function() {
+        // Remove active class from all view buttons
+        viewButtons.forEach(b => b.classList.remove('active'));
+        // Add active class to clicked button
+        this.classList.add('active');
+      });
+    });
+  </script>
+</body>
+</html>

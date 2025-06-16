@@ -1,0 +1,1347 @@
+/* Calendar Page Specific Styles
+-------------------------------------------------- */
+:root {
+  /* Palette de couleurs noires */
+  --primary-color: #1a1a1a;      /* Noir profond */
+  --secondary-color: #333333;    /* Gris foncé */
+  --accent-color: #4a4a4a;       /* Gris moyen */
+  
+  /* Card and UI element styling */
+  --calendar-card-radius: 12px;
+  --calendar-card-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+  --calendar-cell-size: 160px;
+  --grid-gap: 10px;
+  --transition-standard: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  
+  /* Couleurs Kente et Africaines spécifiques au calendrier */
+  --color-kente-yellow: #FFD100;
+  --color-kente-green: #1A8F3C;
+  --color-kente-red: #C41E3A;
+  --color-kente-blue: #0077C8;
+  --color-kente-purple: #5E35B1;
+  --color-earth-brown: #6D4C41;
+  --color-earth-orange: #FF7043;
+  --color-earth-terracotta: #BF360C;
+  --color-savanna-tan: #D7CCC8;
+  --color-gold: var(--color-kente-gold, #F9A825);
+  --color-african-gold: #F2A121; /* Nouvelle couleur dorée/orangée */
+  
+  /* Variables RGB pour les animations et transparences */
+  --color-kente-yellow-rgb: 255, 209, 0;
+  --color-kente-green-rgb: 26, 143, 60;
+  --color-kente-red-rgb: 196, 30, 58;
+  --color-kente-blue-rgb: 0, 119, 200;
+  --color-kente-purple-rgb: 94, 53, 177;
+  --color-earth-brown-rgb: 109, 76, 65;
+  --color-earth-orange-rgb: 255, 112, 67;
+  --color-gold-rgb: 249, 168, 37;
+  
+  /* Couleurs de statut */
+  --status-pending: #666666;
+  --status-confirmed: #333333;
+  --status-cancelled: #1a1a1a;
+  --status-completed: #4a4a4a;
+  
+  /* Gradient backgrounds */
+  --gradient-warm: linear-gradient(135deg, #333333 0%, #1a1a1a 100%);
+  --gradient-cool: linear-gradient(135deg, #4a4a4a 0%, #333333 100%);
+  --gradient-header: linear-gradient(135deg, #1a1a1a 0%, #333333 100%);
+  --gradient-gold: linear-gradient(135deg, var(--color-gold) 0%, #FBC02D 100%);
+  
+  /* Couleurs principales */
+  --primary-color-dark: #000000;
+  --primary-color-light: #4a4a4a;
+  --primary-color-rgb: 26, 26, 26;
+  
+  /* Couleurs de statut */
+  --success-color: #333333;
+  --success-color-rgb: 51, 51, 51;
+  --warning-color: #4a4a4a;
+  --warning-color-rgb: 74, 74, 74;
+  --danger-color: #1a1a1a;
+  --danger-color-rgb: 26, 26, 26;
+  --info-color: #666666;
+  --info-color-rgb: 102, 102, 102;
+  
+  /* Couleurs des jours de la semaine */
+  --monday-color: #1a1a1a;
+  --tuesday-color: #333333;
+  --wednesday-color: #4a4a4a;
+  --thursday-color: #666666;
+  --friday-color: #808080;
+  --saturday-color: #999999;
+  --sunday-color: #b3b3b3;
+  
+  /* Couleurs de fond */
+  --surface-color: #ffffff;
+  --background-color: #f5f5f5;
+  --card-background: rgba(255, 255, 255, 0.95);
+  
+  /* Couleurs de texte */
+  --text-primary: #1a1a1a;
+  --text-secondary: #4a4a4a;
+  --text-light: #ffffff;
+  
+  /* Couleurs de bordure */
+  --border-color: rgba(26, 26, 26, 0.1);
+  --border-color-light: rgba(255, 255, 255, 0.1);
+}
+
+:root {
+  /* Patterns africains */
+  --pattern-dots: radial-gradient(var(--color-kente-purple) 2px, transparent 2px);
+  --pattern-stripes: repeating-linear-gradient(45deg, 
+    var(--color-kente-yellow) 0, var(--color-kente-yellow) 5px, 
+    transparent 5px, transparent 10px);
+}
+
+/* Thème sombre */
+[data-theme="dark"] {
+  --surface-color: #1a1a1a;
+  --background-color: #000000;
+  --card-background: rgba(26, 26, 26, 0.95);
+  --text-primary: #ffffff;
+  --text-secondary: #b3b3b3;
+  --border-color: rgba(255, 255, 255, 0.1);
+  --border-color-light: rgba(255, 255, 255, 0.05);
+}
+
+/* Calendar Content Layout */
+.calendar-content {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  background-color: var(--bg-color, #f8f9fa);
+  position: relative;
+}
+
+/* African pattern overlay */
+.calendar-content::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 10px;
+  background-image: repeating-linear-gradient(45deg, 
+    var(--color-kente-yellow) 0, var(--color-kente-yellow) 10px, 
+    var(--color-kente-green) 10px, var(--color-kente-green) 20px, 
+    var(--color-kente-red) 20px, var(--color-kente-red) 30px, 
+    var(--color-kente-purple) 30px, var(--color-kente-purple) 40px);
+  opacity: 0.9;
+  z-index: 1;
+  border-radius: 3px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+/* Dashboard Stats */
+.dashboard-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 24px;
+  margin-bottom: 30px;
+  position: relative;
+  z-index: 2;
+  animation: fadeIn 0.8s ease-out;
+  padding: 5px;
+  position: relative;
+}
+
+.stat-card {
+  background: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  border-radius: 15px;
+  padding: 1.5rem;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.stat-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 20px rgba(var(--primary-rgb), 0.15);
+  border-color: var(--primary-color);
+}
+
+.stat-icon {
+  background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+  color: var(--text-light);
+  width: 50px;
+  height: 50px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.stat-icon::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  animation: statIconShine 3s infinite;
+}
+
+@keyframes statIconShine {
+  0% { left: -100%; }
+  20% { left: 100%; }
+  100% { left: 100%; }
+}
+
+.stat-content {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.stat-content h3 {
+  margin: 0;
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--text-color, #333);
+}
+
+.stat-content p {
+  margin: 0;
+  font-size: 0.95rem;
+  color: var(--text-muted, #666);
+}
+
+/* Actions Bar */
+.actions-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 15px;
+  background-color: var(--card-bg, white);
+  padding: 20px;
+  border-radius: var(--calendar-card-radius);
+  box-shadow: var(--calendar-card-shadow);
+  border-top: 4px solid var(--primary-color);
+  position: relative;
+  overflow: hidden;
+}
+
+.actions-bar::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background-image: var(--pattern-stripes);
+  opacity: 0.5;
+}
+
+.actions-bar::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 80px;
+  height: 80px;
+  background-image: var(--pattern-dots);
+  background-size: 10px 10px;
+  opacity: 0.07;
+  pointer-events: none;
+  border-radius: 50%;
+  transform: translate(30%, 30%);
+}
+
+.left-actions, .right-actions {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+/* Quick Filters */
+.quick-filters-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18px;
+  margin-bottom: 24px;
+  align-items: center;
+  background: var(--card-bg, white);
+  padding: 20px;
+  border-radius: var(--calendar-card-radius, 12px);
+  box-shadow: var(--calendar-card-shadow);
+  position: relative;
+  overflow: hidden;
+  border-left: 4px solid var(--primary-color);
+  background-image: linear-gradient(to right, rgba(94, 53, 177, 0.03), transparent);
+}
+
+.quick-filters-bar::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: 4px;
+  background-image: repeating-linear-gradient(0deg, 
+    var(--color-kente-yellow) 0, var(--color-kente-yellow) 10px, 
+    var(--color-kente-green) 10px, var(--color-kente-green) 20px, 
+    var(--color-kente-red) 20px, var(--color-kente-red) 30px, 
+    var(--color-kente-purple) 30px, var(--color-kente-purple) 40px);
+  opacity: 0.7;
+}
+
+.search-container {
+  position: relative;
+  flex: 1;
+  max-width: 400px;
+}
+
+.search-icon {
+  position: absolute;
+  left: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--primary-color);
+}
+
+.search-container input {
+  width: 100%;
+  padding: 0.75rem 1rem 0.75rem 2.5rem;
+  border: 1px solid var(--border-color);
+  border-radius: 25px;
+  transition: all 0.3s ease;
+  background: var(--bg-primary);
+}
+
+.date-selector {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.current-date {
+  font-weight: 600;
+  font-size: 1.1rem;
+  padding: 0 10px;
+  min-width: 120px;
+  text-align: center;
+}
+
+.filter-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.filter-chip {
+  background: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  color: var(--text-secondary);
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.filter-chip:hover {
+  border-color: var(--primary-color);
+  color: var(--primary-color);
+  transform: translateY(-2px);
+}
+
+.filter-chip.active {
+  background: var(--primary-color);
+  color: var(--text-light);
+  border-color: var(--primary-color);
+  box-shadow: 0 4px 12px rgba(var(--primary-rgb), 0.3);
+}
+
+.filter-chip.active::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(circle at center, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0) 70%);
+  pointer-events: none;
+}
+
+/* Calendar Container */
+.calendar-container {
+  background: var(--surface-color);
+  border-radius: 20px;
+  padding: 2rem;
+  box-shadow: 0 10px 30px rgba(var(--primary-color-rgb), 0.1);
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  border: 1px solid var(--border-color);
+}
+
+.calendar-container:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 15px 40px rgba(var(--primary-color-rgb), 0.15);
+}
+
+.calendar-header {
+  background: #F2A121;
+  color: white;
+  padding: 1rem;
+  border-radius: 8px 8px 0 0;
+  margin-bottom: 1rem;
+  box-shadow: 0 2px 4px rgba(242, 161, 33, 0.2);
+}
+
+.calendar-header h2 {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: white;
+}
+
+.calendar-header .month-year {
+  font-size: 1.2rem;
+  font-weight: 500;
+  color: white;
+  opacity: 0.9;
+}
+
+.calendar-header .navigation {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.calendar-header .nav-btn {
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.calendar-header .nav-btn:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: translateY(-2px);
+}
+
+.calendar-day-header {
+  text-align: center;
+  font-weight: 600;
+  padding: 1rem;
+  border-radius: 12px;
+  color: white;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.calendar-day-header:hover {
+  transform: scale(1.05);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+.calendar-day-header:nth-child(1) { 
+  background: linear-gradient(135deg, var(--monday-color) 0%, var(--primary-color) 100%);
+  color: var(--text-light);
+}
+
+.calendar-day-header:nth-child(2) { 
+  background: linear-gradient(135deg, var(--tuesday-color) 0%, var(--info-color) 100%);
+  color: var(--text-light);
+}
+
+.calendar-day-header:nth-child(3) { 
+  background: linear-gradient(135deg, var(--wednesday-color) 0%, var(--success-color) 100%);
+  color: var(--text-light);
+}
+
+.calendar-day-header:nth-child(4) { 
+  background: linear-gradient(135deg, var(--thursday-color) 0%, var(--warning-color) 100%);
+  color: var(--text-light);
+}
+
+.calendar-day-header:nth-child(5) { 
+  background: linear-gradient(135deg, var(--friday-color) 0%, var(--danger-color) 100%);
+  color: var(--text-light);
+}
+
+.calendar-day-header:nth-child(6) { 
+  background: linear-gradient(135deg, var(--saturday-color) 0%, #FFE082 100%);
+  color: var(--text-primary);
+}
+
+.calendar-day-header:nth-child(7) { 
+  background: linear-gradient(135deg, var(--sunday-color) 0%, #A1887F 100%);
+  color: var(--text-light);
+}
+
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 1rem;
+  position: relative;
+}
+
+.calendar-day {
+  min-height: 120px;
+  background: var(--card-background);
+  border-radius: 15px;
+  padding: 0.75rem;
+  position: relative;
+  transition: all 0.3s ease;
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+}
+
+.calendar-day:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  background: rgba(var(--primary-color-rgb), 0.05);
+  border-color: var(--primary-color-light);
+}
+
+.calendar-day.today {
+  background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-color-dark) 100%);
+  color: var(--text-light);
+  box-shadow: 0 8px 25px rgba(var(--primary-color-rgb), 0.3);
+}
+
+.appointment {
+  background: var(--card-background);
+  border-radius: 10px;
+  padding: 0.75rem;
+  margin-bottom: 0.5rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border-left: 4px solid var(--primary-color);
+  position: relative;
+  overflow: hidden;
+  color: var(--text-primary);
+}
+
+.appointment:hover {
+  transform: translateX(5px);
+  background: rgba(var(--primary-color-rgb), 0.05);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.appointment.confirmed {
+  border-left-color: var(--success-color);
+  background: rgba(var(--success-color-rgb), 0.1);
+}
+
+.appointment.pending {
+  border-left-color: var(--warning-color);
+  background: rgba(var(--warning-color-rgb), 0.1);
+}
+
+.appointment.canceled {
+  border-left-color: var(--danger-color);
+  background: rgba(var(--danger-color-rgb), 0.1);
+}
+
+.appointment.completed {
+  border-left-color: var(--info-color);
+  background: rgba(var(--info-color-rgb), 0.1);
+}
+
+.appointment .time {
+  font-weight: 600;
+  color: var(--text-color, #333);
+}
+
+.appointment .client {
+  font-weight: 500;
+  color: var(--primary-color, #5e35b1);
+}
+
+.appointment .type {
+  color: var(--text-muted, #666);
+}
+
+/* Structure des rendez-vous */
+.appointment {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.appointment-info {
+  flex: 1;
+  padding-right: 5px;
+}
+
+.appointment .time {
+  font-weight: 700;
+  font-size: 0.9rem;
+  display: block;
+  color: var(--text-dark);
+}
+
+.appointment .client {
+  font-weight: 600;
+  display: block;
+}
+
+.appointment .type {
+  font-size: 0.75rem;
+  opacity: 0.85;
+  display: block;
+  font-style: italic;
+}
+
+/* Boutons d'action pour les rendez-vous */
+.appointment-actions {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: flex-end;
+  opacity: 1;
+  transform: translateX(0);
+  transition: all 0.3s ease;
+}
+
+.action-btn {
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border: none;
+  background: var(--gradient-header);
+  color: white;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  box-shadow: 0 4px 6px rgba(var(--primary-color-rgb), 0.2);
+}
+
+.action-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: all 0.6s ease;
+}
+
+.action-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(var(--primary-color-rgb), 0.3);
+}
+
+.action-btn:hover::before {
+  left: 100%;
+}
+
+.action-btn i {
+  font-size: 1.1rem;
+  transition: transform 0.3s ease;
+}
+
+.action-btn:hover i {
+  transform: scale(1.2);
+}
+
+/* Animation pour les boutons d'action */
+@keyframes actionButtonPulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+.action-btn:active {
+  animation: actionButtonPulse 0.3s ease;
+}
+
+/* Styles pour les actions dans le tableau */
+.appointment-actions {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: flex-end;
+  opacity: 1;
+  transform: translateX(0);
+  transition: all 0.3s ease;
+}
+
+.appointment-actions .btn {
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.appointment-actions .btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: all 0.6s ease;
+}
+
+.appointment-actions .btn:hover::before {
+  left: 100%;
+}
+
+.appointment-actions .edit-btn {
+  background: #F2A121;
+  color: #fff;
+  border: none;
+  box-shadow: 0 2px 8px rgba(242,161,33,0.10);
+  transition: background 0.2s, box-shadow 0.2s;
+}
+
+.appointment-actions .edit-btn:hover {
+  background: #ffb74d;
+  color: #fff;
+  box-shadow: 0 4px 16px rgba(242,161,33,0.18);
+}
+
+.appointment-actions .cancel-btn {
+  background: #E53935;
+  color: #fff;
+  border: none;
+  box-shadow: 0 2px 8px rgba(229,57,53,0.10);
+  transition: background 0.2s, box-shadow 0.2s;
+}
+
+.appointment-actions .cancel-btn:hover {
+  background: #ff5252;
+  color: #fff;
+  box-shadow: 0 4px 16px rgba(229,57,53,0.18);
+}
+
+/* Animation pour les actions de statut */
+.status-action {
+  position: relative;
+  overflow: hidden;
+}
+
+.status-action::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.2) 0%, transparent 70%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.status-action:hover::after {
+  opacity: 1;
+}
+
+/* Animation pour les actions de confirmation */
+.confirm-action {
+  animation: confirmPulse 2s infinite;
+}
+
+@keyframes confirmPulse {
+  0% { box-shadow: 0 0 0 0 rgba(var(--success-color-rgb), 0.4); }
+  70% { box-shadow: 0 0 0 10px rgba(var(--success-color-rgb), 0); }
+  100% { box-shadow: 0 0 0 0 rgba(var(--success-color-rgb), 0); }
+}
+
+/* Animation lors du clic */
+@keyframes buttonPulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+  100% { transform: scale(1); }
+}
+
+.appointment-actions .btn:focus {
+  outline: none;
+  animation: buttonPulse 0.4s ease;
+}
+
+.appointment-status {
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: white;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.appointment-status.confirmed {
+  background-color: var(--status-confirmed);
+  box-shadow: 0 3px 6px rgba(0, 170, 85, 0.25);
+}
+
+.appointment-status.pending {
+  background-color: var(--status-pending);
+  box-shadow: 0 3px 6px rgba(255, 149, 0, 0.25);
+}
+
+.appointment-status.canceled {
+  background-color: var(--status-cancelled);
+  box-shadow: 0 3px 6px rgba(230, 57, 70, 0.25);
+}
+
+.appointment-status.completed {
+  background-color: var(--status-completed);
+  box-shadow: 0 3px 6px rgba(0, 119, 200, 0.25);
+}
+
+/* Modal Styles */
+.modal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(8px);
+  z-index: 1000;
+  justify-content: center;
+  align-items: center;
+  animation: modalFadeIn 0.3s ease;
+}
+
+/* --- MODAL CONTENT AFRICAIN --- */
+.modal-content {
+  background: linear-gradient(135deg, #fff 80%, rgba(255, 209, 0, 0.07) 100%);
+  border-radius: 16px;
+  padding: 2.2rem 2rem 2rem 2rem;
+  max-width: 480px;
+  width: 95%;
+  box-shadow: 0 12px 40px rgba(26,26,26,0.18), 0 2px 8px rgba(196,30,58,0.07);
+  border: 0;
+  color: var(--text-color);
+  position: relative;
+  border-top: 8px solid;
+  border-image: repeating-linear-gradient(90deg, var(--color-kente-yellow) 0, var(--color-kente-yellow) 20px, var(--color-kente-green) 20px, var(--color-kente-green) 40px, var(--color-kente-red) 40px, var(--color-kente-red) 60px, var(--color-kente-purple) 60px, var(--color-kente-purple) 80px) 8;
+  animation: modalSlideIn 0.4s cubic-bezier(0.4,0,0.2,1);
+}
+
+.modal-content:hover {
+  box-shadow: 0 16px 48px rgba(26,26,26,0.22), 0 4px 16px rgba(196,30,58,0.10);
+}
+
+/* --- MODAL HEADER AFRICAIN --- */
+.modal-header {
+  background: #F2A121;
+  color: #fff;
+  padding: 1.5rem 2rem 1.2rem 2rem;
+  border-radius: 12px 12px 0 0;
+  position: relative;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  border-bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.modal-header::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 6px;
+  background: linear-gradient(to right, var(--color-african-gold), var(--color-kente-red), var(--color-kente-purple));
+  opacity: 1;
+  border-radius: 2px;
+  animation: separatorLinePulse 3s infinite ease-in-out;
+}
+
+@keyframes separatorLinePulse {
+  0% { transform: scaleX(0.8); opacity: 0.7; }
+  50% { transform: scaleX(1); opacity: 1; }
+  100% { transform: scaleX(0.8); opacity: 0.7; }
+}
+
+.modal-header h2 {
+  color: #000000 !important;
+  font-size: 1.4rem;
+  font-weight: 700;
+  margin: 0;
+  letter-spacing: 1px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Pour le thème sombre, le texte du header devient blanc */
+[data-theme="dark"] .modal-header h2 {
+  color: #ffffff !important;
+}
+
+/* Bouton de fermeture de la modale */
+.modal-header .close-btn {
+  font-size: 2.2rem !important;
+  width: 40px !important;
+  height: 40px !important;
+  border-radius: 50% !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.2) !important;
+  color: #fff !important;
+  border: 1px solid rgba(255, 255, 255, 0.3) !important;
+  transition: all 0.3s ease !important;
+  margin-left: 10px !important;
+}
+
+.modal-header .close-btn:hover {
+  background: rgba(255, 255, 255, 0.4) !important;
+  transform: rotate(90deg) scale(1.1) !important;
+  color: var(--color-kente-yellow) !important;
+  box-shadow: 0 0 15px rgba(255, 255, 255, 0.5) !important;
+}
+
+@media (max-width: 600px) {
+  .modal-content {
+    padding: 1.2rem 0.5rem 1.2rem 0.5rem;
+    max-width: 98vw;
+  }
+  .modal-header {
+    padding: 1rem 0.7rem 0.7rem 0.7rem;
+  }
+}
+
+/* --- MODAL BODY --- */
+.modal-body {
+  padding: 1.5rem 0 0 0;
+}
+
+.modal-body p,
+.modal-body strong,
+.modal-body span {
+  color: #000000 !important;
+  line-height: 1.6;
+}
+
+/* Pour le thème sombre, rendre le texte du corps clair */
+[data-theme="dark"] .modal-body p,
+[data-theme="dark"] .modal-body strong,
+[data-theme="dark"] .modal-body span {
+  color: var(--text-light) !important;
+}
+
+/* Styles pour les labels dans les formulaires de modale */
+.form-group label {
+  color: #000000 !important;
+  font-weight: 600;
+}
+
+/* Pour le thème sombre, rendre les labels clairs */
+[data-theme="dark"] .form-group label {
+  color: var(--text-light) !important;
+}
+
+/* --- MODAL ACTIONS --- */
+.modal-actions, .form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.modal-actions .btn, .form-actions .btn {
+  padding: 0.75rem 1.7rem;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 1rem;
+  transition: all 0.2s cubic-bezier(0.4,0,0.2,1);
+  cursor: pointer;
+  border: none;
+  outline: none;
+  box-shadow: 0 2px 8px rgba(26,26,26,0.07);
+  position: relative;
+  overflow: hidden;
+}
+
+.modal-actions .primary-btn, .form-actions .primary-btn {
+  background: linear-gradient(90deg, var(--color-kente-green), var(--color-kente-yellow));
+  color: #fff;
+}
+.modal-actions .primary-btn:hover, .form-actions .primary-btn:hover {
+  background: linear-gradient(90deg, var(--color-kente-yellow), var(--color-kente-green));
+  color: #fff;
+  transform: translateY(-2px) scale(1.04);
+}
+
+.modal-actions .danger-btn, .form-actions .danger-btn {
+  background: linear-gradient(90deg, var(--color-kente-red), #ff7961);
+  color: #fff;
+  animation: pulseDanger 1.2s infinite alternate;
+}
+@keyframes pulseDanger {
+  from { box-shadow: 0 0 0 0 rgba(196,30,58,0.18); }
+  to { box-shadow: 0 0 0 8px rgba(196,30,58,0.08); }
+}
+.modal-actions .danger-btn:hover, .form-actions .danger-btn:hover {
+  background: linear-gradient(90deg, #ff7961, var(--color-kente-red));
+  color: #fff;
+  transform: translateY(-2px) scale(1.04);
+}
+
+.modal-actions .outline-btn, .form-actions .outline-btn {
+  background: var(--surface-color);
+  color: var(--text-primary);
+  border: 2px solid var(--border-color);
+}
+.modal-actions .outline-btn:hover, .form-actions .outline-btn:hover {
+  background: var(--background-color);
+  color: var(--primary-color);
+  border-color: var(--primary-color);
+  transform: translateY(-2px) scale(1.04);
+}
+
+/* Amélioration du style de focus pour les champs de formulaire */
+.form-control:focus {
+  border: 3px solid var(--color-kente-purple) !important;
+  box-shadow: 0 0 0 5px rgba(var(--color-kente-purple-rgb), 0.3) !important;
+  background-image: linear-gradient(to right, rgba(var(--color-kente-purple-rgb), 0.1), transparent) !important;
+  background-size: 200% 100% !important;
+  background-position: 0 0 !important;
+  animation: formFocusPulse 2s infinite ease-in-out !important;
+}
+
+/* Cohérence des boutons outline en thème sombre */
+[data-theme="dark"] .modal-actions .outline-btn,
+[data-theme="dark"] .form-actions .outline-btn {
+  background: #1a1a1a !important;
+  color: #ffffff !important;
+  border: 2px solid #ffffff !important;
+}
+
+[data-theme="dark"] .modal-actions .outline-btn:hover,
+[data-theme="dark"] .form-actions .outline-btn:hover {
+  background: #333333 !important;
+  border-color: var(--color-kente-yellow) !important;
+  color: var(--color-kente-yellow) !important;
+}
+
+/* Styles pour le select */
+select.form-control {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'24\' height=\'24\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'#F2A121\' stroke-width=\'2\' stroke-linecap=\'round\' stroke-linejoin=\'round\'%3E%3Cpolyline points=\'6 9 12 15 18 9\'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 16px;
+  padding-right: 40px;
+}
+
+/* Styles spécifiques à la modale de confirmation de suppression (garder ceux-ci) */
+.confirm-modal .modal-header {
+  background: linear-gradient(135deg, var(--color-african-gold) 0%, var(--color-kente-red) 100%);
+}
+.confirm-modal .modal-header h2 {
+  color: #ffffff !important;
+}
+.confirm-modal .modal-header h2 i {
+  color: #ffeb3b;
+  animation: warningPulse 1.5s infinite alternate;
+}
+@keyframes warningPulse {
+  from { transform: scale(1); }
+  to { transform: scale(1.2); }
+}
+
+/* Animate keyframes for modals */
+@keyframes modalFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes modalSlideIn {
+  from { transform: translateY(-50px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+/* Style pour le tableau des rendez-vous */
+.appointments-table-container {
+  background: var(--surface-color);
+  border-radius: 15px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  margin-top: 1.5rem;
+}
+
+.appointments-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: 0.95rem;
+}
+
+.appointments-table thead {
+  background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+  color: white;
+}
+
+.appointments-table th {
+  padding: 1rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.appointments-table th:first-child {
+  border-top-left-radius: 15px;
+}
+
+.appointments-table th:last-child {
+  border-top-right-radius: 15px;
+}
+
+.appointment-row {
+  transition: all 0.3s ease;
+  border-bottom: 1px solid rgba(var(--primary-rgb), 0.1);
+}
+
+.appointment-row:last-child {
+  border-bottom: none;
+}
+
+.appointment-row:hover {
+  background: rgba(var(--primary-rgb), 0.05);
+}
+
+.appointments-table td {
+  padding: 1rem;
+  vertical-align: middle;
+}
+
+.appointment-time {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.appointment-time strong {
+  color: var(--primary-color);
+  font-size: 1.1rem;
+}
+
+.appointment-time .duration {
+  background: rgba(var(--primary-rgb), 0.1);
+  color: var(--primary-color);
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.85rem;
+}
+
+.appointment-client {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.appointment-type {
+  color: var(--text-secondary);
+}
+
+.appointment-location {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+}
+
+.status-badge {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-align: center;
+  min-width: 100px;
+}
+
+.status-badge.confirmed {
+  background: rgba(var(--success-color-rgb), 0.1);
+  color: var(--success-color);
+  border: 1px solid var(--success-color);
+}
+
+.status-badge.pending {
+  background: rgba(var(--primary-color-rgb), 0.1);
+  color: var(--primary-color);
+  border: 1px solid var(--primary-color);
+}
+
+.status-badge.canceled {
+  background: rgba(var(--danger-color-rgb), 0.1);
+  color: var(--danger-color);
+  border: 1px solid var(--danger-color);
+}
+
+.appointment-actions {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: flex-end;
+  opacity: 1;
+  transform: translateX(0);
+  transition: all 0.3s ease;
+}
+
+.appointment-actions .btn {
+  padding: 0.5rem;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+.appointment-actions .btn:hover {
+  background: rgba(var(--primary-color-rgb), 0.1);
+  color: var(--primary-color);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(var(--primary-color-rgb), 0.2);
+}
+
+/* Responsive styles */
+@media (max-width: 992px) {
+  .appointments-table-container {
+    overflow-x: auto;
+  }
+  
+  .appointments-table {
+    min-width: 800px;
+  }
+}
+
+@media (max-width: 768px) {
+  .appointment-type {
+    max-width: 200px;
+  }
+  
+  .status-badge {
+    min-width: 80px;
+    padding: 0.4rem 0.8rem;
+  }
+}
+
+.change-status-btn {
+  background: var(--primary-color);
+  color: var(--text-light);
+  border: none;
+  border-radius: 8px;
+  padding: 0.5rem;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.change-status-btn:hover {
+  background: var(--primary-dark);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(var(--primary-rgb), 0.3);
+}
+
+.change-status-btn i {
+  transition: transform 0.3s ease;
+}
+
+.change-status-btn:hover i {
+  transform: rotate(180deg);
+}
+
+.cancel-appointment-btn {
+  background: #E53935;
+  color: var(--text-light);
+  border: none;
+  border-radius: 8px;
+  padding: 0.5rem;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.cancel-appointment-btn:hover {
+  background: #C62828;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(229, 57, 53, 0.3);
+}
+
+.cancel-appointment-btn i {
+  transition: transform 0.3s ease;
+}
+
+.cancel-appointment-btn:hover i {
+  transform: rotate(90deg);
+}
+
+/* Pagination Styles */
+.pagination {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 2rem;
+  padding: 1rem;
+  background: var(--surface-color);
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.pagination-info {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+}
+
+.pagination-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.pagination-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  background: var(--bg-color);
+  color: #000000;
+  border: 1px solid var(--border-color);
+  text-decoration: none;
+}
+
+.pagination-btn i {
+  color: #000000;
+}
+
+.pagination-current {
+  padding: 0 1rem;
+  color: var(--text-color);
+  font-weight: 500;
+}
+
+/* Responsive Pagination */
+@media (max-width: 768px) {
+  .pagination {
+    flex-direction: column;
+    gap: 1rem;
+    text-align: center;
+  }
+  
+  .pagination-info {
+    margin-bottom: 0.5rem;
+  }
+}

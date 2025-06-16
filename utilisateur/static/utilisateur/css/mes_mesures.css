@@ -1,0 +1,321 @@
+/* Styles spécifiques pour la page Mes Mesures */
+.body-measurement-chart {
+    position: relative;
+    max-width: 100%;
+    margin: 0 auto;
+}
+
+.measurement-point {
+    position: absolute;
+    width: 12px;
+    height: 12px;
+    background-color: #E17921;
+    border: 2px solid white;
+    border-radius: 50%;
+    box-shadow: 0 0 5px rgba(0,0,0,0.3);
+    transform: translate(-50%, -50%);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    z-index: 10;
+}
+
+.measurement-point:hover {
+    transform: translate(-50%, -50%) scale(1.5);
+    box-shadow: 0 0 8px rgba(225, 121, 33, 0.5);
+}
+
+.measurement-point::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 24px;
+    height: 24px;
+    background-color: rgba(225, 121, 33, 0.3);
+    border-radius: 50%;
+    z-index: -1;
+    opacity: 0;
+    animation: pulse-measure 2s infinite;
+}
+
+@keyframes pulse-measure {
+    0% {
+        opacity: 0.7;
+        transform: translate(-50%, -50%) scale(0);
+    }
+    70% {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(1.5);
+    }
+    100% {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0);
+    }
+}
+
+.measurement-item {
+    padding: 1rem;
+    border-radius: 12px;
+    margin-bottom: 0.8rem;
+    transition: all 0.3s ease;
+    background: #ffffff;
+    border: 1px solid rgba(225, 121, 33, 0.1);
+    position: relative;
+    overflow: hidden;
+}
+
+.measurement-item::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 4px;
+    height: 100%;
+    background: linear-gradient(to bottom, #E17921, #9C4506);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.measurement-item:hover {
+    transform: translateX(5px);
+    box-shadow: 0 4px 15px rgba(225, 121, 33, 0.1);
+}
+
+.measurement-item:hover::before {
+    opacity: 1;
+}
+
+.measurement-label {
+    font-weight: 500;
+    color: #2c3e50;
+    font-size: 1rem;
+}
+
+.measurement-value {
+    font-weight: 600;
+    color: #E17921;
+    font-size: 1.1rem;
+}
+
+.measurement-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.btn-outline-primary {
+    color: #E17921;
+    border: 2px solid #E17921;
+    background: transparent;
+    padding: 0.4rem 0.8rem;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.btn-outline-primary:hover {
+    background: linear-gradient(135deg, #E17921, #9C4506);
+    border-color: transparent;
+    color: white;
+    box-shadow: 0 4px 15px rgba(225, 121, 33, 0.2);
+}
+
+.accordion-button {
+    padding: 1.2rem;
+    font-weight: 500;
+    color: #2c3e50;
+    background: #ffffff;
+    border: none;
+    transition: all 0.3s ease;
+}
+
+.accordion-button:not(.collapsed) {
+    background: linear-gradient(to right, rgba(225, 121, 33, 0.05), rgba(156, 69, 6, 0.05));
+    color: #E17921;
+    box-shadow: none;
+}
+
+.accordion-button:focus {
+    box-shadow: none;
+    border-color: rgba(225, 121, 33, 0.2);
+}
+
+.accordion-button::after {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23E17921'%3e%3cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3e%3c/svg%3e");
+    transition: all 0.3s ease;
+}
+
+.modal-content {
+    border: none;
+    border-radius: 15px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+}
+
+.modal-header {
+    background: linear-gradient(135deg, #E17921, #9C4506);
+    color: white;
+    border-radius: 15px 15px 0 0;
+    padding: 1.5rem;
+}
+
+.modal-body {
+    padding: 2rem;
+}
+
+.form-control, .form-select {
+    border-radius: 8px;
+    padding: 0.8rem 1rem;
+    border: 2px solid rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: #E17921;
+    box-shadow: 0 0 0 0.25rem rgba(225, 121, 33, 0.15);
+}
+
+.input-group-text {
+    background: #f8f9fa;
+    border: 2px solid rgba(0, 0, 0, 0.1);
+    border-left: none;
+    color: #6c757d;
+}
+
+.measurement-history-chart {
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+}
+
+.table {
+    margin-bottom: 0;
+}
+
+.table th {
+    font-weight: 600;
+    color: #2c3e50;
+    border-bottom: 2px solid rgba(225, 121, 33, 0.1);
+}
+
+.table td {
+    vertical-align: middle;
+    color: #6c757d;
+}
+
+.alert-info {
+    background: linear-gradient(to right, rgba(225, 121, 33, 0.05), rgba(156, 69, 6, 0.05));
+    border: none;
+    border-radius: 12px;
+    padding: 1.2rem;
+    color: #2c3e50;
+}
+
+.alert-info i {
+    color: #E17921;
+    font-size: 1.2rem;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.measurement-item {
+    animation: fadeIn 0.5s ease-out forwards;
+}
+
+@media (max-width: 768px) {
+    .card {
+        margin-bottom: 1rem;
+    }
+
+    .measurement-item {
+        padding: 0.8rem;
+    }
+
+    .measurement-label {
+        font-size: 0.9rem;
+    }
+
+    .measurement-value {
+        font-size: 1rem;
+    }
+
+    .modal-body {
+        padding: 1.5rem;
+    }
+
+    .table-responsive {
+        margin: 0 -1.5rem;
+    }
+}
+
+.form-select {
+    background-color: #ffffff;
+    border: 2px solid rgba(225, 121, 33, 0.2);
+    color: #2c3e50;
+    font-weight: 500;
+}
+
+.form-select:focus {
+    border-color: #E17921;
+    box-shadow: 0 0 0 0.25rem rgba(225, 121, 33, 0.15);
+}
+
+.btn-group .btn {
+    padding: 0.5rem 1rem;
+    font-weight: 500;
+}
+
+.btn-group .btn-outline-primary {
+    border-color: #E17921;
+    color: #E17921;
+}
+
+.btn-group .btn-primary {
+    background: linear-gradient(135deg, #E17921, #9C4506);
+    border: none;
+}
+
+.btn-group .btn-primary:hover {
+    background: linear-gradient(135deg, #9C4506, #E17921);
+    box-shadow: 0 4px 15px rgba(225, 121, 33, 0.2);
+}
+
+/* Style pour la silhouette */
+.silhouette-container {
+    position: relative;
+    text-align: center;
+}
+
+.silhouette {
+    max-width: 100%;
+    height: auto;
+}
+
+.silhouette-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle at center, transparent 50%, rgba(225, 121, 33, 0.1) 100%);
+}
+
+/* Styles responsive */
+@media (max-width: 768px) {
+    .measurement-item {
+        margin-bottom: 1rem;
+    }
+    
+    .body-measurement-chart {
+        margin-bottom: 2rem;
+    }
+}

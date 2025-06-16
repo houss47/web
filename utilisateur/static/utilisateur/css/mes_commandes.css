@@ -1,0 +1,770 @@
+/**
+ * Mes Commandes CSS - Couture Hub
+ * Styles spécifiques pour la page des commandes
+ */
+
+/* ========================= VARIABLES ========================= */
+:root {
+   
+    --secondary-color: #9C4506;
+    --success-color: #28a745;
+    --warning-color: #ffc107;
+    --info-color: #17a2b8;
+    --light-bg: #f8f9fa;
+    --border-color: rgba(225, 121, 33, 0.2);
+    --shadow-color: rgba(225, 121, 33, 0.1);
+}
+
+/* ========================= CARTES ========================= */
+.filter-card, .order-card, .history-card {
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    box-shadow: 0 4px 12px var(--shadow-color);
+    transition: all 0.3s ease;
+    overflow: hidden;
+    position: relative;
+}
+
+.filter-card::before, 
+.order-card::before,
+.history-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 4px;
+    height: 100%;
+    background: linear-gradient(to bottom, var(--primary-color), var(--secondary-color));
+}
+
+.card:hover {
+    box-shadow: 0 8px 16px var(--shadow-color);
+    transform: translateY(-3px);
+}
+
+.card-header {
+    border-bottom: 1px solid var(--border-color);
+    background-color: rgba(225, 121, 33, 0.1);
+}
+
+.order-card .card-body {
+    padding: 2rem;
+}
+
+/* ========================= BADGES DE STATUT ========================= */
+.status-badge {
+    padding: 0.4em 0.8em;
+    border-radius: 6px;
+    font-weight: 500;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 0.5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+}
+
+.status-badge:hover {
+    transform: scale(1.1);
+}
+
+/* ========================= BOUTONS ========================= */
+.btn-outline-primary {
+    position: relative;
+    overflow: hidden;
+    z-index: 1;
+    color: var(--primary-color); 
+    border-color: var(--primary-color);
+    transition: all 0.3s ease;
+}
+
+.btn-outline-primary:hover {
+    color: white !important;
+    background-color: var(--primary-color) !important;
+    border-color: var(--primary-color) !important;
+    transform: translateY(-1px);
+}
+
+.btn-primary {
+    background: linear-gradient(to right, var(--primary-color), var(--secondary-color)) !important;
+    border-color: var(--secondary-color) !important;
+    box-shadow: 0 4px 8px var(--shadow-color);
+}
+
+.btn-primary:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 12px var(--shadow-color);
+}
+
+/* ========================= TABLEAUX ========================= */
+.table {
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+.table-hover tbody tr {
+    transition: all 0.3s ease;
+}
+
+.table-hover tbody tr:hover {
+    background-color: rgba(225, 121, 33, 0.05);
+    transform: translateX(5px);
+}
+
+.table td, .table th {
+    vertical-align: middle;
+}
+
+/* ========================= BARRE DE PROGRESSION ========================= */
+.progress {
+    border-radius: 10px;
+    background-color: #f8f9fa;
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.progress-bar {
+    border-radius: 10px;
+    transition: width 0.6s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.progress-bar::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    background-image: linear-gradient(
+        -45deg,
+        rgba(255, 255, 255, 0.2) 25%,
+        transparent 25%,
+        transparent 50%,
+        rgba(255, 255, 255, 0.2) 50%,
+        rgba(255, 255, 255, 0.2) 75%,
+        transparent 75%,
+        transparent
+    );
+    background-size: 1rem 1rem;
+    animation: move 2s linear infinite;
+}
+
+@keyframes move {
+    0% {
+        background-position: 0 0;
+    }
+    100% {
+        background-position: 1rem 1rem;
+    }
+}
+
+/* Styles pour les informations de progression */
+.progression-details {
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+}
+
+.progression-details .text-danger {
+    font-weight: 500;
+}
+
+.progression-details .text-warning {
+    font-weight: 500;
+}
+
+.progression-details .text-success {
+    font-weight: 500;
+}
+
+/* Styles pour les informations de contact */
+.contact-info {
+    font-size: 0.9rem;
+}
+
+.contact-info a {
+    color: #E17921;
+    text-decoration: none;
+}
+
+.contact-info a:hover {
+    color: #9C4506;
+    text-decoration: underline;
+}
+
+.contact-actions .btn {
+    transition: all 0.3s ease;
+}
+
+.contact-actions .btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.contact-actions .btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* Styles pour les badges de statut avec progression */
+.status-badge {
+    font-size: 0.75rem;
+    padding: 0.375rem 0.75rem;
+    border-radius: 20px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Animation pour les barres de progression en cours */
+.progress-bar.animate {
+    animation: progress-animation 2s ease-in-out infinite;
+}
+
+@keyframes progress-animation {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.8;
+    }
+}
+
+/* Styles pour les alertes de retard */
+.retard-alert {
+    background: linear-gradient(45deg, #dc3545, #c82333);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    box-shadow: 0 2px 4px rgba(220, 53, 69, 0.3);
+}
+
+/* Styles pour les informations d'échéance */
+.echeance-info {
+    background: rgba(225, 121, 33, 0.1);
+    border-left: 3px solid #E17921;
+    padding: 0.5rem;
+    border-radius: 0 4px 4px 0;
+    margin-top: 0.5rem;
+}
+
+.echeance-info.urgent {
+    background: rgba(255, 193, 7, 0.1);
+    border-left-color: #ffc107;
+}
+
+.echeance-info.retard {
+    background: rgba(220, 53, 69, 0.1);
+    border-left-color: #dc3545;
+}
+
+/* ========================= PAGINATION ========================= */
+.pagination .page-link {
+    border-color: var(--border-color);
+    color: var(--primary-color);
+}
+
+.pagination .page-link:hover {
+    background-color: rgba(225, 121, 33, 0.1);
+    border-color: var(--primary-color);
+}
+
+.pagination .page-item.active .page-link {
+    background-color: var(--primary-color);
+    border-color: var(--secondary-color);
+    color: white;
+}
+
+.pagination .page-link:focus {
+    box-shadow: 0 0 0 0.25rem rgba(225, 121, 33, 0.25);
+}
+
+/* ========================= MODAL ========================= */
+.modal-content {
+    border: none;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    overflow: hidden;
+}
+
+.modal-header {
+    background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+    color: white;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 12px 12px 0 0;
+}
+
+.modal-header .btn-close {
+    filter: brightness(0) invert(1);
+}
+
+.modal-body {
+    padding: 1.5rem;
+}
+
+.modal-body .card {
+    border: 1px solid var(--border-color);
+    border-radius: 0.5rem;
+    box-shadow: 0 2px 4px var(--shadow-color);
+}
+
+.modal-body .card-header {
+    border-bottom: 1px solid var(--border-color);
+    padding: 0.75rem 1rem;
+    background-color: rgba(225, 121, 33, 0.1);
+}
+
+.modal-body .card-body {
+    padding: 1rem;
+}
+
+.modal-body .row {
+    margin-bottom: 0.5rem;
+}
+
+.modal-body .row:last-child {
+    margin-bottom: 0;
+}
+
+.modal-body .col-5 {
+    font-weight: 500;
+    color: #6c757d;
+}
+
+.modal-body .col-7 {
+    color: #212529;
+}
+
+.modal-body .badge {
+    font-size: 0.75rem;
+    padding: 0.375rem 0.75rem;
+    border-radius: 0.375rem;
+    font-weight: 500;
+}
+
+.modal-body .progress {
+    height: 8px;
+    margin-bottom: 0.25rem;
+}
+
+.modal-body .btn {
+    border-radius: 0.375rem;
+    padding: 0.5rem 1rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.modal-body .btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* Animation d'ouverture du modal */
+.modal.fade .modal-dialog {
+    transition: transform 0.3s ease-out;
+    transform: translate(0, -50px);
+}
+
+.modal.show .modal-dialog {
+    transform: none;
+}
+
+/* ========================= ÉTATS VIDES ========================= */
+.empty-state {
+    text-align: center;
+    padding: 3rem 1rem;
+}
+
+.empty-state i {
+    font-size: 4rem;
+    color: #dee2e6;
+    margin-bottom: 1rem;
+}
+
+.empty-state h5 {
+    color: #6c757d;
+    margin-bottom: 0.5rem;
+}
+
+.empty-state p {
+    color: #adb5bd;
+    margin-bottom: 1.5rem;
+}
+
+/* ========================= ANIMATIONS ========================= */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes ripple-animation {
+    0% {
+        transform: scale(0);
+        opacity: 1;
+    }
+    100% {
+        transform: scale(3);
+        opacity: 0;
+    }
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.card {
+    animation: fadeIn 0.5s ease-out;
+}
+
+.table-hover tbody tr {
+    animation: fadeInUp 0.5s ease forwards;
+    opacity: 0;
+}
+
+.table-hover tbody tr:nth-child(1) { animation-delay: 0.1s; }
+.table-hover tbody tr:nth-child(2) { animation-delay: 0.2s; }
+.table-hover tbody tr:nth-child(3) { animation-delay: 0.3s; }
+.table-hover tbody tr:nth-child(4) { animation-delay: 0.4s; }
+.table-hover tbody tr:nth-child(5) { animation-delay: 0.5s; }
+
+/* ========================= EFFETS VISUELS ========================= */
+.ripple-effect {
+    position: absolute;
+    border-radius: 50%;
+    background-color: rgba(255, 255, 255, 0.7);
+    width: 100px;
+    height: 100px;
+    margin-top: -50px;
+    margin-left: -50px;
+    animation: ripple-animation 0.6s linear;
+    transform: scale(0);
+    opacity: 1;
+}
+
+.highlighted-row {
+    background-color: rgba(225, 121, 33, 0.1) !important;
+    transition: background-color 0.3s ease;
+}
+
+/* ========================= RESPONSIVE ========================= */
+@media (max-width: 768px) {
+    /* Table responsive */
+    .table-compact {
+        display: block;
+    }
+    
+    .table-compact thead {
+        display: none;
+    }
+    
+    .table-compact tbody {
+        display: block;
+    }
+    
+    .table-compact tr {
+        display: block;
+        margin-bottom: 1rem;
+        border: 1px solid #dee2e6;
+        border-radius: 0.375rem;
+        padding: 1rem;
+        background-color: var(--light-bg);
+    }
+    
+    .table-compact td {
+        display: block;
+        text-align: left;
+        padding: 0.5rem 0;
+        border: none;
+    }
+    
+    .table-compact td::before {
+        content: attr(data-label) ": ";
+        font-weight: bold;
+        color: var(--primary-color);
+    }
+    
+    /* Boutons responsive */
+    .btn-group {
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+    }
+    
+    .btn-group .btn {
+        margin-right: 0;
+        width: 100%;
+    }
+    
+    /* Modal responsive */
+    .modal-dialog {
+        margin: 0.5rem;
+        max-width: calc(100% - 1rem);
+    }
+    
+    .modal-body {
+        padding: 1rem;
+    }
+    
+    .modal-body .row {
+        flex-direction: column;
+    }
+    
+    .modal-body .col-5,
+    .modal-body .col-7 {
+        width: 100%;
+        margin-bottom: 0.25rem;
+    }
+    
+    .modal-body .col-5 {
+        font-weight: 600;
+        color: var(--primary-color);
+    }
+    
+    /* Cartes responsive */
+    .filter-card, .order-card, .history-card {
+        margin-bottom: 1.5rem;
+    }
+    
+    .status-badge {
+        display: inline-block;
+        margin-bottom: 0.5rem;
+    }
+}
+
+/* ========================= ÉTATS DE CHARGEMENT ========================= */
+.loading {
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+.loading::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 20px;
+    height: 20px;
+    margin: -10px 0 0 -10px;
+    border: 2px solid var(--primary-color);
+    border-top: 2px solid transparent;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+/* Styles pour les différentes couleurs de progression */
+.progress-warning {
+    background: linear-gradient(45deg, #ffc107, #e0a800) !important;
+    box-shadow: 0 2px 4px rgba(255, 193, 7, 0.3);
+}
+
+.progress-primary {
+    background: linear-gradient(45deg, #E17921, #9C4506) !important;
+    box-shadow: 0 2px 4px rgba(225, 121, 33, 0.3);
+}
+
+.progress-success {
+    background: linear-gradient(45deg, #28a745, #1e7e34) !important;
+    box-shadow: 0 2px 4px rgba(40, 167, 69, 0.3);
+}
+
+.progress-info {
+    background: linear-gradient(45deg, #17a2b8, #117a8b) !important;
+    box-shadow: 0 2px 4px rgba(23, 162, 184, 0.3);
+}
+
+.progress-danger {
+    background: linear-gradient(45deg, #dc3545, #c82333) !important;
+    box-shadow: 0 2px 4px rgba(220, 53, 69, 0.3);
+    animation: pulse-danger 2s infinite;
+}
+
+.progress-secondary {
+    background: linear-gradient(45deg, #6c757d, #545b62) !important;
+    box-shadow: 0 2px 4px rgba(108, 117, 125, 0.3);
+}
+
+/* Animation pour les commandes en retard */
+@keyframes pulse-danger {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.7;
+    }
+}
+
+/* Animation pour les commandes en cours */
+.progress-primary.animate {
+    animation: progress-primary-animation 3s ease-in-out infinite;
+}
+
+@keyframes progress-primary-animation {
+    0%, 100% {
+        background: linear-gradient(45deg, #E17921, #9C4506);
+    }
+    50% {
+        background: linear-gradient(45deg, #9C4506, #E17921);
+    }
+}
+
+/* Animation pour les commandes terminées */
+.progress-success.animate {
+    animation: progress-success-animation 2s ease-in-out infinite;
+}
+
+@keyframes progress-success-animation {
+    0%, 100% {
+        background: linear-gradient(45deg, #28a745, #1e7e34);
+    }
+    50% {
+        background: linear-gradient(45deg, #1e7e34, #28a745);
+    }
+}
+
+/* Animation pour les commandes récupérées */
+.progress-info.animate {
+    animation: progress-info-animation 2s ease-in-out infinite;
+}
+
+@keyframes progress-info-animation {
+    0%, 100% {
+        background: linear-gradient(45deg, #17a2b8, #117a8b);
+    }
+    50% {
+        background: linear-gradient(45deg, #117a8b, #17a2b8);
+    }
+}
+
+/* Styles pour les notifications */
+.alert.position-fixed {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    border: none;
+    border-radius: 8px;
+    font-weight: 500;
+}
+
+.alert-success {
+    background: linear-gradient(45deg, #28a745, #1e7e34);
+    color: white;
+}
+
+.alert-danger {
+    background: linear-gradient(45deg, #dc3545, #c82333);
+    color: white;
+}
+
+/* Styles pour le modal de confirmation */
+#confirmationModal .modal-header {
+    background: linear-gradient(45deg, #dc3545, #c82333) !important;
+    border-bottom: none;
+}
+
+#confirmationModal .modal-content {
+    border: none;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+#confirmationModal .alert-warning {
+    background: linear-gradient(45deg, #ffc107, #e0a800);
+    color: #212529;
+    border: none;
+    border-radius: 8px;
+}
+
+/* Styles pour les boutons d'action */
+.btn-outline-danger {
+    border-color: #dc3545;
+    color: #dc3545;
+    transition: all 0.3s ease;
+}
+
+.btn-outline-danger:hover {
+    background: linear-gradient(45deg, #dc3545, #c82333);
+    border-color: #c82333;
+    color: white;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(220, 53, 69, 0.3);
+}
+
+.btn-danger {
+    background: linear-gradient(45deg, #dc3545, #c82333);
+    border: none;
+    transition: all 0.3s ease;
+}
+
+.btn-danger:hover {
+    background: linear-gradient(45deg, #c82333, #dc3545);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(220, 53, 69, 0.3);
+}
+
+.btn-danger:disabled {
+    opacity: 0.7;
+    transform: none;
+    box-shadow: none;
+}
+
+/* Animation pour le spinner */
+.fa-spinner {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Styles pour les boutons d'action dans le tableau */
+.btn-group .btn {
+    margin-right: 2px;
+    transition: all 0.2s ease;
+}
+
+.btn-group .btn:last-child {
+    margin-right: 0;
+}
+
+.btn-group .btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Responsive pour les boutons d'action */
+@media (max-width: 768px) {
+    .btn-group {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+    }
+    
+    .btn-group .btn {
+        margin-right: 0;
+        margin-bottom: 2px;
+    }
+    
+    .btn-group .btn:last-child {
+        margin-bottom: 0;
+    }
+}
