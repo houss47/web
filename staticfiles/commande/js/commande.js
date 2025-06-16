@@ -25,10 +25,8 @@ const appState = {
         description: '',
         references: [],
         referenceUrl: '',
-        category: '',
-        description: '',
         
-        // Step 3: Measurements
+        // Étape 3: Mesures
         tourPoitrine: '',
         tourTaille: '',
         tourHanches: '',
@@ -45,11 +43,39 @@ const appState = {
 // Initialize application
 document.addEventListener('DOMContentLoaded', function() {
     initializeApp();
+    setupAnimations();
 });
 
 function initializeApp() {
     bindEventListeners();
-    populateValidationSummary();
+    setupValidationCards();
+}
+
+function setupAnimations() {
+    // Animation des cartes de validation
+    const cards = document.querySelectorAll('.validation-card');
+    cards.forEach((card, index) => {
+        card.style.animationDelay = `${index * 0.1}s`;
+    });
+
+    // Animation des éléments de contact
+    const contactItems = document.querySelectorAll('.contact-item');
+    contactItems.forEach((item, index) => {
+        item.style.animationDelay = `${index * 0.15}s`;
+    });
+}
+
+function setupValidationCards() {
+    const cards = document.querySelectorAll('.validation-card');
+    cards.forEach(card => {
+        card.addEventListener('mouseenter', () => {
+            card.style.transform = 'translateY(-5px)';
+        });
+        
+        card.addEventListener('mouseleave', () => {
+            card.style.transform = 'translateY(0)';
+        });
+    });
 }
 
 function bindEventListeners() {
@@ -59,67 +85,42 @@ function bindEventListeners() {
         confirmButton.addEventListener('click', handleConfirmOrder);
     }
 
-    // Gestionnaire pour les commentaires additionnels
-    const additionalComments = document.getElementById('additional-comments');
-    if (additionalComments) {
-        additionalComments.addEventListener('input', function() {
-            // Sauvegarder les commentaires dans le localStorage
-            localStorage.setItem('additionalComments', this.value);
+    // Gestionnaire pour les éléments de contact
+    const contactItems = document.querySelectorAll('.contact-item');
+    contactItems.forEach(item => {
+        item.addEventListener('mouseenter', () => {
+            item.style.transform = 'translateX(8px)';
         });
+        
+        item.addEventListener('mouseleave', () => {
+            item.style.transform = 'translateX(0)';
+        });
+    });
+}
+
+function handleConfirmOrder(event) {
+    event.preventDefault();
+    
+    const form = event.target.closest('form');
+    if (form) {
+        // Animation du bouton
+        const button = event.target;
+        button.style.transform = 'scale(0.95)';
+        setTimeout(() => {
+            button.style.transform = 'scale(1)';
+            form.submit();
+        }, 200);
     }
 }
 
-function populateValidationSummary() {
-    // Récupérer les données du localStorage
-    const formData = JSON.parse(localStorage.getItem('formData') || '{}');
-    
-    // Mettre à jour les informations personnelles
-    document.getElementById('val-nom').textContent = formData.nom || '-';
-    document.getElementById('val-email').textContent = formData.email || '-';
-    document.getElementById('val-telephone').textContent = formData.telephone || '-';
-    document.getElementById('val-adresse').textContent = formData.adresse || '-';
-    
-    // Mettre à jour les détails du projet
-    document.getElementById('val-project-type').textContent = formData.projectType || 'Création sur-mesure';
-    document.getElementById('val-category').textContent = formData.category || '-';
-    document.getElementById('val-description').textContent = formData.description || '-';
-    
-    // Mettre à jour les mesures
-    document.getElementById('val-tour-poitrine').textContent = formData.tourPoitrine || '-';
-    document.getElementById('val-tour-taille').textContent = formData.tourTaille || '-';
-    document.getElementById('val-tour-hanches').textContent = formData.tourHanches || '-';
-    document.getElementById('val-largeur-epaules').textContent = formData.largeurEpaules || '-';
-    document.getElementById('val-longueur-manches').textContent = formData.longueurManches || '-';
-    document.getElementById('val-taille').textContent = formData.taille || '-';
-    
-    // Mettre à jour les commentaires additionnels
-    const additionalComments = document.getElementById('additional-comments');
-    if (additionalComments) {
-        additionalComments.value = localStorage.getItem('additionalComments') || '';
-    }
-}
-
-function handleConfirmOrder() {
-    // Récupérer les données du formulaire
-    const formData = JSON.parse(localStorage.getItem('formData') || '{}');
-    const additionalComments = document.getElementById('additional-comments').value;
-    
-    // Ajouter les commentaires aux données
-    formData.additionalComments = additionalComments;
-    
-    // Simuler l'envoi des données au serveur
-    console.log('Envoi des données au serveur:', formData);
-    
-    // Afficher un message de confirmation
-    showNotification('Votre commande a été confirmée avec succès !', 'success');
-    
-    // Rediriger vers la page de confirmation
-    setTimeout(() => {
-        window.location.href = '/confirmation.html';
-    }, 2000);
-}
-
+// Fonction pour afficher les notifications
 function showNotification(message, type = 'info') {
+    // Supprimer les notifications existantes
+    const existingNotifications = document.querySelectorAll('.notification');
+    existingNotifications.forEach(notification => {
+        notification.remove();
+    });
+
     // Créer l'élément de notification
     const notification = document.createElement('div');
     notification.className = `notification ${type}`;
@@ -129,9 +130,9 @@ function showNotification(message, type = 'info') {
     document.body.appendChild(notification);
     
     // Animer l'apparition
-    setTimeout(() => {
+    requestAnimationFrame(() => {
         notification.classList.add('show');
-    }, 100);
+    });
     
     // Supprimer la notification après 3 secondes
     setTimeout(() => {
@@ -140,4 +141,31 @@ function showNotification(message, type = 'info') {
             notification.remove();
         }, 300);
     }, 3000);
+}
+
+// Fonction pour gérer les erreurs
+function handleError(error) {
+    console.error('Erreur:', error);
+    showNotification('Une erreur est survenue. Veuillez réessayer.', 'error');
+}
+
+// Fonction pour valider les données
+function validateData(data) {
+    const errors = {};
+    
+    // Validation des informations personnelles
+    if (!data.nom) errors.nom = 'Le nom est requis';
+    if (!data.prenom) errors.prenom = 'Le prénom est requis';
+    if (!data.email) errors.email = 'L\'email est requis';
+    if (!data.telephone) errors.telephone = 'Le téléphone est requis';
+    
+    // Validation des mesures
+    if (data.tourPoitrine && (isNaN(data.tourPoitrine) || data.tourPoitrine <= 0)) {
+        errors.tourPoitrine = 'Le tour de poitrine doit être un nombre positif';
+    }
+    
+    return {
+        isValid: Object.keys(errors).length === 0,
+        errors
+    };
 }

@@ -1,15 +1,15 @@
 /* Base Styles avec variables pour correspondre à la palette de couleurs africaine moderne */
 :root {
   /* Palette de couleurs africaine riche et vibrante */
-  --color-primary: #7E57C2;      /* Violet principal */
-  --color-primary-light: #B39DDB; /* Violet clair */
-  --color-primary-dark: #5E35B1;  /* Violet foncé */
+  --color-primary: #F2A121;      /* Orange doré pour le thème africain */
+  --color-primary-light: #FFB347; /* Orange clair */
+  --color-primary-dark: #D98F1D;  /* Orange foncé */
   --color-secondary: #1E8449;    /* Vert forêt */
   --color-accent: #B7410E;      /* Rouge terre */
   --color-tertiary: #6C3483;    /* Violet aubergine - Pour les éléments spéciaux */
   
   /* Couleurs supplémentaires inspirées des textiles africains */
-  --color-kente-gold: #FFC107;   /* Or Kente - Pour les éléments festifs */
+  --color-kente-gold: #F2A121;   /* Or Kente - Maintenant la même que primary pour la cohérence */
   --color-mud-brown: #5D4037;    /* Brun boue - Pour les éléments traditionnels */
   --color-indigo-dye: #3F51B5;   /* Indigo - Pour les accents froids */
   --color-calabash: #8D6E63;     /* Calebasse - Pour les éléments naturels */
@@ -28,10 +28,10 @@
   --color-card: #FFFFFF;        /* Blanc pur - Pour les cartes */
   --color-sidebar: var(--sidebar-bg);
   --color-sidebar-active: var(--sidebar-hover-bg);
-  --color-hover: rgba(210, 105, 30, 0.07); /* Terre de Sienne très transparent - Pour les survols */
+  --color-hover: rgba(242, 161, 33, 0.07); /* Utilisation de la nouvelle couleur primaire pour le survol */
   
   /* Convertir les couleurs en RGB pour les utiliser avec rgba */
-  --color-primary-rgb: 126, 87, 194;
+  --color-primary-rgb: 242, 161, 33;
   --color-secondary-rgb: 30, 132, 73;
   --color-accent-rgb: 183, 65, 14;
   --color-tertiary-rgb: 108, 52, 131;
@@ -71,12 +71,12 @@
   --transition-slow: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
   
   /* Gradients inspirés des textiles et paysages africains */
-  --gradient-primary: linear-gradient(135deg, #D2691E 0%, #E67E22 100%);
+  --gradient-primary: linear-gradient(135deg, var(--color-primary-dark) 0%, var(--color-primary) 100%);
   --gradient-secondary: linear-gradient(135deg, #1E8449 0%, #27AE60 100%);
   --gradient-accent: linear-gradient(135deg, #D2691E 0%, #B7410E 100%);
-  --gradient-sunset: linear-gradient(135deg, #E67E22 0%, #B7410E 70%, #5D4037 100%);
+  --gradient-sunset: linear-gradient(135deg, #F2A121 0%, #B7410E 70%, #5D4037 100%); /* Ajusté pour le nouvel orange */
   --gradient-savanna: linear-gradient(135deg, #F9F5F1 0%, #E0D5C9 50%, #8D6E63 100%);
-  --gradient-kente: linear-gradient(135deg, #D2691E 0%, #FFC107 30%, #1E8449 70%, #3F51B5 100%);
+  --gradient-kente: linear-gradient(135deg, #F2A121 0%, #FFC107 30%, #1E8449 70%, #3F51B5 100%); /* Ajusté pour le nouvel orange */
   --gradient-mud-cloth: linear-gradient(90deg, #5D4037 25%, #8D6E63 25%, #8D6E63 50%, #A0522D 50%, #A0522D 75%, #D2691E 75%);
   --gradient-card: linear-gradient(145deg, #FFFFFF 0%, #F9F5F1 100%);
   --gradient-sidebar: linear-gradient(180deg, #FFFFFF 0%, #F9F5F1 100%);
@@ -85,10 +85,10 @@
   --pattern-stripes: repeating-linear-gradient(45deg, rgba(var(--color-primary-rgb), 0.03) 0, rgba(var(--color-primary-rgb), 0.03) 10px, rgba(var(--color-kente-gold-rgb), 0.03) 10px, rgba(var(--color-kente-gold-rgb), 0.03) 20px);
   
   /* Couleurs de la barre latérale */
-  --sidebar-bg: #1a1a1a;         /* Fond très sombre */
-  --sidebar-hover-bg: #2d2d2d;   /* Fond sombre au survol */
-  --text-color: #ffffff;         /* Texte blanc */
-  --text-color-muted: #b3b3b3;   /* Texte gris clair */
+  --sidebar-bg: #F6F3ED;         /* Nouveau fond clair pour la barre latérale */
+  --sidebar-hover-bg: #EAE6DF;   /* Fond plus clair au survol pour la barre latérale */
+  --text-color: #2C3E50;         /* Texte sombre pour un bon contraste sur fond clair */
+  --text-color-muted: #6C757D;   /* Texte gris foncé pour la discrétion */
 }
 
 * {

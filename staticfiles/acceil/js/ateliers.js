@@ -748,6 +748,73 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Initialisation
     filterAteliers();
+
+    // Gestion des messages de validation
+    initFormValidation();
+    
+    // Gestion des messages de succès/erreur
+    const messages = document.querySelectorAll('.alert');
+    messages.forEach(message => {
+        setTimeout(() => {
+            message.style.opacity = '0';
+            message.style.transform = 'translateY(-10px)';
+            setTimeout(() => message.remove(), 300);
+        }, 5000);
+    });
 });
 
 })();
+
+function initFormValidation() {
+    const forms = document.querySelectorAll('form');
+    
+    forms.forEach(form => {
+        form.addEventListener('submit', function(e) {
+            const formFields = form.querySelectorAll('input, textarea, select');
+            let hasErrors = false;
+            
+            // Réinitialiser les erreurs précédentes
+            form.querySelectorAll('.error-message').forEach(el => el.remove());
+            form.querySelectorAll('.error').forEach(el => el.classList.remove('error'));
+            
+            // Validation des champs
+            formFields.forEach(field => {
+                if (field.hasAttribute('required') && !field.value.trim()) {
+                    hasErrors = true;
+                    showFieldError(field, 'Ce champ est requis');
+                }
+                
+                // Validation spécifique pour l'email
+                if (field.type === 'email' && field.value) {
+                    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                    if (!emailRegex.test(field.value)) {
+                        hasErrors = true;
+                        showFieldError(field, 'Veuillez entrer une adresse email valide');
+                    }
+                }
+                
+                // Validation spécifique pour le téléphone
+                if (field.name === 'telephone' && field.value) {
+                    const phoneRegex = /^[0-9]{10}$/;
+                    if (!phoneRegex.test(field.value.replace(/\s/g, ''))) {
+                        hasErrors = true;
+                        showFieldError(field, 'Veuillez entrer un numéro de téléphone valide');
+                    }
+                }
+            });
+            
+            if (hasErrors) {
+                e.preventDefault();
+                showNotification('Veuillez corriger les erreurs dans le formulaire', 'error');
+            }
+        });
+    });
+}
+
+function showFieldError(field, message) {
+    field.classList.add('error');
+    const errorDiv = document.createElement('div');
+    errorDiv.className = 'error-message';
+    errorDiv.textContent = message;
+    field.parentNode.appendChild(errorDiv);
+}

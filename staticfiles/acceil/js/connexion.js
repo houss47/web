@@ -152,6 +152,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Fonction pour afficher les notifications
     function showToast(message, type = 'success') {
+        // Supprimer les notifications existantes
+        const existingToasts = document.querySelectorAll('.toast-notification');
+        existingToasts.forEach(toast => toast.remove());
+
         const toast = document.createElement('div');
         toast.className = `toast-notification ${type}`;
         toast.innerHTML = `
@@ -168,11 +172,11 @@ document.addEventListener('DOMContentLoaded', () => {
         // Afficher la notification avec animation
         setTimeout(() => toast.classList.add('show'), 100);
         
-        // Supprimer la notification après 5 secondes
+        // Supprimer la notification après 3 secondes
         setTimeout(() => {
             toast.classList.remove('show');
             setTimeout(() => toast.remove(), 300);
-        }, 5000);
+        }, 3000);
     }
 
     // Fonction pour afficher les erreurs de formulaire

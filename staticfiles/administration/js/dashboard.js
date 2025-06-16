@@ -1,4 +1,3 @@
-
 // Wait for the DOM to be fully loaded
 document.addEventListener('DOMContentLoaded', function() {
   // Performance tab buttons
@@ -22,17 +21,77 @@ document.addEventListener('DOMContentLoaded', function() {
   initializeCharts();
 });
 
+// Fonction pour récupérer les données JSON du DOM
+function getCommandesData() {
+    const scriptTag = document.getElementById('commandes-data');
+    if (scriptTag && scriptTag.textContent) {
+        try {
+            return JSON.parse(scriptTag.textContent);
+        } catch (e) {
+            console.error("Erreur lors du parsing des données JSON des commandes:", e);
+            return {};
+        }
+    } else {
+        console.warn("Balise 'commandes-data' ou son contenu introuvable.");
+        return {};
+    }
+}
+
+function getRevenueLabelsData() {
+    const scriptTag = document.getElementById('revenue-labels-data');
+    if (scriptTag && scriptTag.textContent) {
+        try {
+            return JSON.parse(scriptTag.textContent);
+        } catch (e) {
+            console.error("Erreur lors du parsing des données JSON des labels de revenus:", e);
+            return [];
+        }
+    } else {
+        console.warn("Balise 'revenue-labels-data' ou son contenu introuvable.");
+        return [];
+    }
+}
+
+function getRevenueChartData() {
+    const scriptTag = document.getElementById('revenue-data');
+    if (scriptTag && scriptTag.textContent) {
+        try {
+            return JSON.parse(scriptTag.textContent);
+        } catch (e) {
+            console.error("Erreur lors du parsing des données JSON des revenus:", e);
+            return [];
+        }
+    } else {
+        console.warn("Balise 'revenue-data' ou son contenu introuvable.");
+        return [];
+    }
+}
+
 // Function to initialize charts
 function initializeCharts() {
+  // Données dynamiques des commandes par statut
+  const commandesParStatut = getCommandesData();
+  console.log('Données des commandes par statut:', commandesParStatut);
+
+  // Données dynamiques du chiffre d'affaires
+  const revenueLabels = getRevenueLabelsData();
+  const revenueData = getRevenueChartData();
+  console.log('Labels de revenus:', revenueLabels);
+  console.log('Données de revenus:', revenueData);
+
   // Revenue Chart - Area Chart
   const revenueCtx = document.getElementById('revenueChart').getContext('2d');
+  if (!revenueCtx) {
+      console.error('L\'élément canvas avec l\'ID "revenueChart" n\'a pas été trouvé ou le contexte 2D n\'est pas disponible.');
+      return; 
+  }
   const revenueChart = new Chart(revenueCtx, {
     type: 'line',
     data: {
-      labels: ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin', 'Juil'],
+      labels: revenueLabels, // Utilisation des labels dynamiques
       datasets: [{
-        label: 'Chiffre d\'affaires (€)',
-        data: [4000, 3000, 5000, 2780, 1890, 2390, 3490],
+        label: 'Chiffre d\'affaires (CFA)', // Changement de la devise
+        data: revenueData, // Utilisation des données dynamiques
         backgroundColor: 'rgba(139, 92, 246, 0.1)',
         borderColor: 'rgba(139, 92, 246, 1)',
         borderWidth: 2,
@@ -52,7 +111,7 @@ function initializeCharts() {
           intersect: false,
           callbacks: {
             label: function(context) {
-              return context.dataset.label + ': ' + context.parsed.y + ' €';
+              return context.dataset.label + ': ' + context.parsed.y + ' CFA'; // Changement de la devise
             }
           }
         }
@@ -62,7 +121,7 @@ function initializeCharts() {
           beginAtZero: true,
           ticks: {
             callback: function(value) {
-              return value + ' €';
+              return value + ' CFA'; // Changement de la devise
             }
           }
         }
@@ -72,23 +131,29 @@ function initializeCharts() {
   
   // Services Chart - Pie Chart
   const servicesCtx = document.getElementById('servicesChart').getContext('2d');
+  if (!servicesCtx) {
+      console.error('L\'élément canvas avec l\'ID "servicesChart" n\'a pas été trouvé ou le contexte 2D n\'est pas disponible.');
+      return;
+  }
   const servicesChart = new Chart(servicesCtx, {
     type: 'pie',
     data: {
-      labels: ['Retouches', 'Sur-mesure', 'Réparations', 'Autres'],
+      labels: ['En attente', 'En cours', 'Terminées'],
       datasets: [{
-        data: [40, 30, 20, 10],
+        data: [
+          commandesParStatut.en_attente,
+          commandesParStatut.en_cours,
+          commandesParStatut.termine
+        ],
         backgroundColor: [
-          'rgba(139, 92, 246, 0.8)',
-          'rgba(217, 70, 239, 0.8)',
-          'rgba(249, 115, 22, 0.8)',
-          'rgba(14, 165, 233, 0.8)'
+          'rgba(249, 115, 22, 0.8)', // Orange pour 'En attente'
+          'rgba(14, 165, 233, 0.8)', // Bleu pour 'En cours'
+          'rgba(139, 92, 246, 0.8)'  // Violet pour 'Terminées'
         ],
         borderColor: [
-          'rgba(139, 92, 246, 1)',
-          'rgba(217, 70, 239, 1)',
           'rgba(249, 115, 22, 1)',
-          'rgba(14, 165, 233, 1)'
+          'rgba(14, 165, 233, 1)',
+          'rgba(139, 92, 246, 1)'
         ],
         borderWidth: 1
       }]
@@ -107,7 +172,11 @@ function initializeCharts() {
         tooltip: {
           callbacks: {
             label: function(context) {
-              return context.label + ': ' + context.parsed + '%';
+              const label = context.label || '';
+              const value = context.raw;
+              const total = context.dataset.data.reduce((sum, current) => sum + current, 0);
+              const percentage = total > 0 ? ((value / total) * 100).toFixed(1) : 0;
+              return `${label}: ${value} (${percentage}%)`;
             }
           }
         }
