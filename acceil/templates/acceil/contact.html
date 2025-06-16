@@ -1,4 +1,3 @@
-
 {% load static %}
 <!DOCTYPE html>
 <html lang="fr">
@@ -39,14 +38,14 @@
                         <circle cx="12" cy="10" r="3"></circle>
                     </svg>
                     <h3>Notre Adresse</h3>
-                    <p>123 Avenue de la Mode<br>75000 Paris, France</p>
+                    <p>Cocody Angré 7ème Tranche<br>Abidjan, Côte d'Ivoire</p>
                 </div>
                 <div class="info-card">
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="phone-icon">
                         <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
                     </svg>
                     <h3>Téléphone</h3>
-                    <p>+33 1 23 45 67 89</p>
+                    <p>+225 07 07 07 07 07</p>
                 </div>
                 <div class="info-card">
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="email-icon">
@@ -64,25 +63,32 @@
                     <h2>Envoyez-nous un message</h2>
                     <p>Nous vous répondrons dans les plus brefs délais</p>
                 </div>
+
+                <!-- Conteneur pour les messages d'erreur généraux -->
+                <div id="formMessages" class="form-messages"></div>
                 
                 <div class="form-group">
                     <label for="name">Nom complet</label>
                     <input type="text" id="name" name="name" required>
+                    <div class="field-message"></div>
                 </div>
 
                 <div class="form-group">
                     <label for="email">Email</label>
                     <input type="email" id="email" name="email" required>
+                    <div class="field-message"></div>
                 </div>
 
                 <div class="form-group">
                     <label for="subject">Sujet</label>
                     <input type="text" id="subject" name="subject" required>
+                    <div class="field-message"></div>
                 </div>
 
                 <div class="form-group">
                     <label for="message">Message</label>
                     <textarea id="message" name="message" rows="5" required></textarea>
+                    <div class="field-message"></div>
                 </div>
 
                 <button type="submit" class="submit-btn">
@@ -93,6 +99,9 @@
                     </svg>
                 </button>
             </form>
+
+            <!-- Toast Notification -->
+            <div id="toast" class="toast"></div>
         </div>
 
     </main>
@@ -100,5 +109,6 @@
     {% include 'acceil/section/footer.html' %}
     <!-- Scripts -->
 <script src="{% static 'js/app.js' %}"></script>
+    <script src="{% static 'acceil/js/contact.js' %}"></script>
 </body>
 </html>

@@ -79,3 +79,20 @@ class Atelier(models.Model):
     class Meta:
         verbose_name = "Atelier"
         verbose_name_plural = "Ateliers"
+
+
+class Contact(models.Model):
+    nom_complet = models.CharField(max_length=100, verbose_name="Nom complet")
+    email = models.EmailField(verbose_name="Adresse email")
+    sujet = models.CharField(max_length=200, verbose_name="Sujet du message")
+    message = models.TextField(verbose_name="Message")
+    date_envoi = models.DateTimeField(auto_now_add=True, verbose_name="Date d'envoi")
+    traite = models.BooleanField(default=False, verbose_name="Message traité")
+
+    def __str__(self):
+        return f"Message de {self.nom_complet} - {self.sujet}"
+
+    class Meta:
+        verbose_name = "Message de contact"
+        verbose_name_plural = "Messages de contact"
+        ordering = ['-date_envoi']

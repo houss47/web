@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Utilisateur, Atelier
+from .models import Utilisateur, Atelier, Contact
 
 @admin.register(Utilisateur)
 class UtilisateurAdmin(admin.ModelAdmin):
@@ -35,3 +35,32 @@ class AtelierAdmin(admin.ModelAdmin):
             'fields': ('cree_le',)
         }),
     )
+
+@admin.register(Contact)
+class ContactAdmin(admin.ModelAdmin):
+    list_display = ('nom_complet', 'email', 'sujet', 'date_envoi', 'traite')
+    list_filter = ('traite', 'date_envoi')
+    search_fields = ('nom_complet', 'email', 'sujet', 'message')
+    ordering = ('-date_envoi',)
+    readonly_fields = ('date_envoi',)
+    list_editable = ('traite',)
+    fieldsets = (
+        ('Informations de l\'expéditeur', {
+            'fields': ('nom_complet', 'email')
+        }),
+        ('Message', {
+            'fields': ('sujet', 'message')
+        }),
+        ('Suivi', {
+            'fields': ('traite', 'date_envoi')
+        }),
+    )
+    actions = ['marquer_comme_traite', 'marquer_comme_non_traite']
+
+    def marquer_comme_traite(self, request, queryset):
+        queryset.update(traite=True)
+    marquer_comme_traite.short_description = "Marquer les messages sélectionnés comme traités"
+
+    def marquer_comme_non_traite(self, request, queryset):
+        queryset.update(traite=False)
+    marquer_comme_non_traite.short_description = "Marquer les messages sélectionnés comme non traités"

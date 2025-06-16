@@ -1,11 +1,13 @@
 from django.shortcuts import render, redirect
 from django.contrib import messages
-from .models import Utilisateur, Atelier
+from .models import Utilisateur, Atelier, Contact
 from django.contrib.auth.hashers import make_password, check_password
 from django.core.exceptions import ValidationError
 from django.db import transaction
 from .forms import AtelierCreationForm, ConnexionForm, InscriptionForm
 from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from django.core.validators import validate_email
 
 # Create your views here.
 def index(request):
@@ -13,7 +15,86 @@ def index(request):
     ateliers = Atelier.objects.all()[:4]
     return render(request, 'acceil/home.html', {'ateliers': ateliers})
 
+@csrf_exempt
 def contact(request):
+    if request.method == 'POST':
+        try:
+            # Récupération des données
+            nom_complet = request.POST.get('name', '').strip()
+            email = request.POST.get('email', '').strip()
+            sujet = request.POST.get('subject', '').strip()
+            message = request.POST.get('message', '').strip()
+
+            # Validation des données
+            errors = {}
+            
+            if not nom_complet:
+                errors['name'] = 'Le nom est requis'
+            elif len(nom_complet) < 2:
+                errors['name'] = 'Le nom doit contenir au moins 2 caractères'
+
+            if not email:
+                errors['email'] = 'L\'email est requis'
+            else:
+                try:
+                    validate_email(email)
+                except ValidationError:
+                    errors['email'] = 'Veuillez entrer une adresse email valide'
+
+            if not sujet:
+                errors['subject'] = 'Le sujet est requis'
+            elif len(sujet) < 3:
+                errors['subject'] = 'Le sujet doit contenir au moins 3 caractères'
+
+            if not message:
+                errors['message'] = 'Le message est requis'
+            elif len(message) < 10:
+                errors['message'] = 'Le message doit contenir au moins 10 caractères'
+
+            # Si des erreurs sont présentes, les retourner
+            if errors:
+                if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                    return JsonResponse({
+                        'success': False,
+                        'errors': errors
+                    })
+                for field, error in errors.items():
+                    messages.error(request, f"{field}: {error}")
+                return render(request, 'acceil/contact.html')
+
+            # Si tout est valide, créer le contact
+            with transaction.atomic():
+                contact = Contact.objects.create(
+                    nom_complet=nom_complet,
+                    email=email,
+                    sujet=sujet,
+                    message=message
+                )
+
+            # Préparer la réponse de succès
+            success_message = 'Votre message a été envoyé avec succès. Nous vous répondrons dans les plus brefs délais.'
+            
+            if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                return JsonResponse({
+                    'success': True,
+                    'message': success_message
+                })
+
+            messages.success(request, success_message)
+            return redirect('acceil:contact')
+
+        except Exception as e:
+            error_message = 'Une erreur est survenue lors de l\'envoi du message. Veuillez réessayer.'
+            
+            if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                return JsonResponse({
+                    'success': False,
+                    'message': error_message
+                })
+
+            messages.error(request, error_message)
+            return render(request, 'acceil/contact.html')
+
     return render(request, 'acceil/contact.html')
 
 def connexion(request):
