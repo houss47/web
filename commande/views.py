@@ -9,7 +9,6 @@ from atelier.models import Produit, Atelier # Assuming Produit and Atelier are i
 from utilisateur.models import Mesure # Import Mesure model
 
 # Create your views here.
-@login_required
 def commande_list(request):
     try:
         # Récupérer l'utilisateur connecté depuis la session
@@ -107,7 +106,6 @@ def commande_list(request):
         messages.error(request, f'Une erreur est survenue: {str(e)}')
         return redirect('atelier:ateliers')
 
-@login_required
 def validate_commande(request):
     if request.method == 'POST':
         try:

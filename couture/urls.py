@@ -15,13 +15,15 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
-from django.urls import include
+from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
+from acceil import views as acceil_views # Importer les vues de l'application acceil
+
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', include(('acceil.urls', 'acceil'), namespace='acceil')),
+    path('', acceil_views.index, name='home'), # Page d'accueil à la racine
+    path('acceil/', include(('acceil.urls', 'acceil'), namespace='acceil')),
     path('administration/', include(('administration.urls', 'administration'), namespace='administration')),
     path('utilisateur/', include(('utilisateur.urls', 'utilisateur'), namespace='utilisateur')),
     path('atelier/', include(('atelier.urls', 'atelier'), namespace='atelier')),  

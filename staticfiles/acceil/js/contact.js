@@ -68,6 +68,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Gestion du formulaire de contact
     contactForm.addEventListener('submit', async (e) => {
         e.preventDefault();
+        clearMessages();
 
         // Désactiver le bouton pendant la soumission
         const submitBtn = contactForm.querySelector('.submit-btn');
@@ -85,16 +86,31 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         try {
-            await simulateFormSubmission(formDataObject);
-            showToast('Message envoyé avec succès !', 'success');
-            contactForm.reset();
-            
-            // Animation du bouton de succès
-            submitBtn.innerHTML = '<span>Envoyé !</span>';
-            setTimeout(resetSubmitButton, 2000);
+            const response = await fetch('/contact/', {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRFToken': getCookie('csrftoken')
+                }
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                showSuccessMessage(data.message);
+                contactForm.reset();
+                submitBtn.innerHTML = '<span>Envoyé !</span>';
+                clearValidationStates();
+            } else if (data.errors) {
+                showFieldErrors(data.errors);
+            } else {
+                showErrorMessage(data.message || 'Une erreur est survenue');
+            }
         } catch (error) {
-            showToast('Une erreur est survenue. Veuillez réessayer.', 'error');
-            resetSubmitButton();
+            showErrorMessage('Une erreur est survenue lors de l\'envoi du message');
+        } finally {
+            setTimeout(resetSubmitButton, 2000);
         }
 
         function resetSubmitButton() {
@@ -102,6 +118,82 @@ document.addEventListener('DOMContentLoaded', () => {
             submitBtn.innerHTML = originalText;
         }
     });
+
+    // Fonction pour effacer tous les messages
+    function clearMessages() {
+        const formMessages = document.getElementById('formMessages');
+        const fieldMessages = document.querySelectorAll('.field-message');
+        
+        formMessages.className = 'form-messages';
+        formMessages.style.display = 'none';
+        
+        fieldMessages.forEach(message => {
+            message.className = 'field-message';
+            message.textContent = '';
+        });
+    }
+
+    // Fonction pour effacer les états de validation
+    function clearValidationStates() {
+        const inputs = contactForm.querySelectorAll('input, textarea');
+        inputs.forEach(input => {
+            input.classList.remove('valid', 'invalid');
+        });
+    }
+
+    // Fonction pour afficher les erreurs de champs
+    function showFieldErrors(errors) {
+        Object.keys(errors).forEach(field => {
+            const input = document.getElementById(field);
+            const messageDiv = input.parentElement.querySelector('.field-message');
+            
+            if (input && messageDiv) {
+                input.classList.add('invalid');
+                input.classList.remove('valid');
+                messageDiv.className = 'field-message error';
+                messageDiv.textContent = errors[field];
+            }
+        });
+    }
+
+    // Fonction pour afficher un message de succès
+    function showSuccessMessage(message) {
+        const formMessages = document.getElementById('formMessages');
+        formMessages.className = 'form-messages success';
+        formMessages.innerHTML = `
+            <p>
+                <span class="message-title">Message envoyé avec succès !</span>
+                <span class="message-content">Nous vous répondrons dans les plus brefs délais.</span>
+            </p>
+        `;
+        formMessages.style.display = 'block';
+        showToast('Message envoyé avec succès !', 'success');
+    }
+
+    // Fonction pour afficher un message d'erreur
+    function showErrorMessage(message) {
+        const formMessages = document.getElementById('formMessages');
+        formMessages.className = 'form-messages error';
+        formMessages.textContent = message;
+        formMessages.style.display = 'block';
+        showToast(message, 'error');
+    }
+
+    // Fonction pour récupérer le token CSRF
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
 
     // Validation en temps réel des champs
     const formInputs = contactForm.querySelectorAll('input, textarea');
@@ -111,9 +203,10 @@ document.addEventListener('DOMContentLoaded', () => {
         });
         
         input.addEventListener('input', () => {
-            const errorMessage = input.parentElement.querySelector('.error-message');
-            if (errorMessage) {
-                errorMessage.remove();
+            const messageDiv = input.parentElement.querySelector('.field-message');
+            if (messageDiv) {
+                messageDiv.className = 'field-message';
+                messageDiv.textContent = '';
                 input.classList.remove('invalid');
             }
         });

@@ -16,6 +16,7 @@ from datetime import datetime, timedelta
 from django.db.models.functions import ExtractMonth
 from django.contrib.auth import logout
 from acceil.views import deconnexion
+import re
 
 # Create your views here.
 def calendar(request):
@@ -975,13 +976,16 @@ def settings(request):
                     utilisateur.nom = request.POST.get('nom', utilisateur.nom)
                     utilisateur.prenom = request.POST.get('prenom', utilisateur.prenom)
                     utilisateur.email = request.POST.get('email', utilisateur.email)
-                    utilisateur.telephone = request.POST.get('telephone', utilisateur.telephone)
+                    # Validation et normalisation du téléphone
+                    telephone_input = request.POST.get('telephone', utilisateur.telephone)
+                    # Conserver le format original tel quel
+                    utilisateur.telephone = telephone_input
                     
                     if 'photo' in request.FILES:
                         utilisateur.photo = request.FILES['photo']
                     
-                    utilisateur.full_clean()  # Validation du modèle
-                    utilisateur.save()
+                    # Sauvegarder sans validation du modèle pour le téléphone
+                    utilisateur.save(update_fields=['nom', 'prenom', 'email', 'telephone', 'photo'])
                     
                     if is_ajax:
                         return JsonResponse({

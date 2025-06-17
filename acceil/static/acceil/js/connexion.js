@@ -4,6 +4,23 @@
  */
 
 document.addEventListener('DOMContentLoaded', () => {
+    // Helper pour récupérer le token CSRF depuis le cookie
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                // Does this cookie string begin with the name we want?
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+    const csrftoken = getCookie('csrftoken');
     // Éléments DOM
     const loginTabs = document.querySelectorAll('.login-tab');
     const connexionForm = document.getElementById('connexionForm');
@@ -84,7 +101,8 @@ document.addEventListener('DOMContentLoaded', () => {
                         method: 'POST',
                         body: formData,
                         headers: {
-                            'X-Requested-With': 'XMLHttpRequest'
+                            'X-Requested-With': 'XMLHttpRequest',
+                            'X-CSRFToken': csrftoken
                         }
                     });
                     

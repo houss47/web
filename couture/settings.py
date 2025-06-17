@@ -29,6 +29,7 @@ SECRET_KEY = 'django-insecure-@01t*=)ybt(zhv4adsjbypv*eeso6y4ti78uqxviiz+&3!i2yf
 DEBUG = False
 
 ALLOWED_HOSTS = ['*']
+# ALLOWED_HOSTS = ['una.theses.ci','houessou.theses.ci']
 
 
 
@@ -99,6 +100,23 @@ DATABASES = {
 }
 
 
+
+# Database
+# https://docs.djangoproject.com/en/5.2/ref/settings/#databases
+
+# EN PRODUCTION
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.mysql',
+#         'NAME': 'sc5zds_bd_couture',
+#         'USER': 'sc5zds_houessou',
+#
+#         'PASSWORD': '%zP342TC$#ep',
+#         'HOST': 'localhost',
+#         'PORT': '3306',
+#     }
+# }
+
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
 
@@ -133,18 +151,30 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATICFILES_DIRS = [
     BASE_DIR / 'static',
 ]
 
-# WhiteNoise: compression + cache busting for fichiers statiques
+# Configuration pour les fichiers médias
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
+
+# Configuration de WhiteNoise pour les fichiers statiques
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
-# Media files (User uploads)
-MEDIA_URL = 'media/'
-MEDIA_ROOT = BASE_DIR / 'media'
+# Ajout de la configuration pour servir les fichiers médias en production
+if not DEBUG:
+    # Configuration pour servir les fichiers médias via le serveur web
+    MEDIA_URL = '/media/'
+    MEDIA_ROOT = BASE_DIR / 'media'
+    
+    # Configuration pour les fichiers statiques
+    STATIC_URL = '/static/'
+    STATIC_ROOT = BASE_DIR / 'staticfiles'
+    
+   
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
@@ -152,7 +182,7 @@ MEDIA_ROOT = BASE_DIR / 'media'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Configuration d'authentification
-LOGIN_URL = 'acceil/connexion/'
+LOGIN_URL = '/acceil/connexion/'
 LOGIN_REDIRECT_URL = '/administration/orders/'
 
 # Configuration de Jazzmin

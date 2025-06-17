@@ -135,8 +135,11 @@ def mon_profil(request):
         # Validation du téléphone
         if not telephone:
             errors.append("Le numéro de téléphone est obligatoire.")
-        elif not re.match(r'^\+?\d{9,15}$', telephone):
-            errors.append("Le format du numéro de téléphone n'est pas valide.")
+        else:
+            # Supprimer tous les caractères non numériques pour la validation
+            telephone_digits = re.sub(r'\D', '', telephone)
+            if len(telephone_digits) < 9 or len(telephone_digits) > 15:
+                errors.append("Le format du numéro de téléphone n'est pas valide. Veuillez saisir entre 9 et 15 chiffres (espaces ou symboles autorisés).")
         
         # Si des erreurs sont trouvées, les afficher et ne pas sauvegarder
         if errors:
